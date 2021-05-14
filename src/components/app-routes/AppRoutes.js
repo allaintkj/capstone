@@ -23,10 +23,6 @@ class AppRoutes extends React.Component {
     }
 
     showLogoutButton() {
-        let isPrinting = this.props.location.pathname.includes('/print');
-
-        if (isPrinting) { return null; }
-
         return (
             <div className='section has-text-centered'>
                 <a className='button is-link' onClick={() => {
@@ -53,12 +49,10 @@ class AppRoutes extends React.Component {
     }
 
     render() {
-        let isPrinting = this.props.location.pathname.includes('/print');
-
         return (
             <Provider store={store}>
                 <React.Fragment>
-                    <Header show={!isPrinting}/>
+                    <Header show={true} />
 
                     <Switch>
                         <Route component={this.wrapInfo} exact path='/student/:id' />
@@ -66,8 +60,6 @@ class AppRoutes extends React.Component {
                         <Route component={Dashboard} path='/dashboard/:type/:id/:edit' />
                         <Route component={Dashboard} path='/dashboard/:type/:id' />
                         <Route component={Dashboard} path='/dashboard/:type' />
-
-                        <Route component={this.wrapInfo} path='/print/:type/:id' />
 
                         <Route component={PasswordReset} path='/password' />
 
@@ -77,7 +69,7 @@ class AppRoutes extends React.Component {
                         <Route component={Splash} path='/' />
                     </Switch>
 
-                    <Footer show={!isPrinting}/>
+                    <Footer show={true}/>
                 </React.Fragment>
             </Provider>
         );
