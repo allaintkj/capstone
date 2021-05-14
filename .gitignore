@@ -1,3 +1,9 @@
+# Config files
+config.*.json
+
+# Built files
+dist/
+
 # Logs
 logs
 *.log

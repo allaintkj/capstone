@@ -1,0 +1,13 @@
+{
+    "host": "localhost",
+    "user": "root",
+    "multipleStatements": true,
+    "password": "",
+    "database": "progress_tracker",
+    "tables": {
+        "users": [
+            "student",
+            "faculty"
+        ]
+    }
+}

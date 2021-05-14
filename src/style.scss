@@ -1,0 +1,60 @@
+// variables and mixins
+
+// global styles
+@import './bulma.min.css';
+
+* {
+    border-left: none !important;
+    border-right: none !important;
+    box-shadow: none !important;
+}
+
+label {
+    user-select: none;
+
+    &.confirm-delete {
+        cursor: pointer;
+        display: inline-block;
+        margin-top: 1.5em;
+
+        input[type='checkbox'] {
+            cursor: pointer;
+            margin: auto;
+        }
+    }
+}
+
+p {
+    margin-bottom: 1rem;
+}
+
+.help {
+    font-weight: bold;
+    margin: 1em 0 0;
+}
+
+.hide {
+    height: 0;
+    margin: 0;
+    overflow: hidden;
+    padding: 0;
+}
+
+.info-string {
+    word-break: break-all;
+}
+
+.justify {
+    &-between {
+        justify-content: space-between;
+    }
+}
+
+.show {
+    height: auto;
+    overflow: visible;
+}
+
+// import partials
+@import 'components/forms/Forms';
+@import 'components/progress/Progress';
