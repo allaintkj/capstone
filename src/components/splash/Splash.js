@@ -1,6 +1,10 @@
+import PropTypes from 'prop-types';
 import React from 'react';
+import { connect } from 'react-redux';
 import { Redirect } from 'react-router';
 import { Link } from 'react-router-dom';
+
+import { setUserType } from '../../redux/actions/authActions';
 
 class Splash extends React.Component {
     constructor() {
@@ -34,11 +38,15 @@ class Splash extends React.Component {
                     </div>
 
                     <div className='section buttons is-centered'>
-                        <Link className='button is-link inline' to={{pathname: '/login/student'}}>
+                        <Link className='button is-link inline' onClick={() => {
+                            this.props.setUserType('student');
+                        }} to={{pathname: '/login/student'}}>
                             Student
                         </Link>
 
-                        <Link className='button is-info inline' to={{pathname: '/login/faculty'}}>
+                        <Link className='button is-info inline' onClick={() => {
+                            this.props.setUserType('faculty');
+                        }} to={{pathname: '/login/faculty'}}>
                             Faculty
                         </Link>
                     </div>
@@ -48,4 +56,12 @@ class Splash extends React.Component {
     }
 }
 
-export default Splash;
+Splash.propTypes = {
+    setUserType: PropTypes.func.isRequired
+};
+
+const mapDispatchToProps = dispatch => ({
+    setUserType: userType => dispatch(setUserType(userType))
+});
+
+export default connect(null, mapDispatchToProps)(Splash);

@@ -57,6 +57,22 @@ class AppRoutes extends React.Component {
                     <Switch>
                         <Route component={this.wrapInfo} exact path='/student/:id' />
 
+                        {/*
+                            FIXME
+                            Better routing
+                            This way there's no string comparisons to route params:
+
+                            <Route component={Dashboard} path='/dashboard/student/:id/edit' />
+                            <Route component={Dashboard} path='/dashboard/student/:id' />
+                            <Route component={Dashboard} path='/dashboard/student' />
+
+                            <Route component={Dashboard} path='/dashboard/faculty/:id/edit' />
+                            <Route component={Dashboard} path='/dashboard/faculty/:id' />
+                            <Route component={Dashboard} path='/dashboard/faculty' />
+
+                            <Route component={ErrorPage} />
+                        */}
+
                         <Route component={Dashboard} path='/dashboard/:type/:id/:edit' />
                         <Route component={Dashboard} path='/dashboard/:type/:id' />
                         <Route component={Dashboard} path='/dashboard/:type' />

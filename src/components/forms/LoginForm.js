@@ -5,8 +5,23 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Redirect } from 'react-router';
 
-import { setLoading } from '../../redux/actions/misc';
+// Auth actions
+import {
+    clearUserType,
+    setUserType,
+    login
+} from '../../redux/actions/authActions';
 
+// Validation actions
+import {
+    clearMessages
+} from '../../redux/actions/messageActions';
+
+/*
+*
+*   LoginForm component
+*
+*/
 class LoginForm extends React.Component {
     constructor(props) {
         super(props);
@@ -19,15 +34,9 @@ class LoginForm extends React.Component {
             nscc_id: '',
             password: ''
         };
-        this.messages = {
-            text: '',
-            nscc_id: '',
-            password: ''
-        };
 
         this.state = {
-            fields: this.fields,
-            msg: this.messages
+            fields: this.fields
         };
     }
 
@@ -65,88 +74,7 @@ class LoginForm extends React.Component {
             if (event.keyCode && (event.keyCode !== 13)) { return; }
         }
 
-        this.setState({msg: this.messages});
-        this.props.setLoading(true);
-
-        let params = this.props.match.params;
-        let route = `${this.props.api_url}/login/${params.type}`;
-        let req_type = 'POST';
-
-        axios({
-            data: this.state.fields,
-            method: req_type,
-            timeout: 10000,
-            url: route
-        }).then(response => {
-            this.setState({
-                fields: this.fields,
-                msg: this.messages
-            }, () => {
-                localStorage.removeItem('token');
-                localStorage.setItem('token', response.headers.token);
-
-                let decoded = jwt.decode(localStorage.getItem('token'));
-                let route = `/student/${decoded.nscc_id}`;
-
-                if (decoded.type === 'faculty') { route = '/dashboard/student'; }
-
-                this.props.setLoading(false);
-                this.props.history.push(route);
-            });
-        }).catch(error => {
-            let msgBlock = {};
-
-            try {
-                let requiresReset = error.response.status === 300;
-                let response = error.response.data;
-                let token = error.response.headers.token;
-
-                if (requiresReset) {
-                    localStorage.removeItem('token');
-                    localStorage.setItem('token', token);
-
-                    this.setState({
-                        fields: this.state.fields,
-                        msg: this.state.msg
-                    }, () => {
-                        this.props.setLoading(false);
-                        this.props.history.push('/password');
-                    });
-
-                    return;
-                }
-
-                // build error msg object
-                if (response.validation) {
-                    for (let field in response.validation) {
-                        msgBlock = {
-                            ...msgBlock,
-                            [field]: response.validation[field]
-                        };
-                    }
-                }
-
-                if (response.text) { msgBlock.text = response.text; }
-
-                // set error msg in state to display on page
-                // keep values in fields
-                this.setState({
-                    fields: this.state.fields,
-                    msg: msgBlock
-                }, () => {
-                    localStorage.removeItem('token');
-                    this.props.setLoading(false);
-                });
-            } catch (exception) {
-                this.setState({
-                    fields: this.state.fields,
-                    msg: {text: 'Request aborted'}
-                }, () => {
-                    localStorage.removeItem('token');
-                    this.props.setLoading(false);
-                });
-            }
-        });
+        this.props.login(this.state.fields, this.props.match.params.type);
     }
 
     updateField(event) {
@@ -156,28 +84,29 @@ class LoginForm extends React.Component {
             fields: {
                 ...this.state.fields,
                 [event.target.name]: event.target.value
-            },
-            msg: {
-                ...this.state.msg,
-                [event.target.name]: '',
-                text: ''
             }
         });
     }
 
     render() {
         let params = this.props.match.params;
+        let loadingClass = this.props.loading ? 'is-loading' : '';
+        // This won't be needed when proper routing is implemented
         let has_type = params.type && (params.type === 'student' || params.type === 'faculty');
-        let is_loading = this.props.loading ? 'is-loading' : '';
 
-        // auth check
+        // Check for token
         if (localStorage.getItem('token')) {
             let decoded = jwt.decode(localStorage.getItem('token'));
+            // FIXME
+            // This redirects to student, which fires a fetch method, which redirects to faculty
+            // Figure out how to just send the user to the correct route
             if (!decoded.password_reset) { return <Redirect to='/dashboard/student' />; }
         }
 
-        // check for query var
-        if (!has_type) { return <Redirect to='/' />; }
+        // Check for route param indicating user type
+        if (!has_type) {
+            return <Redirect to='/' />;
+        }
 
         return (
             <React.Fragment>
@@ -186,32 +115,36 @@ class LoginForm extends React.Component {
                         <div className='section'>
                             <h2 className='subtitle has-text-centered'>hint: try admin/alpAdmin</h2>
 
-                            <LoginField loading={this.props.loading} msg={this.state.msg} strLabel={'ID'}
+                            <LoginField loading={this.props.loading} msg={this.props.msg} strLabel={'ID'}
                                 strName='nscc_id' strPlaceholder='W0123456'
                                 strType='text'
                                 submitLogin={this.submitLogin} />
 
-                            {this.getErrors('nscc_id', 'ID', this.state.msg)}
+                            {this.getErrors('nscc_id', 'ID', this.props.msg)}
 
-                            <LoginField loading={this.props.loading} msg={this.state.msg} strLabel='Password'
+                            <LoginField loading={this.props.loading} msg={this.props.msg} strLabel='Password'
                                 strName='password' strPlaceholder='Password'
                                 strType='password'
                                 submitLogin={this.submitLogin} />
 
-                            {this.getErrors('password', 'Password', this.state.msg)}
+                            {this.getErrors('password', 'Password', this.props.msg)}
                         </div>
 
-                        {this.getErrors('text', 'Error', this.state.msg)}
+                        {this.getErrors('text', 'Error', this.props.msg)}
                     </div>
                 </form>
 
                 <div className='buttons is-centered section'>
-                    <a className={`button is-danger inline ${is_loading}`}
-                        onClick={() => this.props.history.push('/')}>
+                    <a className={`button is-danger inline ${loadingClass}`}
+                        onClick={() => {
+                            this.props.clearUserType();
+                            this.props.clearMessages();
+                            this.props.history.push('/');
+                        }}>
                         Go Back
                     </a>
 
-                    <a className={`button is-link inline ${is_loading}`}
+                    <a className={`button is-link inline ${loadingClass}`}
                         onClick={this.submitLogin}>
                         Login
                     </a>
@@ -221,6 +154,11 @@ class LoginForm extends React.Component {
     }
 }
 
+/*
+*
+*   LoginField component
+*
+*/
 class LoginField extends React.Component {
     render() {
         let is_danger = this.props.msg[this.props.strName] ? 'is-danger' : '';
@@ -243,11 +181,15 @@ class LoginField extends React.Component {
 }
 
 LoginForm.propTypes = {
-    api_url: PropTypes.string.isRequired,
+    // React router
     history: PropTypes.object.isRequired,
-    loading: PropTypes.bool.isRequired,
     match: PropTypes.object.isRequired,
-    setLoading: PropTypes.func.isRequired
+    // Auth
+    clearUserType: PropTypes.func.isRequired,
+    loading: PropTypes.bool.isRequired,
+    // Validation
+    clearMessages: PropTypes.func,
+    msg: PropTypes.object
 };
 
 LoginField.propTypes = {
@@ -261,12 +203,20 @@ LoginField.propTypes = {
 };
 
 const mapDispatchToProps = dispatch => ({
-    setLoading: loading => dispatch(setLoading(loading))
+    // Auth
+    clearUserType: () => dispatch(clearUserType()),
+    setUserType: userType => dispatch(setUserType(userType)),
+    login: fields => dispatch(login(fields)),
+    // Validation
+    clearMessages: () => dispatch(clearMessages())
 });
 
 const mapStateToProps = state => ({
-    api_url: state.misc.api_url,
-    loading: state.misc.loading
+    // Auth reducer
+    loading: state.auth.isLoading,
+    userType: state.auth.userType,
+    // Validation reducer
+    msg: state.msg.data
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(LoginForm);

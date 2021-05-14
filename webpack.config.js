@@ -6,6 +6,12 @@ const path = require('path');
 
 module.exports = (env, args) => {
     const devMode = args.mode !== 'production';
+    const minimizer = devMode ? [] : [
+        new TerserPlugin({
+            extractComments: false
+        }),
+        new OptimizeCSSAssetsPlugin({})
+    ];
 
     // configure plugins
     const htmlPlugin = new HtmlWebPackPlugin({
@@ -31,12 +37,7 @@ module.exports = (env, args) => {
         entry: './src/index.js',
         optimization: {
             minimize: true,
-            minimizer: [
-                new TerserPlugin({
-                    extractComments: false
-                }),
-                new OptimizeCSSAssetsPlugin({})
-            ]
+            minimizer: minimizer
         },
         output: {
             path: path.resolve(__dirname, 'dist/'),
