@@ -77,6 +77,11 @@ module.exports = function(app) {
         let errors = validate(req.body, constraints);
 
         if (errors) {
+            utils.payload = {
+                ...utils.payload,
+                password_reset: true
+            };
+
             utils.respond(res, 400, {validation: errors});
 
             return;

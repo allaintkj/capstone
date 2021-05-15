@@ -1,14 +1,12 @@
 import {
     AUTH_LOADED,
     AUTH_LOADING,
-    CLEAR_USER_TYPE,
-    SET_USER_TYPE
+    DEAUTH_USER
 } from '../actions/types';
 
 const initialState = {
     isLoading: false,
-    token: localStorage.getItem('token'),
-    userType: null
+    token: localStorage.getItem('token')
 };
 
 export default function(state = initialState, action) {
@@ -24,15 +22,11 @@ export default function(state = initialState, action) {
                 ...state,
                 isLoading: true
             };
-        case CLEAR_USER_TYPE:
+        case DEAUTH_USER:
             return {
                 ...state,
-                userType: null
-            };
-        case SET_USER_TYPE:
-            return {
-                ...state,
-                userType: action.payload
+                isLoading: false,
+                token: null
             };
         default:
             return {...state};

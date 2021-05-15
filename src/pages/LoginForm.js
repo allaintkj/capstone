@@ -1,4 +1,3 @@
-import * as jwt from 'jsonwebtoken';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
@@ -6,15 +5,14 @@ import { Redirect } from 'react-router';
 
 // Auth actions
 import {
-    clearUserType,
-    setUserType,
+    getPathFromToken,
     login
-} from '../../redux/actions/authActions';
+} from '../redux/actions/authActions';
 
 // Validation actions
 import {
     clearMessages
-} from '../../redux/actions/messageActions';
+} from '../redux/actions/messageActions';
 
 /*
 *
@@ -25,15 +23,18 @@ class LoginForm extends React.Component {
     constructor(props) {
         super(props);
 
+        // Function bindings
         this.getErrors = this.getErrors.bind(this);
         this.submitLogin = this.submitLogin.bind(this);
         this.updateField = this.updateField.bind(this);
 
+        // Default form field states
         this.fields = {
             nscc_id: '',
             password: ''
         };
 
+        // Initial state
         this.state = {
             fields: this.fields
         };
@@ -73,7 +74,7 @@ class LoginForm extends React.Component {
             if (event.keyCode && (event.keyCode !== 13)) { return; }
         }
 
-        this.props.login(this.state.fields, this.props.match.params.type);
+        this.props.login(this.state.fields);
     }
 
     updateField(event) {
@@ -88,24 +89,10 @@ class LoginForm extends React.Component {
     }
 
     render() {
-        let params = this.props.match.params;
         let loadingClass = this.props.loading ? 'is-loading' : '';
-        // This won't be needed when proper routing is implemented
-        let has_type = params.type && (params.type === 'student' || params.type === 'faculty');
 
         // Check for token
-        if (localStorage.getItem('token')) {
-            let decoded = jwt.decode(localStorage.getItem('token'));
-
-            if (decoded.password_reset) { return <Redirect to='/password' />; }
-            if (decoded.type === 'student') { return <Redirect to={'/student/' + decoded.nscc_id} />; }
-            if (decoded.type === 'faculty') { return <Redirect to='/dashboard/student/' />; }
-        }
-
-        // Check for route param indicating user type
-        if (!has_type) {
-            return <Redirect to='/' />;
-        }
+        if (this.props.token) { return <Redirect to={this.props.getPathFromToken()} />; }
 
         return (
             <React.Fragment>
@@ -129,20 +116,11 @@ class LoginForm extends React.Component {
                             {this.getErrors('password', 'Password', this.props.msg)}
                         </div>
 
-                        {this.getErrors('text', 'Error', this.props.msg)}
+                        {this.getErrors('text', 'Message', this.props.msg)}
                     </div>
                 </form>
 
                 <div className='buttons is-centered section'>
-                    <a className={`button is-danger inline ${loadingClass}`}
-                        onClick={() => {
-                            this.props.clearUserType();
-                            this.props.clearMessages();
-                            this.props.history.push('/');
-                        }}>
-                        Go Back
-                    </a>
-
                     <a className={`button is-link inline ${loadingClass}`}
                         onClick={this.submitLogin}>
                         Login
@@ -184,8 +162,9 @@ LoginForm.propTypes = {
     history: PropTypes.object.isRequired,
     match: PropTypes.object.isRequired,
     // Auth
-    clearUserType: PropTypes.func.isRequired,
+    getPathFromToken: PropTypes.func,
     loading: PropTypes.bool.isRequired,
+    token: PropTypes.string,
     // Validation
     clearMessages: PropTypes.func,
     msg: PropTypes.object
@@ -202,18 +181,17 @@ LoginField.propTypes = {
 };
 
 const mapDispatchToProps = dispatch => ({
-    // Auth
-    clearUserType: () => dispatch(clearUserType()),
-    setUserType: userType => dispatch(setUserType(userType)),
-    login: fields => dispatch(login(fields)),
-    // Validation
+    // Auth actions
+    getPathFromToken: () => dispatch(getPathFromToken()),
+    login: (fields, userType) => dispatch(login(fields, userType)),
+    // Validation actions
     clearMessages: () => dispatch(clearMessages())
 });
 
 const mapStateToProps = state => ({
     // Auth reducer
     loading: state.auth.isLoading,
-    userType: state.auth.userType,
+    token: state.auth.token,
     // Validation reducer
     msg: state.msg.data
 });

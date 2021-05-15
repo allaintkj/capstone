@@ -13,7 +13,7 @@ const initialState = {
     show_confirm_del: false,
     tabs: {
         panel_array: ['Info', 'Edit'],
-        list_array: ['Students', 'Faculty', 'Courses']
+        list_array: ['Students', 'Courses']
     }
 };
 

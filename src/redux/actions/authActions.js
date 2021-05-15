@@ -1,38 +1,118 @@
 import axios from 'axios';
+import * as jwt from 'jsonwebtoken';
 
 import {
     AUTH_LOADED,
     AUTH_LOADING,
     CLEAR_MESSAGES,
     SET_MESSAGES,
-    CLEAR_USER_TYPE,
-    SET_USER_TYPE
+    DEAUTH_USER
 } from './types';
 
-export const clearUserType = () => dispatch => {
-    dispatch({
-        type: CLEAR_USER_TYPE,
-        payload: null
-    });
+export const getPathFromToken = () => (dispatch, getState) => {
+    let decoded = jwt.decode(getState().auth.token);
+
+    if (decoded.password_reset) { return '/password'; }
+    if (decoded.type === 'student') { return `/student/${decoded.nscc_id}`; }
+    if (decoded.type === 'faculty') { return '/dashboard/student'; }
 };
 
-export const setUserType = userType => dispatch => {
-    dispatch({
-        type: SET_USER_TYPE,
-        payload: userType
-    });
-};
-
-export const login = (fields, userType = 'student') => (dispatch, getState) => {
+export const submitPasswordReset = fields => (dispatch, getState) => {
     // Set loading state to true
     dispatch({
         type: AUTH_LOADING
     });
 
-    // Set userType in case it isn't already
+    // Clear messages
     dispatch({
-        type: SET_USER_TYPE,
-        payload: userType
+        type: CLEAR_MESSAGES
+    });
+
+    axios({
+        data: fields,
+        headers: { 'token': getState().auth.token },
+        method: 'POST',
+        timeout: 10000,
+        url: `${getState().api.url}/password/reset`
+    }).then(response => {
+        localStorage.removeItem('token');
+        localStorage.setItem('token', response.headers.token);
+
+        dispatch({
+            type: AUTH_LOADED
+        });
+    }).catch(error => {
+        try {
+            localStorage.removeItem('token');
+
+            let msgBlock = {};
+            let response = error.response.data;
+
+            // build error msg object
+            if (response.validation) {
+                for (let field in response.validation) {
+                    msgBlock = {
+                        ...msgBlock,
+                        [field]: response.validation[field]
+                    };
+                }
+            }
+
+            if (response.text) { msgBlock.text = response.text; }
+
+            // Invalid token
+            if (error.response.status === 401) {
+                dispatch({
+                    type: SET_MESSAGES,
+                    payload: msgBlock
+                });
+
+                dispatch({
+                    type: DEAUTH_USER
+                });
+
+                return;
+            }
+
+            // Invalid token
+            if (error.response.status === 400) {
+                dispatch({
+                    type: SET_MESSAGES,
+                    payload: msgBlock
+                });
+
+                return;
+            }
+
+            localStorage.setItem('token', error.response.headers.token);
+
+            dispatch({
+                type: AUTH_LOADED
+            });
+        } catch (exception) {
+            // Clear message block just in case
+            let msgBlock = {};
+
+            // Set a general message to notify the user
+            msgBlock.text = 'Request aborted';
+
+            // Set the message in redux state
+            dispatch({
+                type: SET_MESSAGES,
+                payload: msgBlock
+            });
+
+            dispatch({
+                type: AUTH_LOADED
+            });
+        }
+    });
+};
+
+export const login = fields => (dispatch, getState) => {
+    // Set loading state to true
+    dispatch({
+        type: AUTH_LOADING
     });
 
     // Clear messages
@@ -48,7 +128,7 @@ export const login = (fields, userType = 'student') => (dispatch, getState) => {
         data: fields,
         method: 'POST',
         timeout: 10000,
-        url: getState().api.url + '/login/' + getState().auth.userType
+        url: getState().api.url + '/login/student'
     }).then(response => {
         // Set token in localStorage for Redux store to find
         localStorage.setItem('token', response.headers.token);
@@ -72,27 +152,6 @@ export const login = (fields, userType = 'student') => (dispatch, getState) => {
         // Attempt to assign data returned from server
         // If this fails, request has probably timed out and we should abort
         try {
-            // FIXME
-            // HTTP 300 means the account has been flagged for password reset
-            
-            // let requiresReset = error.response.status === 300;
-            // let token = error.response.headers.token;
-
-            // if (requiresReset) {
-            //     localStorage.removeItem('token');
-            //     localStorage.setItem('token', token);
-
-            //     this.setState({
-            //         fields: this.state.fields,
-            //         msg: this.props.msg
-            //     }, () => {
-            //         this.props.setLoading(false);
-            //         this.props.history.push('/password');
-            //     });
-
-            //     return;
-            // }
-
             // Data object composed by API
             let response = error.response.data;
 
@@ -116,6 +175,12 @@ export const login = (fields, userType = 'student') => (dispatch, getState) => {
                 payload: msgBlock
             });
 
+            // HTTP 300 means the account has been flagged for password reset
+            if (error.response.status === 300) {
+                localStorage.removeItem('token');
+                localStorage.setItem('token', error.response.headers.token);
+            }
+
             // Set loading state false
             dispatch({
                 type: AUTH_LOADED
@@ -138,5 +203,26 @@ export const login = (fields, userType = 'student') => (dispatch, getState) => {
                 type: AUTH_LOADED
             });
         }
+    });
+};
+
+export const logout = () => dispatch => {
+    // Remove token
+    localStorage.removeItem('token');
+
+    // Clear message block just in case
+    let msgBlock = {};
+    // Set a general message to notify the user
+    msgBlock.text = 'You have been logged out';
+
+    // Clear auth state from redux
+    dispatch({
+        type: DEAUTH_USER
+    });
+
+    // Set message in state to be rendered
+    dispatch({
+        type: SET_MESSAGES,
+        payload: msgBlock
     });
 };

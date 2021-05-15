@@ -3,14 +3,25 @@
 */
 export const AUTH_LOADED = 'AUTH_LOADED';
 export const AUTH_LOADING = 'AUTH_LOADING';
-export const CLEAR_USER_TYPE = 'CLEAR_USER_TYPE';
-export const SET_USER_TYPE = 'SET_USER_TYPE';
+export const DEAUTH_USER = 'DEAUTH_USER';
 
 /*
 *   Validation handling types
 */
 export const SET_MESSAGES = 'SET_MESSAGES';
 export const CLEAR_MESSAGES = 'CLEAR_MESSAGES';
+
+/*
+*   Student types
+*/
+export const FETCH_STUDENT = 'FETCH_STUDENT';
+export const CLEAR_STUDENT = 'CLEAR_STUDENT';
+export const SET_STUDENT = 'SET_STUDENT';
+
+/*
+*   API types
+*/
+export const SET_LOAD_FLAG = 'SET_LOAD_FLAG';
 
 /*
 *   FIXME

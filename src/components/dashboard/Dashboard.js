@@ -7,7 +7,6 @@ import Tabs from '../tabs/Tabs';
 import Users from '../lists/Users';
 import Courses from '../lists/Courses';
 import StudentForm from '../forms/StudentForm';
-import FacultyForm from '../forms/FacultyForm';
 import CourseForm from '../forms/CourseForm';
 import Info from '../info/Info';
 
@@ -20,6 +19,10 @@ import {
     setLoading
 } from '../../redux/actions/misc';
 
+import {
+    logout
+} from '../../redux/actions/authActions';
+
 class Dashboard extends React.Component {
     constructor(props) {
         super(props);
@@ -28,7 +31,6 @@ class Dashboard extends React.Component {
         this.deleteItem = this.deleteItem.bind(this);
         this.fetch = this.fetch.bind(this);
         this.itemExists = this.itemExists.bind(this);
-        this.logout = this.logout.bind(this);
         this.save = this.save.bind(this);
 
         this.state = {
@@ -153,12 +155,6 @@ class Dashboard extends React.Component {
         return exists;
     }
 
-    logout() {
-        localStorage.removeItem('token');
-        localStorage.setItem('msg', 'You have been logged out');
-        this.props.history.push('/');
-    }
-
     save() {
         let action = this.state.add ? 'add' : 'update';
         let params = this.props.match.params;
@@ -204,8 +200,7 @@ class Dashboard extends React.Component {
     }
 
     render() {
-        // auth check
-        if (!localStorage.getItem('token')) { return <Redirect to='/' />; }
+        if (!this.props.token) { return <Redirect to='/' />; }
 
         let params = this.props.match.params;
         let tabs = this.props.tabs.panel_array;
@@ -261,7 +256,7 @@ class Dashboard extends React.Component {
                                 <Users current={params.id}
                                     editing={params.edit ? true : false}
                                     filter={this.state.filter}
-                                    show={params.type === 'student' || params.type === 'faculty'}
+                                    show={params.type === 'student'}
                                     users={this.state.array} />
 
                                 <Courses courses={this.state.array}
@@ -301,10 +296,6 @@ class Dashboard extends React.Component {
                                     array={this.state.array}
                                     errors={this.state.errors}
                                     show={this.checkShowForm() && params.type === 'student'} />
-                                <FacultyForm add={this.state.add}
-                                    array={this.state.array}
-                                    errors={this.state.errors}
-                                    show={this.checkShowForm() && params.type === 'faculty'} />
                                 <CourseForm add={this.state.add}
                                     array={this.state.array}
                                     errors={this.state.errors}
@@ -317,7 +308,7 @@ class Dashboard extends React.Component {
                 <div className='card columns is-desktop is-marginless'>
                     {/* desktop logout */}
                     <div className='card-footer-item column is-4-desktop is-3-widescreen is-2-fullhd is-centered is-hidden-touch section'>
-                        <a className='button is-link is-fullwidth' onClick={() => this.logout()}>Logout</a>
+                        <a className='button is-link is-fullwidth' onClick={() => this.props.logout()}>Logout</a>
                     </div>
 
                     <div className='card-footer-item column is-8-desktop is-9-widescreen is-10-fullhd section'
@@ -366,7 +357,7 @@ class Dashboard extends React.Component {
                     <div className='is-hidden-desktop section card-footer-item column'>
                         <a className='button is-link is-fullwidth'
                             disabled={this.props.loading}
-                            onClick={() => this.logout()}>
+                            onClick={() => this.props.logout()}>
                             Logout
                         </a>
                     </div>
@@ -390,7 +381,10 @@ Dashboard.propTypes = {
     setLoading: PropTypes.func.isRequired,
     showConfirmDelete: PropTypes.func.isRequired,
     show_confirm_del: PropTypes.bool.isRequired,
-    tabs: PropTypes.object.isRequired
+    tabs: PropTypes.object.isRequired,
+    // Auth
+    logout: PropTypes.func.isRequired,
+    token: PropTypes.string
 };
 
 const mapDispatchToProps = dispatch => ({
@@ -399,7 +393,9 @@ const mapDispatchToProps = dispatch => ({
     fetch: (url, params, successCb, errorCb) => dispatch(fetch(url, params, successCb, errorCb)),
     setConfirmDelete: status => dispatch(setConfirmDelete(status)),
     setLoading: status => dispatch(setLoading(status)),
-    showConfirmDelete: status => dispatch(showConfirmDelete(status))
+    showConfirmDelete: status => dispatch(showConfirmDelete(status)),
+    // Auth
+    logout: () => dispatch(logout())
 });
 
 const mapStateToProps = state => ({
@@ -408,7 +404,9 @@ const mapStateToProps = state => ({
     form_state: state.misc.form_state,
     loading: state.misc.loading,
     show_confirm_del: state.misc.show_confirm_del,
-    tabs: state.misc.tabs
+    tabs: state.misc.tabs,
+    // Auth
+    token: state.auth.token
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Dashboard);

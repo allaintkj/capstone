@@ -5,8 +5,6 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
 import { Link } from 'react-router-dom';
 
-import ProgressChart from '../progress/ProgressChart';
-
 class Info extends React.Component {
     constructor(props) {
         super(props);
@@ -172,8 +170,6 @@ class Info extends React.Component {
                         </React.Fragment>
                     );
                 })}
-
-                <ProgressChart edit={false} show={isStudent} />
             </React.Fragment>
         );
     }

@@ -223,33 +223,6 @@ class ProgressChart extends React.Component {
         );
     }
 
-    componentDidMount() {
-        this.fetchProgress();
-
-        if (this.props.edit) {
-            this.props.fetch(this.props.api_url, {type: 'course'}, null, error => {
-                localStorage.removeItem('token');
-
-                if (error.response.status === 401) {
-                    localStorage.setItem('msg', error.response.data.text);
-                    this.props.history.push('/');
-
-                    return;
-                }
-
-                localStorage.setItem('token', error.response.headers.token);
-            });
-        }
-    }
-
-    componentDidUpdate(prevProps) {
-        let hasId = this.props.match.params.id;
-        let hadNoId = !prevProps.match.params.id;
-        let newStudent = prevProps.match.params.id !== this.props.match.params.id;
-
-        if (hasId && (hadNoId || newStudent)) { this.fetchProgress(); }
-    }
-
     deleteRow(progressEntry) {
         let progress = this.state.progress.filter(entry => entry !== progressEntry);
 
