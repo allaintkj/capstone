@@ -150,8 +150,6 @@ class Info extends React.Component {
     render() {
         if (!this.props.show) { return null; }
 
-        let isStudent = this.props.location.pathname.includes('/student/');
-
         return (
             <React.Fragment>
                 <h1 className='title'>

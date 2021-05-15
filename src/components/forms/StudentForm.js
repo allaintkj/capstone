@@ -3,8 +3,6 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
 
-import ProgressChart from '../progress/ProgressChart';
-
 import { setForm } from '../../redux/actions/misc';
 
 class StudentForm extends React.Component {
@@ -289,8 +287,6 @@ class StudentForm extends React.Component {
                             </label>
                         </div>
                     </div>
-
-                    <ProgressChart edit={true} show={!this.props.add} />
                 </form>
             </React.Fragment>
         );
