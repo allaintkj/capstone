@@ -1,4 +1,3 @@
-import axios from 'axios';
 import * as jwt from 'jsonwebtoken';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -97,10 +96,15 @@ class LoginForm extends React.Component {
         // Check for token
         if (localStorage.getItem('token')) {
             let decoded = jwt.decode(localStorage.getItem('token'));
+
             // FIXME
             // This redirects to student, which fires a fetch method, which redirects to faculty
             // Figure out how to just send the user to the correct route
+
             if (!decoded.password_reset) { return <Redirect to='/dashboard/student' />; }
+
+            // Send to password reset form if token contains reset flag
+            if (decoded.password_reset === true) { return <Redirect to='/password' />; }
         }
 
         // Check for route param indicating user type

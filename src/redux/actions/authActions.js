@@ -13,15 +13,15 @@ export const clearUserType = () => dispatch => {
     dispatch({
         type: CLEAR_USER_TYPE,
         payload: null
-    })
-}
+    });
+};
 
 export const setUserType = userType => dispatch => {
     dispatch({
         type: SET_USER_TYPE,
         payload: userType
     });
-}
+};
 
 export const login = (fields, userType = 'student') => (dispatch, getState) => {
     // Set loading state to true
@@ -50,8 +50,6 @@ export const login = (fields, userType = 'student') => (dispatch, getState) => {
         timeout: 10000,
         url: getState().api.url + '/login/' + getState().auth.userType
     }).then(response => {
-        console.log(response);
-
         // Set token in localStorage for Redux store to find
         localStorage.setItem('token', response.headers.token);
 
@@ -125,6 +123,7 @@ export const login = (fields, userType = 'student') => (dispatch, getState) => {
         } catch (exception) {
             // Clear message block just in case
             msgBlock = {};
+
             // Set a general message to notify the user
             msgBlock.text = 'Request aborted';
 

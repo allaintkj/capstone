@@ -1,3 +1,4 @@
+const ESLintPlugin = require('eslint-webpack-plugin');
 const HtmlWebPackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
@@ -19,12 +20,13 @@ module.exports = (env, args) => {
         template: './src/index.html',
         filename: 'index.html'
     });
+    const eslintPlugin = new ESLintPlugin();
     const extractCssPlugin = new MiniCssExtractPlugin({
         filename: '[name].css'
     });
 
     // populate plugin array
-    let pluginArray = [htmlPlugin, extractCssPlugin];
+    let pluginArray = [htmlPlugin, extractCssPlugin, eslintPlugin];
 
     // return webpack config object
     return {
@@ -75,16 +77,9 @@ module.exports = (env, args) => {
                     loader: 'postcss-loader',
                     options: {
                         sourceMap: devMode,
-                        ident: 'postcss',
-                        plugins: () => [
-                            require('autoprefixer')({
-                                browsers: [
-                                    '>1%',
-                                    'last 2 versions',
-                                    'not ie < 11'
-                                ]
-                            })
-                        ]
+                        postcssOptions: {
+                            plugins: ['autoprefixer']
+                        }
                     }
                 }, {
                     loader: 'sass-loader',
