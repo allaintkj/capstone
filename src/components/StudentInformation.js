@@ -8,6 +8,8 @@ class StudentInformation extends React.Component {
     }
 
     render() {
+        if (!this.props.visible) { return null; }
+
         if (this.props.student.nscc_id.length != 8) {
             return (
                 <React.Fragment>
@@ -68,6 +70,7 @@ class StudentInformation extends React.Component {
 }
 
 StudentInformation.propTypes = {
+    visible: PropTypes.bool,
     // Student
     student: PropTypes.object.isRequired
 };

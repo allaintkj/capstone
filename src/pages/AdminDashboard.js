@@ -9,6 +9,9 @@ import CourseList from '../components/CourseList';
 import StudentInformation from '../components/StudentInformation';
 import CourseInformation from '../components/CourseInformation';
 
+import EditStudent from '../components/EditStudent';
+import EditCourse from '../components/EditCourse';
+
 // Auth actions
 import {
     logout
@@ -87,10 +90,15 @@ class Dashboard extends React.Component {
         if (!this.props.token) { return <Redirect to='/' />; }
 
         let params = this.props.match.params;
-        let showLists = (this.state.add && this.state.array.length > 0) ? false : this.state.lists ? true : false;
+        let pathname = this.props.location.pathname.split('/');
+        let isEditing = false;
 
-        let contentColumns = (this.state.add && this.state.array.length > 0) ? 'is-12' : 'is-8-desktop is-9-widescreen is-10-fullhd';
-        let listColumns = (this.state.add && this.state.array.length > 0) ? 'is-hidden' : 'is-4-desktop is-3-widescreen is-2-fullhd';
+        if ((pathname[4]) && (pathname[4].toLowerCase() === 'edit')) {
+            isEditing = true;
+        }
+
+        let contentColumns = 'is-8-desktop is-9-widescreen is-10-fullhd';
+        let listColumns = 'is-4-desktop is-3-widescreen is-2-fullhd';
 
         return (
             <div className='card-content has-text-centered is-paddingless'>
@@ -103,14 +111,14 @@ class Dashboard extends React.Component {
                                 <a className='card-header-icon has-background-white'
                                     onClick={() => this.setState({lists: !this.state.lists})}>
                                     <span className='icon'>
-                                        <i className={`fas fa-chevron-${showLists ? 'down' : 'right'}`} />
+                                        <i className={`fas fa-chevron-${this.state.lists ? 'down' : 'right'}`} />
                                     </span>
                                 </a>
                             </div>
                         </div>
 
                         {/* Student/course lists */}
-                        <div style={{overflow: 'hidden', height: showLists ? 'auto' : '0'}}>
+                        <div style={{overflow: 'hidden', height: this.state.lists ? 'auto' : '0'}}>
                             <div className='card-header tabs is-marginless'>
 
                                 {/* Control tabs for list components */}
@@ -143,6 +151,7 @@ class Dashboard extends React.Component {
 
                                 <StudentList
                                     currentListItem={params.id}
+                                    isEditing={isEditing}
                                     list={this.props.student.list}
                                     listFilter={this.state.filter}
                                     visible={this.type === 'student'}
@@ -150,6 +159,7 @@ class Dashboard extends React.Component {
 
                                 <CourseList
                                     currentListItem={params.id}
+                                    isEditing={isEditing}
                                     list={this.props.course.list}
                                     listFilter={this.state.filter}
                                     visible={this.type === 'course'}
@@ -177,16 +187,27 @@ class Dashboard extends React.Component {
                             {/* Control tabs for information components */}
                             <div className='card-header tabs is-marginless'>
                                 <ul style={{display: 'flex'}}>
-                                    <li className='is-active'>
-                                        <a className='is-size-7'>
+                                    <li className={isEditing ? '' : 'is-active'}>
+                                        <a className='is-size-7' href={`/admin/${this.type}/${params.id}`}>
                                             {'Info'}
+                                        </a>
+                                    </li>
+
+                                    <li className={isEditing ? 'is-active' : ''}>
+                                        <a
+                                            className='is-size-7'
+                                            href={params.id ? `/admin/${this.type}/${params.id}/edit` : ''}
+                                        >
+                                            {'Edit'}
                                         </a>
                                     </li>
                                 </ul>
                             </div>
 
                             <div className='card-content has-text-left section'>
-                                {this.type === 'student' ? <StudentInformation /> : <CourseInformation />}
+                                {this.type === 'student' ? <StudentInformation visible={!isEditing} /> : <CourseInformation visible={!isEditing} />}
+
+                                {this.type === 'student' ? <EditStudent visible={isEditing} /> : <EditCourse visible={isEditing} />}
                             </div>
                         </div>
                     </div>
@@ -237,7 +258,7 @@ const mapDispatchToProps = dispatch => ({
     // Student actions
     fetchAllStudents: nscc_id => dispatch(fetchAllStudents(nscc_id)),
     // Course actions
-    fetchAllCourses: () => dispatch(fetchAllCourses())
+    fetchAllCourses: course_code => dispatch(fetchAllCourses(course_code))
 });
 
 const mapStateToProps = state => ({

@@ -8,6 +8,8 @@ class CourseInformation extends React.Component {
     }
 
     render() {
+        if (!this.props.visible) { return null; }
+        
         if (this.props.course.course_code.length != 8) {
             return (
                 <React.Fragment>
@@ -68,6 +70,7 @@ class CourseInformation extends React.Component {
 }
 
 CourseInformation.propTypes = {
+    visible: PropTypes.bool,
     // Course
     course: PropTypes.object.isRequired
 };

@@ -21,7 +21,7 @@ export default function(state = initialState, action) {
         case CLEAR_STUDENTS:
             return {
                 ...state,
-                initialState
+                ...initialState
             };
         case SET_STUDENT:
             return {

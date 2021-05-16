@@ -17,6 +17,8 @@ class StudentList extends React.Component {
                 {this.props.list.map((student, index) => {
                     let className = 'button is-fullwidth' + (this.props.currentListItem === student.nscc_id ? ' is-dark' : '');
                     let userName = student.last_name ? student.last_name + ', ' + student.first_name : student.first_name;
+                    let route = `/admin/student/${student.nscc_id}`;
+                    route += this.props.isEditing ? '/edit' : '';
 
                     if (this.props.listFilter === 'active' && !student.active) {
                         return null;
@@ -29,7 +31,7 @@ class StudentList extends React.Component {
                             key={`users-list-${index}`}
                             onClick={() => {
                                 this.props.setNewStudent(student.nscc_id);
-                                this.props.history.push(`/admin/student/${student.nscc_id}`);
+                                this.props.history.push(route);
                             }}>
                             {userName}
                         </li>
@@ -43,6 +45,7 @@ class StudentList extends React.Component {
 StudentList.propTypes = {
     currentListItem: PropTypes.string,
     history: PropTypes.object.isRequired,
+    isEditing: PropTypes.bool,
     list: PropTypes.arrayOf(PropTypes.object).isRequired,
     listFilter: PropTypes.string.isRequired,
     visible: PropTypes.bool.isRequired,

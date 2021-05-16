@@ -3,7 +3,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
 
-// Student actions
+// Course actions
 import {
     setNewCourse
 } from '../redux/actions/courseActions';
@@ -17,7 +17,8 @@ class CourseList extends React.Component {
                 {this.props.list.map((course, index) => {
                     let className = `button is-fullwidth ${this.props.currentListItem === course.course_code ? ' is-dark' : ''}`;
                     let courseName = `${course.course_code}  ${course.course_name}`;
-                    let route = `/dashboard/course/${course.course_code}`;
+                    let route = `/admin/course/${course.course_code}`;
+                    route += this.props.isEditing ? '/edit' : '';
 
                     if (course.course_name.length > 15) {
                         courseName = courseName.substr(0, 25) + '...';
@@ -43,6 +44,7 @@ class CourseList extends React.Component {
 CourseList.propTypes = {
     currentListItem: PropTypes.string,
     history: PropTypes.object.isRequired,
+    isEditing: PropTypes.bool,
     list: PropTypes.arrayOf(PropTypes.object).isRequired,
     listFilter: PropTypes.string.isRequired,
     visible: PropTypes.bool.isRequired,

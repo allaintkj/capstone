@@ -27,9 +27,11 @@ class AppRoutes extends React.Component {
                     <Switch>
                         <Route component={StudentHome} exact path='/student/:id' />
 
+                        <Route component={AdminDashboard} path='/admin/student/:id/edit' />
                         <Route component={AdminDashboard} path='/admin/student/:id' />
                         <Route component={AdminDashboard} path='/admin/student' />
 
+                        <Route component={AdminDashboard} path='/admin/course/:id/edit' />
                         <Route component={AdminDashboard} path='/admin/course/:id' />
                         <Route component={AdminDashboard} path='/admin/course' />
 

@@ -30,6 +30,10 @@ export const fetchStudent = nscc_id => (dispatch, getState) => {
         timeout: 10000,
         url: `${getState().api.url}/student/get/${nscc_id}`
     }).then(response => {
+        // Update token
+        localStorage.removeItem('token');
+        localStorage.setItem('token', response.headers.token);
+
         // Set response in state
         dispatch({
             type: SET_STUDENT,
@@ -116,6 +120,10 @@ export const fetchAllStudents = (nscc_id = '') => (dispatch, getState) => {
         timeout: 10000,
         url: `${getState().api.url}/student/get/all`
     }).then(response => {
+        // Update token
+        localStorage.removeItem('token');
+        localStorage.setItem('token', response.headers.token);
+        
         // Set the entire list of students in state
         dispatch({
             type: SET_STUDENTS,

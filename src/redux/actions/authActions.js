@@ -6,7 +6,9 @@ import {
     AUTH_LOADING,
     CLEAR_MESSAGES,
     SET_MESSAGES,
-    DEAUTH_USER
+    DEAUTH_USER,
+    CLEAR_STUDENTS,
+    CLEAR_COURSES
 } from './types';
 
 export const getPathFromToken = () => (dispatch, getState) => {
@@ -207,6 +209,16 @@ export const login = fields => (dispatch, getState) => {
 };
 
 export const logout = () => dispatch => {
+    // Clear student state
+    dispatch({
+        type: CLEAR_STUDENTS
+    });
+
+    // Clear course state
+    dispatch({
+        type: CLEAR_COURSES
+    });
+
     // Remove token
     localStorage.removeItem('token');
 

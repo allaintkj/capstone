@@ -19,7 +19,7 @@ export default function(state = initialState, action) {
         case CLEAR_COURSES:
             return {
                 ...state,
-                initialState
+                ...initialState
             };
         case SET_COURSE:
             return {

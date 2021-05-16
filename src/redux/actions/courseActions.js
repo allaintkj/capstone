@@ -35,6 +35,10 @@ export const fetchAllCourses = (course_code = '') => (dispatch, getState) => {
         timeout: 10000,
         url: `${getState().api.url}/course/get/all`
     }).then(response => {
+        // Update token
+        localStorage.removeItem('token');
+        localStorage.setItem('token', response.headers.token);
+        
         // Set the entire list of courses in state
         dispatch({
             type: SET_COURSES,
@@ -43,7 +47,7 @@ export const fetchAllCourses = (course_code = '') => (dispatch, getState) => {
 
         // Check for provided course code
         if (course_code.length > 1) {
-            // If there's a course coe provided, set the corresponding course in state
+            // If there's a course code provided, set the corresponding course in state
             let activeCourse = getState().course.list.filter(course => course.course_code == course_code)[0];
 
             dispatch({
