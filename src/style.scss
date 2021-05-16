@@ -4,24 +4,13 @@
 @import './bulma.min.css';
 
 * {
-    border-left: none !important;
-    border-right: none !important;
+    // border-left: none !important;
+    // border-right: none !important;
     box-shadow: none !important;
 }
 
 label {
     user-select: none;
-
-    &.confirm-delete {
-        cursor: pointer;
-        display: inline-block;
-        margin-top: 1.5em;
-
-        input[type='checkbox'] {
-            cursor: pointer;
-            margin: auto;
-        }
-    }
 }
 
 p {
@@ -56,5 +45,5 @@ p {
 }
 
 // import partials
-@import 'components/forms/Forms';
-@import 'components/progress/Progress';
+@import 'scss/Forms';
+@import 'scss/Progress';

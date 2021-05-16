@@ -2,6 +2,8 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 
+import LogoutButton from './LogoutButton';
+
 class CourseInformation extends React.Component {
     constructor(props) {
         super(props);
@@ -22,6 +24,8 @@ class CourseInformation extends React.Component {
                         <label className='has-text-weight-bold'>{'No course selected'}</label>
                         <p className='info-string'>{'Select a course to see details'}</p>
                     </div>
+
+                    <LogoutButton />
 
                 </React.Fragment>
             );
@@ -63,6 +67,8 @@ class CourseInformation extends React.Component {
                     <label className='has-text-weight-bold'>{'Comments:'}</label>
                     <p className='info-string'>{this.props.course.comment}</p>
                 </div>
+
+                <LogoutButton />
 
             </React.Fragment>
         );

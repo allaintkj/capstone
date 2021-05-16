@@ -1,0 +1,14 @@
+i {
+    cursor: pointer;
+}
+
+.table {
+    td,
+    th {
+        vertical-align: middle;
+    }
+
+    &-container {
+        overflow-x: auto;
+    }
+}

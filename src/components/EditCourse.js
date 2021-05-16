@@ -3,6 +3,8 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
 
+import LogoutButton from './LogoutButton';
+
 class EditCourse extends React.Component {
     constructor(props) {
         super(props);
@@ -10,29 +12,40 @@ class EditCourse extends React.Component {
         this.fieldUpdate = this.fieldUpdate.bind(this);
         this.getErrors = this.getErrors.bind(this);
 
-        this.course = {
-            comment: '',
-            course_code: '',
-            course_desc: '',
-            course_name: '',
-            number_credits: 0,
-            number_units: 0
-        };
-
         this.state = {
-            course: this.course
+            course: {
+                comment: '',
+                course_code: '',
+                course_desc: '',
+                course_name: '',
+                number_credits: 0,
+                number_units: 0
+            }
         };
     }
 
-    fieldUpdate(event) {
-        let value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
-        let course = this.state.course;
+    componentDidUpdate(lastProps) {
+        let lastCourse = lastProps.match.params.id;
+        let thisCourse = this.props.match.params.id;
 
-        if (!this.props.add) { this.activateSelected(); }
+        if (lastCourse !== thisCourse) {
+            this.setState({
+                course: this.props.course
+            });
+        }
+    }
+
+    fieldUpdate(event) {
+        let courseModel = this.props.course;
+        let value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
+
+        if (this.state.course.course_code.length === 8) {
+            courseModel = this.state.course;
+        }
 
         this.setState({
             course: {
-                ...course,
+                ...courseModel,
                 [event.target.name]: value
             }
         });
@@ -67,6 +80,12 @@ class EditCourse extends React.Component {
     render() {
         if (!this.props.visible) { return null; }
 
+        let courseModel = this.props.course;
+
+        if (this.state.course.course_code.length === 8) {
+            courseModel = this.state.course;
+        }
+
         return (
             <React.Fragment>
                 <h1 className='title'>{'Edit Course'}</h1>
@@ -83,7 +102,7 @@ class EditCourse extends React.Component {
                                     onChange={this.fieldUpdate}
                                     placeholder='WEBD3000'
                                     type='text'
-                                    value={this.props.course.course_code} />
+                                    value={courseModel.course_code} />
                             </div>
 
                             {this.getErrors('course_code', 'Course Code', this.props.msg)}
@@ -97,7 +116,7 @@ class EditCourse extends React.Component {
                                     onChange={this.fieldUpdate}
                                     placeholder='Web Application Programming'
                                     type='text'
-                                    value={this.props.course.course_name} />
+                                    value={courseModel.course_name} />
                             </div>
 
                             {this.getErrors('course_name', 'Course Name', this.props.msg)}
@@ -113,7 +132,7 @@ class EditCourse extends React.Component {
                                     onChange={this.fieldUpdate}
                                     placeholder=''
                                     type='number'
-                                    value={this.props.course.number_units} />
+                                    value={courseModel.number_units} />
                             </div>
 
                             {this.getErrors('number_units', 'Number of Units', this.props.msg)}
@@ -127,7 +146,7 @@ class EditCourse extends React.Component {
                                     onChange={this.fieldUpdate}
                                     placeholder=''
                                     type='number'
-                                    value={this.props.course.number_credits} />
+                                    value={courseModel.number_credits} />
                             </div>
 
                             {this.getErrors('number_credits', 'Number of Credits', this.props.msg)}
@@ -143,7 +162,7 @@ class EditCourse extends React.Component {
                                     onChange={this.fieldUpdate}
                                     placeholder='Web Application Programming'
                                     type='text'
-                                    value={this.props.course.course_desc} />
+                                    value={courseModel.course_desc} />
                             </div>
 
                             {this.getErrors('course_desc', 'Course Description', this.props.msg)}
@@ -158,11 +177,44 @@ class EditCourse extends React.Component {
                                     onChange={this.fieldUpdate}
                                     placeholder='Add a comment..' rows='7'
                                     style={{resize: 'none'}}
-                                    value={this.props.course.comment} />
+                                    value={courseModel.comment} />
                             </div>
                         </div>
                     </div>
                 </form>
+
+                <div className='columns is-desktop is-centered mt-6'>
+
+                    <div className='column'>
+                        <a className='button is-danger is-block'
+                            disabled={false}
+                            onClick={() => {
+                                /* eslint-disable */
+                                let confirmStatus = confirm('Are you sure you wish to delete this course record?');
+                                /* eslint-enable */
+                            }}>
+
+                            Delete
+
+                        </a>
+                    </div>
+
+                    <div className='column'>
+                        <a className='button is-success is-block'
+                            disabled={false}
+                            onClick={() => {
+                                console.log(this.state.course);
+                            }}>
+
+                            Save
+
+                        </a>
+                    </div>
+
+                </div>
+
+                <LogoutButton />
+
             </React.Fragment>
         );
     }

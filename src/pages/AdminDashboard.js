@@ -12,11 +12,6 @@ import CourseInformation from '../components/CourseInformation';
 import EditStudent from '../components/EditStudent';
 import EditCourse from '../components/EditCourse';
 
-// Auth actions
-import {
-    logout
-} from '../redux/actions/authActions';
-
 // Student actions
 import {
     fetchAllStudents
@@ -27,29 +22,27 @@ import {
     fetchAllCourses
 } from '../redux/actions/courseActions';
 
+// Auth actions
+import {
+    logout
+} from '../redux/actions/authActions';
+
 class Dashboard extends React.Component {
     constructor(props) {
         super(props);
 
-        this.itemExists = this.itemExists.bind(this);
-
         this.type = 'student';
 
         this.state = {
-            add: false,
-            array: [],
-            errors: null,
             filter: 'all',
-            lists: true,
-            content: true
+            collapseLists: false
         };
     }
 
     componentDidMount() {
         window.addEventListener('resize', () => {
             this.setState({
-                lists: true,
-                content: true
+                collapseLists: false
             });
         }, false);
 
@@ -67,22 +60,6 @@ class Dashboard extends React.Component {
         if (this.type === 'course') {
             this.props.fetchAllCourses(this.props.match.params.id);
         }
-    }
-
-    itemExists() {
-        let exists = false;
-        let params = this.props.match.params;
-
-        for (let key of this.state.array) {
-            let thisId = key.nscc_id ? key.nscc_id : key.course_code;
-
-            if (params.id && (thisId === params.id)) {
-                exists = true;
-                break;
-            } else if (!params.id) { break; }
-        }
-
-        return exists;
     }
 
     render() {
@@ -109,28 +86,28 @@ class Dashboard extends React.Component {
                         <div className='card-header columns is-marginless is-hidden-desktop'>
                             <div className='column is-12 is-paddingless'>
                                 <a className='card-header-icon has-background-white'
-                                    onClick={() => this.setState({lists: !this.state.lists})}>
+                                    onClick={() => this.setState({collapseLists: !this.state.collapseLists})}>
                                     <span className='icon'>
-                                        <i className={`fas fa-chevron-${this.state.lists ? 'down' : 'right'}`} />
+                                        <i className={`fas fa-chevron-${this.state.collapseLists ? 'right' : 'down'}`} />
                                     </span>
                                 </a>
                             </div>
                         </div>
 
                         {/* Student/course lists */}
-                        <div style={{overflow: 'hidden', height: this.state.lists ? 'auto' : '0'}}>
+                        <div className={this.state.collapseLists ? 'is-hidden' : 'is-block'}>
                             <div className='card-header tabs is-marginless'>
 
                                 {/* Control tabs for list components */}
                                 <ul style={{display: 'flex'}}>
                                     <li className={this.type === 'student' ? 'is-active' : ''}>
-                                        <a className='is-size-7' href='/admin/student'>
+                                        <a href='/admin/student'>
                                             {'Students'}
                                         </a>
                                     </li>
 
                                     <li className={this.type === 'course' ? 'is-active' : ''}>
-                                        <a className='is-size-7' href='/admin/course'>
+                                        <a href='/admin/course'>
                                             {'Courses'}
                                         </a>
                                     </li>
@@ -140,8 +117,19 @@ class Dashboard extends React.Component {
 
                             {/* List components */}
                             <div className='card-content section'>
-                                <div className='field select'
-                                    style={{display: this.type === 'course' ? 'none' : 'inline-block'}}>
+                                <div className='columns'>
+                                    <div className='column'>
+                                        <a className='button is-success is-block'
+                                            disabled={false}
+                                            onClick={() => { return null; }}>
+
+                                            {'Add New'}
+
+                                        </a>
+                                    </div>
+                                </div>
+
+                                <div className={`field select is-small ${this.type === 'course' ? 'is-hidden' : ''}`}>
                                     <select onChange={evt => this.setState({filter: evt.target.value})}>
                                         <option value='all'>All</option>
                                         <option value='active'>Active</option>
@@ -170,65 +158,39 @@ class Dashboard extends React.Component {
 
                     <div className={'card column ' + contentColumns + ' is-paddingless has-background-light'}>
 
-                        {/* Collapse button for information component */}
-                        <div className='card-header columns is-marginless is-hidden-desktop'>
-                            <div className='column is-12 is-paddingless'>
-                                <a className='card-header-icon has-background-white'
-                                    onClick={() => this.setState({content: !this.state.content})}>
-                                    <span className='icon'>
-                                        <i className={`fas fa-chevron-${this.state.content ? 'down' : 'right'}`} />
-                                    </span>
-                                </a>
-                            </div>
-                        </div>
+                        {/* Information/form component */}
+                        <div style={{overflow: 'hidden', height: 'auto'}}>
 
-                        {/* Information component */}
-                        <div style={{overflow: 'hidden', height: this.state.content ? 'auto' : '0'}}>
-                            {/* Control tabs for information components */}
+                            {/* Control tabs for information/form components */}
                             <div className='card-header tabs is-marginless'>
                                 <ul style={{display: 'flex'}}>
+
                                     <li className={isEditing ? '' : 'is-active'}>
-                                        <a className='is-size-7' href={`/admin/${this.type}/${params.id}`}>
+                                        <a href={`/admin/${this.type}/${params.id}`}>
                                             {'Info'}
                                         </a>
                                     </li>
 
                                     <li className={isEditing ? 'is-active' : ''}>
-                                        <a
-                                            className='is-size-7'
-                                            href={params.id ? `/admin/${this.type}/${params.id}/edit` : ''}
-                                        >
+                                        <a href={params.id ? `/admin/${this.type}/${params.id}/edit` : ''}>
                                             {'Edit'}
                                         </a>
                                     </li>
+
                                 </ul>
                             </div>
 
                             <div className='card-content has-text-left section'>
+
                                 {this.type === 'student' ? <StudentInformation visible={!isEditing} /> : <CourseInformation visible={!isEditing} />}
 
                                 {this.type === 'student' ? <EditStudent visible={isEditing} /> : <EditCourse visible={isEditing} />}
+
                             </div>
+
                         </div>
+
                     </div>
-                </div>
-
-                <div className='card columns is-desktop is-marginless'>
-
-                    {/* Desktop logout button */}
-                    <div className='card-footer-item column is-4-desktop is-3-widescreen is-2-fullhd is-centered is-hidden-touch section'>
-                        <a className='button is-link is-fullwidth' onClick={() => this.props.logout()}>Logout</a>
-                    </div>
-
-                    {/* Mobile logout button */}
-                    <div className='is-hidden-desktop section card-footer-item column'>
-                        <a className='button is-link is-fullwidth'
-                            disabled={this.props.loading}
-                            onClick={() => this.props.logout()}>
-                            Logout
-                        </a>
-                    </div>
-
                 </div>
             </div>
         );
@@ -236,8 +198,6 @@ class Dashboard extends React.Component {
 }
 
 Dashboard.propTypes = {
-    form_state: PropTypes.object,
-    tabs: PropTypes.object.isRequired,
     location: PropTypes.object,
     // API
     loading: PropTypes.bool.isRequired,
@@ -262,8 +222,6 @@ const mapDispatchToProps = dispatch => ({
 });
 
 const mapStateToProps = state => ({
-    form_state: state.misc.form_state,
-    tabs: state.misc.tabs,
     // API reducer
     loading: state.api.isLoading,
     // Auth reducer

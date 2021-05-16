@@ -3,6 +3,8 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
 
+import LogoutButton from './LogoutButton';
+
 class EditStudent extends React.Component {
     constructor(props) {
         super(props);
@@ -10,30 +12,43 @@ class EditStudent extends React.Component {
         this.fieldUpdate = this.fieldUpdate.bind(this);
         this.getErrors = this.getErrors.bind(this);
 
-        this.student = {
-            active: true,
-            advisor: '',
-            comment: '',
-            nscc_id: '',
-            start_date: '',
-            end_date: '',
-            first_name: '',
-            last_name: '',
-            progress: {}
-        };
-
         this.state = {
-            student: this.student
+            student: {
+                active: true,
+                advisor: '',
+                comment: '',
+                nscc_id: '',
+                start_date: '',
+                end_date: '',
+                first_name: '',
+                last_name: '',
+                progress: {}
+            }
         };
     }
 
+    componentDidUpdate(lastProps) {
+        let lastStudent = lastProps.match.params.id;
+        let thisStudent = this.props.match.params.id;
+
+        if (lastStudent !== thisStudent) {
+            this.setState({
+                student: this.props.student
+            });
+        }
+    }
+
     fieldUpdate(event) {
-        let student = this.state.student;
+        let studentModel = this.props.student;
         let value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
+
+        if (this.state.student.nscc_id.length === 8) {
+            studentModel = this.state.student;
+        }
 
         this.setState({
             student: {
-                ...student,
+                ...studentModel,
                 [event.target.name]: value
             }
         });
@@ -68,6 +83,12 @@ class EditStudent extends React.Component {
     render() {
         if (!this.props.visible) { return null; }
 
+        let studentModel = this.props.student;
+
+        if (this.state.student.nscc_id.length === 8) {
+            studentModel = this.state.student;
+        }
+
         return (
             <React.Fragment>
                 <h1 className='title'>{'Edit Student'}</h1>
@@ -84,7 +105,7 @@ class EditStudent extends React.Component {
                                         onChange={this.fieldUpdate}
                                         placeholder='W1234567'
                                         type='text'
-                                        value={this.props.student.nscc_id}
+                                        value={studentModel.nscc_id}
                                     />
                                 </div>
 
@@ -99,7 +120,7 @@ class EditStudent extends React.Component {
                                         onChange={this.fieldUpdate}
                                         placeholder='Jane Doe'
                                         type='text'
-                                        value={this.props.student.advisor}
+                                        value={studentModel.advisor}
                                     />
                                 </div>
 
@@ -116,7 +137,7 @@ class EditStudent extends React.Component {
                                         onChange={this.fieldUpdate}
                                         placeholder='John'
                                         type='text'
-                                        value={this.props.student.first_name}
+                                        value={studentModel.first_name}
                                     />
                                 </div>
 
@@ -131,7 +152,7 @@ class EditStudent extends React.Component {
                                         onChange={this.fieldUpdate}
                                         placeholder='Doe'
                                         type='text'
-                                        value={this.props.student.last_name}
+                                        value={studentModel.last_name}
                                     />
                                 </div>
 
@@ -147,7 +168,7 @@ class EditStudent extends React.Component {
                                         name='start_date'
                                         onChange={this.fieldUpdate}
                                         type='date'
-                                        value={this.props.student.start_date}
+                                        value={studentModel.start_date}
                                     />
                                 </div>
 
@@ -161,7 +182,7 @@ class EditStudent extends React.Component {
                                         name='end_date'
                                         onChange={this.fieldUpdate}
                                         type='date'
-                                        value={this.props.student.end_date}
+                                        value={studentModel.end_date}
                                     />
                                 </div>
 
@@ -178,16 +199,16 @@ class EditStudent extends React.Component {
                                     onChange={this.fieldUpdate}
                                     placeholder='Add a comment..' rows='7'
                                     style={{resize: 'none'}}
-                                    value={this.props.student.comment} />
+                                    value={studentModel.comment} />
                             </div>
                         </div>
                     </div>
 
                     <div className='columns'>
                         <div className='column'>
-                            <label className='label is-flex' style={{'justifyContent': 'space-between'}}>
+                            <label className='label is-flex is-justify-content-space-between'>
                                 Currently Active
-                                <input checked={this.props.student.active}
+                                <input checked={studentModel.active}
                                     name='active'
                                     onChange={this.fieldUpdate}
                                     type='checkbox' />
@@ -197,7 +218,7 @@ class EditStudent extends React.Component {
 
                     <div className='columns'>
                         <div className='column'>
-                            <label className='label is-flex' style={{'justifyContent': 'space-between'}}>
+                            <label className='label is-flex is-justify-content-space-between'>
                                 Password Reset
 
                                 <input
@@ -209,12 +230,46 @@ class EditStudent extends React.Component {
                         </div>
                     </div>
                 </form>
+
+                <div className='columns is-desktop is-centered mt-6'>
+
+                    <div className='column'>
+                        <a className='button is-danger is-block'
+                            disabled={false}
+                            onClick={() => {
+                                /* eslint-disable */
+                                let confirmStatus = confirm('Are you sure you wish to delete this student record?');
+                                /* eslint-enable */
+                            }}>
+
+                            Delete
+
+                        </a>
+                    </div>
+
+                    <div className='column'>
+                        <a className='button is-success is-block'
+                            disabled={false}
+                            onClick={() => {
+                                console.log(this.state.student);
+                            }}>
+
+                            Save
+
+                        </a>
+                    </div>
+
+                </div>
+
+                <LogoutButton />
+                
             </React.Fragment>
         );
     }
 }
 
 EditStudent.propTypes = {
+    match: PropTypes.object,
     visible: PropTypes.bool,
     // Validation
     msg: PropTypes.object,
