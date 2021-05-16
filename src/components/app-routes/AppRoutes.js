@@ -5,11 +5,11 @@ import { Route, Switch } from 'react-router-dom';
 
 import Header from '../header/Header';
 import Footer from '../footer/Footer';
-import Dashboard from '../dashboard/Dashboard';
 
 import LoginForm from '../../pages/LoginForm';
 import PasswordReset from '../../pages/PasswordReset';
 import StudentHome from '../../pages/StudentHome';
+import AdminDashboard from '../../pages/AdminDashboard';
 
 import store from '../../redux/store';
 
@@ -27,9 +27,17 @@ class AppRoutes extends React.Component {
                     <Switch>
                         <Route component={StudentHome} exact path='/student/:id' />
                         
-                        <Route component={Dashboard} path='/dashboard/:type/:id/:edit' />
-                        <Route component={Dashboard} path='/dashboard/:type/:id' />
-                        <Route component={Dashboard} path='/dashboard/:type' />
+                        {/*
+
+                        <Route component={AdminDashboard} path='/admin/student/:id' />
+                        <Route component={AdminDashboard} path='/admin/course/:id' />
+                        <Route exact path='/admin'><Redirect from='/admin' to='/admin/student' /></Route>
+
+                        */}
+
+                        <Route component={AdminDashboard} path='/dashboard/:type/:id/:edit' />
+                        <Route component={AdminDashboard} path='/dashboard/:type/:id' />
+                        <Route component={AdminDashboard} path='/dashboard/:type' />
 
                         <Route component={PasswordReset} path='/password' />
 
