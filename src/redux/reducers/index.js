@@ -1,17 +1,19 @@
 import { combineReducers } from 'redux';
 
-import api from './apiReducer';
-import auth from './authReducer';
+import apiReducer from './apiReducer';
+import authReducer from './authReducer';
 import arrays from './arrays';
-import msg from './messageReducer';
+import courseReducer from './courseReducer';
+import messageReducer from './messageReducer';
 import misc from './misc';
-import student from './studentReducer';
+import studentReducer from './studentReducer';
 
 export default combineReducers({
-    api: api,
-    auth: auth,
+    api: apiReducer,
+    auth: authReducer,
     arrays: arrays,
-    msg,
+    course: courseReducer,
+    msg: messageReducer,
     misc: misc,
-    student: student
+    student: studentReducer
 });

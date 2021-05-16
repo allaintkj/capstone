@@ -1,31 +1,29 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
-import { Redirect, withRouter } from 'react-router';
-
-// Auth actions
-import {
-    logout
-} from '../redux/actions/authActions';
-
-// Student actions
-import {
-    fetchStudent
-} from '../redux/actions/studentActions';
 
 class StudentInformation extends React.Component {
     constructor(props) {
         super(props);
     }
 
-    componentDidMount() {
-        // Execute Redux action to populate state with this student
-        this.props.fetchStudent(this.props.match.params.id);
-    }
-
     render() {
-        // Check for token
-        if ((!this.props.token) || this.props.token.length == 0) { return <Redirect to='/' />; }
+        if (this.props.student.nscc_id.length != 8) {
+            return (
+                <React.Fragment>
+
+                    <h1 className='title'>
+                        {'Student Information'}
+                    </h1>
+
+                    <div>
+                        <label className='has-text-weight-bold'>{'No student selected'}</label>
+                        <p className='info-string'>{'Select a student to see their record'}</p>
+                    </div>
+
+                </React.Fragment>
+            );
+        }
 
         return (
             <React.Fragment>
@@ -70,28 +68,13 @@ class StudentInformation extends React.Component {
 }
 
 StudentInformation.propTypes = {
-    // Auth
-    token: PropTypes.string,
-    logout: PropTypes.func.isRequired,
     // Student
-    fetchStudent: PropTypes.func.isRequired,
-    student: PropTypes.object.isRequired,
-    // React router
-    match: PropTypes.object.isRequired
+    student: PropTypes.object.isRequired
 };
 
-const mapDispatchToProps = dispatch => ({
-    // Auth actions
-    logout: fields => dispatch(logout(fields)),
-    // Student actions
-    fetchStudent: nscc_id => dispatch(fetchStudent(nscc_id))
-});
-
 const mapStateToProps = state => ({
-    // Auth reducer
-    token: state.auth.token,
     // Student reducer
     student: state.student
 });
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(StudentInformation));
+export default connect(mapStateToProps)(StudentInformation);

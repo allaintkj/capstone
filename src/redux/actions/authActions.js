@@ -14,7 +14,7 @@ export const getPathFromToken = () => (dispatch, getState) => {
 
     if (decoded.password_reset) { return '/password'; }
     if (decoded.type === 'student') { return `/student/${decoded.nscc_id}`; }
-    if (decoded.type === 'faculty') { return '/dashboard/student'; }
+    if (decoded.type === 'faculty') { return '/admin/student'; }
 };
 
 export const submitPasswordReset = fields => (dispatch, getState) => {

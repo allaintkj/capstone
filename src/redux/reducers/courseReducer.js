@@ -1,34 +1,32 @@
 import {
-    CLEAR_STUDENTS,
-    SET_STUDENT,
-    SET_STUDENTS
+    CLEAR_COURSES,
+    SET_COURSE,
+    SET_COURSES
 } from '../actions/types';
 
 const initialState = {
-    nscc_id: '',
-    first_name: '',
-    last_name: '',
-    start_date: '',
-    end_date: '',
-    advisor: '',
+    course_code: '',
+    course_name: '',
+    course_desc: '',
+    number_units: 1,
+    number_credits: 1,
     comment: '',
-    active: 1,
     list: []
 };
 
 export default function(state = initialState, action) {
     switch (action.type) {
-        case CLEAR_STUDENTS:
+        case CLEAR_COURSES:
             return {
                 ...state,
                 initialState
             };
-        case SET_STUDENT:
+        case SET_COURSE:
             return {
                 ...state,
                 ...action.payload
             };
-        case SET_STUDENTS:
+        case SET_COURSES:
             return {
                 ...state,
                 list: action.payload

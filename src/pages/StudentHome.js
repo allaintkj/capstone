@@ -10,9 +10,19 @@ import {
     logout
 } from '../redux/actions/authActions';
 
+// Student actions
+import {
+    fetchStudent
+} from '../redux/actions/studentActions';
+
 class StudentHome extends React.Component {
     constructor(props) {
         super(props);
+    }
+
+    componentDidMount() {
+        // Execute Redux action to populate state with this student
+        this.props.fetchStudent(this.props.match.params.id);
     }
 
     render() {
@@ -38,19 +48,21 @@ class StudentHome extends React.Component {
 StudentHome.propTypes = {
     // Auth
     token: PropTypes.string,
-    logout: PropTypes.func.isRequired
+    logout: PropTypes.func.isRequired,
+    // Student
+    fetchStudent: PropTypes.func.isRequired
 };
 
 const mapDispatchToProps = dispatch => ({
     // Auth actions
-    logout: fields => dispatch(logout(fields))
+    logout: fields => dispatch(logout(fields)),
+    // Student actions
+    fetchStudent: nscc_id => dispatch(fetchStudent(nscc_id))
 });
 
 const mapStateToProps = state => ({
     // Auth reducer
-    token: state.auth.token,
-    // Student reducer
-    student: state.student
+    token: state.auth.token
 });
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(StudentHome));

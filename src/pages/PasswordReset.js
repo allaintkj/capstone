@@ -160,10 +160,8 @@ class PasswordField extends React.Component {
 }
 
 PasswordReset.propTypes = {
-    history: PropTypes.object.isRequired,
-    loading: PropTypes.bool.isRequired,
-    match: PropTypes.object.isRequired,
     // Auth
+    loading: PropTypes.bool.isRequired,
     getPathFromToken: PropTypes.func,
     submitPasswordReset: PropTypes.func.isRequired,
     logout: PropTypes.func.isRequired

@@ -14,9 +14,16 @@ export const CLEAR_MESSAGES = 'CLEAR_MESSAGES';
 /*
 *   Student types
 */
-export const FETCH_STUDENT = 'FETCH_STUDENT';
-export const CLEAR_STUDENT = 'CLEAR_STUDENT';
+export const CLEAR_STUDENTS = 'CLEAR_STUDENTS';
 export const SET_STUDENT = 'SET_STUDENT';
+export const SET_STUDENTS = 'SET_STUDENTS';
+
+/*
+*   Course types
+*/
+export const CLEAR_COURSES = 'CLEAR_COURSES';
+export const SET_COURSE = 'SET_COURSE';
+export const SET_COURSES = 'SET_COURSES';
 
 /*
 *   API types

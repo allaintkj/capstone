@@ -158,9 +158,6 @@ class LoginField extends React.Component {
 }
 
 LoginForm.propTypes = {
-    // React router
-    history: PropTypes.object.isRequired,
-    match: PropTypes.object.isRequired,
     // Auth
     getPathFromToken: PropTypes.func,
     loading: PropTypes.bool.isRequired,
