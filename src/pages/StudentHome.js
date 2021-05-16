@@ -30,16 +30,12 @@ class StudentHome extends React.Component {
         if ((!this.props.token) || this.props.token.length == 0) { return <Redirect to='/' />; }
 
         return (
-            <div className='container section'>
+            <div className='has-background-light'>
+                <div className='container section'>
 
-                <StudentInformation />
+                    <StudentInformation visible={true} />
 
-                <div className='section has-text-centered'>
-                    <a className='button is-link' onClick={() => this.props.logout()}>
-                        {'Logout'}
-                    </a>
                 </div>
-
             </div>
         );
     }

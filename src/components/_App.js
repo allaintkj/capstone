@@ -3,17 +3,17 @@ import { Provider } from 'react-redux';
 import { Redirect } from 'react-router';
 import { Route, Switch } from 'react-router-dom';
 
-import Header from '../header/Header';
-import Footer from '../footer/Footer';
+import Header from './Header';
+import Footer from './Footer';
 
-import LoginForm from '../../pages/LoginForm';
-import PasswordReset from '../../pages/PasswordReset';
-import StudentHome from '../../pages/StudentHome';
-import AdminDashboard from '../../pages/AdminDashboard';
+import LoginForm from '../pages/LoginForm';
+import PasswordReset from '../pages/PasswordReset';
+import StudentHome from '../pages/StudentHome';
+import AdminDashboard from '../pages/AdminDashboard';
 
-import store from '../../redux/store';
+import store from '../redux/store';
 
-class AppRoutes extends React.Component {
+class App extends React.Component {
     constructor(props) {
         super(props);
     }
@@ -48,4 +48,4 @@ class AppRoutes extends React.Component {
     }
 }
 
-export default AppRoutes;
+export default App;

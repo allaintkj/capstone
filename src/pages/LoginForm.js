@@ -96,7 +96,7 @@ class LoginForm extends React.Component {
 
         return (
             <React.Fragment>
-                <form className='columns card-content' onChange={this.updateField}>
+                <form className='columns card-content has-background-light m-0' onChange={this.updateField}>
                     <div className='column is-6-desktop is-offset-3-desktop is-4-widescreen is-offset-4-widescreen'>
                         <div className='section'>
                             <h2 className='subtitle has-text-centered'>hint: try admin/alpAdmin</h2>
@@ -117,15 +117,15 @@ class LoginForm extends React.Component {
                         </div>
 
                         {this.getErrors('text', 'Message', this.props.msg)}
+
+                        <div className='buttons is-centered section'>
+                            <a className={`button is-link is-block ${loadingClass}`}
+                                onClick={this.submitLogin}>
+                                Login
+                            </a>
+                        </div>
                     </div>
                 </form>
-
-                <div className='buttons is-centered section'>
-                    <a className={`button is-link inline ${loadingClass}`}
-                        onClick={this.submitLogin}>
-                        Login
-                    </a>
-                </div>
             </React.Fragment>
         );
     }

@@ -156,7 +156,7 @@ class Dashboard extends React.Component {
                         </div>
                     </div>
 
-                    <div className={'card column ' + contentColumns + ' is-paddingless has-background-light'}>
+                    <div className={'card column ' + contentColumns + ' has-background-light p-0'}>
 
                         {/* Information/form component */}
                         <div style={{overflow: 'hidden', height: 'auto'}}>
@@ -199,6 +199,7 @@ class Dashboard extends React.Component {
 
 Dashboard.propTypes = {
     location: PropTypes.object,
+    match: PropTypes.object,
     // API
     loading: PropTypes.bool.isRequired,
     // Auth

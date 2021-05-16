@@ -82,6 +82,24 @@ class EditStudent extends React.Component {
 
     render() {
         if (!this.props.visible) { return null; }
+        if (this.props.student.nscc_id.length !== 8) {
+            return (
+                <React.Fragment>
+
+                    <h1 className='title'>
+                        {'Edit Student'}
+                    </h1>
+
+                    <div>
+                        <label className='has-text-weight-bold'>{'No student selected'}</label>
+                        <p className='info-string'>{'Select a student to edit their record'}</p>
+                    </div>
+
+                    <LogoutButton />
+
+                </React.Fragment>
+            );
+        }
 
         let studentModel = this.props.student;
 

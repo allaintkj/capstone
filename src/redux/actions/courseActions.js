@@ -49,7 +49,7 @@ export const fetchAllCourses = (course_code = '') => (dispatch, getState) => {
         if (course_code.length > 1) {
             // If there's a course code provided, set the corresponding course in state
             let activeCourse = getState().course.list.filter(course => course.course_code == course_code)[0];
-
+            
             dispatch({
                 type: SET_COURSE,
                 payload: activeCourse

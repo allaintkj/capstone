@@ -80,6 +80,25 @@ class EditCourse extends React.Component {
     render() {
         if (!this.props.visible) { return null; }
 
+        if (this.props.course.course_code.length !== 8) {
+            return (
+                <React.Fragment>
+
+                    <h1 className='title'>
+                        {'Edit Course'}
+                    </h1>
+
+                    <div>
+                        <label className='has-text-weight-bold'>{'No course selected'}</label>
+                        <p className='info-string'>{'Select a course to edit details'}</p>
+                    </div>
+
+                    <LogoutButton />
+
+                </React.Fragment>
+            );
+        }
+
         let courseModel = this.props.course;
 
         if (this.state.course.course_code.length === 8) {

@@ -29,20 +29,3 @@ export const SET_COURSES = 'SET_COURSES';
 *   API types
 */
 export const SET_LOAD_FLAG = 'SET_LOAD_FLAG';
-
-/*
-*   FIXME
-*   Misc. types
-*/
-export const FETCH = 'FETCH';
-export const SET_CONFIRM_DEL = 'SET_CONFIRM_DEL';
-export const SET_FORM = 'SET_FORM';
-export const SET_LOADING = 'SET_LOADING';
-export const SET_TAB = 'SET_TAB';
-export const SHOW_CONFIRM_DEL = 'SHOW_CONFIRM_DEL';
-
-/*
-*   FIXME
-*   Array types
-*/
-export const SET_ARRAY = 'SET_ARRAY';
