@@ -3,13 +3,12 @@ import { Provider } from 'react-redux';
 import { Redirect } from 'react-router';
 import { Route, Switch } from 'react-router-dom';
 
-import Header from './Header';
-import Footer from './Footer';
-
+import AddStudent from '../pages/AddStudent';
+import AddCourse from '../pages/AddCourse';
+import AdminDashboard from '../pages/AdminDashboard';
 import LoginForm from '../pages/LoginForm';
 import PasswordReset from '../pages/PasswordReset';
 import StudentHome from '../pages/StudentHome';
-import AdminDashboard from '../pages/AdminDashboard';
 
 import store from '../redux/store';
 
@@ -22,10 +21,16 @@ class App extends React.Component {
         return (
             <Provider store={store}>
                 <React.Fragment>
-                    <Header show={true} />
+                    <div className='section card-header has-background-link column'>
+                        <h1 className='title has-text-white'>{this.title}</h1>
+                        <h2 className='subtitle has-text-white'>{this.subtitle}</h2>
+                    </div>
 
                     <Switch>
                         <Route component={StudentHome} exact path='/student/:id' />
+
+                        <Route component={AddStudent} path='/admin/student/add' />
+                        <Route component={AddCourse} path='/admin/course/add' />
 
                         <Route component={AdminDashboard} path='/admin/student/:id/edit' />
                         <Route component={AdminDashboard} path='/admin/student/:id' />
@@ -41,7 +46,20 @@ class App extends React.Component {
                         <Route exact path='/'><Redirect from='/' to='/login' /></Route>
                     </Switch>
 
-                    <Footer show={true}/>
+                    <div className='card-footer has-background-grey-lighter is-justify-content-center py-6'>
+                        <div className='has-text-centered py-6'>
+                            <p>
+                                Designed with <a href='https://bulma.io' rel='noopener noreferrer' target='_blank'>Bulma</a>
+                            </p>
+
+                            <p>
+                                Powered by
+                                <a href='https://reactjs.org' rel='noopener noreferrer' target='_blank'> React</a>,
+                                <a href='https://nodejs.org/' rel='noopener noreferrer' target='_blank'> Node.js</a>, and
+                                <a href='https://www.mysql.com/' rel='noopener noreferrer' target='_blank'> MySQL</a>
+                            </p>
+                        </div>
+                    </div>
                 </React.Fragment>
             </Provider>
         );

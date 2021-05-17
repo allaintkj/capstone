@@ -89,7 +89,7 @@ class PasswordReset extends React.Component {
         let is_loading = this.props.loading ? 'is-loading' : '';
 
         return (
-            <React.Fragment>
+            <div className='has-background-light'>
                 <form className='columns card-content' onChange={this.updateField}>
                     <div className='column is-6-desktop is-offset-3-desktop is-4-widescreen is-offset-4-widescreen'>
                         <h1 className='has-text-centered section subtitle'>
@@ -133,7 +133,7 @@ class PasswordReset extends React.Component {
                         Change Password
                     </a>
                 </div>
-            </React.Fragment>
+            </div>
         );
     }
 }

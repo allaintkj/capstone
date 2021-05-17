@@ -77,12 +77,10 @@ class CourseInformation extends React.Component {
 
 CourseInformation.propTypes = {
     visible: PropTypes.bool,
-    // Course
     course: PropTypes.object.isRequired
 };
 
 const mapStateToProps = state => ({
-    // Course reducer
     course: state.course
 });
 

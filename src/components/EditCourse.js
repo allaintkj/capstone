@@ -5,7 +5,6 @@ import { withRouter } from 'react-router';
 
 import LogoutButton from './LogoutButton';
 
-// Student actions
 import {
     updateCourse,
     deleteCourse
@@ -258,25 +257,21 @@ class EditCourse extends React.Component {
 }
 
 EditCourse.propTypes = {
+    match: PropTypes.object.isRequired,
     visible: PropTypes.bool,
-    // Validation
     msg: PropTypes.object,
-    // Courses
     course: PropTypes.object.isRequired,
     updateCourse: PropTypes.func.isRequired,
     deleteCourse: PropTypes.func.isRequired
 };
 
 const mapDispatchToProps = dispatch => ({
-    // Student actions
     updateCourse: form => dispatch(updateCourse(form)),
     deleteCourse: course_code => dispatch(deleteCourse(course_code))
 });
 
 const mapStateToProps = state => ({
-    // Validation reducer
     msg: state.msg.data,
-    // Student reducer
     course: state.course
 });
 

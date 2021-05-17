@@ -119,7 +119,7 @@ class Dashboard extends React.Component {
                                     <div className='column'>
                                         <a className='button is-success is-block'
                                             disabled={false}
-                                            onClick={() => { return null; }}>
+                                            href={`/admin/${this.type}/add`}>
 
                                             {'Add New'}
 

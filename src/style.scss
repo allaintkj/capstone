@@ -1,4 +1,4 @@
-// Variables and mixins
+// Variables
 $grey-lighter: #dbdbdb;
 
 // Global styles
@@ -8,6 +8,17 @@ $grey-lighter: #dbdbdb;
     // border-left: none !important;
     // border-right: none !important;
     box-shadow: none !important;
+}
+
+form {
+    input,
+    select,
+    textarea {
+        border-left: none !important;
+        border-radius: 0 !important;
+        border-right: none !important;
+        border-top: none !important;
+    }
 }
 
 html {
@@ -22,6 +33,10 @@ p {
     margin-bottom: 1rem;
 }
 
+i {
+    cursor: pointer;
+}
+
 .help {
     font-weight: bold;
     margin: 1em 0 0;
@@ -34,6 +49,11 @@ p {
     padding: 0;
 }
 
+.show {
+    height: auto;
+    overflow: visible;
+}
+
 .info-string {
     word-break: break-all;
 }
@@ -44,11 +64,13 @@ p {
     }
 }
 
-.show {
-    height: auto;
-    overflow: visible;
-}
+.table {
+    td,
+    th {
+        vertical-align: middle;
+    }
 
-// import partials
-@import 'scss/Forms';
-@import 'scss/Progress';
+    &-container {
+        overflow-x: auto;
+    }
+}
