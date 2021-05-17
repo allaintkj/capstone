@@ -7,7 +7,8 @@ import LogoutButton from './LogoutButton';
 
 // Student actions
 import {
-    updateCourse
+    updateCourse,
+    deleteCourse
 } from '../redux/actions/courseActions';
 
 class EditCourse extends React.Component {
@@ -222,6 +223,8 @@ class EditCourse extends React.Component {
                                 /* eslint-disable */
                                 let confirmStatus = confirm('Are you sure you wish to delete this course record?');
                                 /* eslint-enable */
+
+                                if (confirmStatus) { this.props.deleteCourse(this.props.course.course_code); }
                             }}>
 
                             Delete
@@ -260,12 +263,14 @@ EditCourse.propTypes = {
     msg: PropTypes.object,
     // Courses
     course: PropTypes.object.isRequired,
-    updateCourse: PropTypes.func.isRequired
+    updateCourse: PropTypes.func.isRequired,
+    deleteCourse: PropTypes.func.isRequired
 };
 
 const mapDispatchToProps = dispatch => ({
     // Student actions
-    updateCourse: form => dispatch(updateCourse(form))
+    updateCourse: form => dispatch(updateCourse(form)),
+    deleteCourse: course_code => dispatch(deleteCourse(course_code))
 });
 
 const mapStateToProps = state => ({
