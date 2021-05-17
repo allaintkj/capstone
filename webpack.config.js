@@ -1,3 +1,4 @@
+const ESLintPlugin = require('eslint-webpack-plugin');
 const HtmlWebPackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
@@ -6,6 +7,12 @@ const path = require('path');
 
 module.exports = (env, args) => {
     const devMode = args.mode !== 'production';
+    const minimizer = devMode ? [] : [
+        new TerserPlugin({
+            extractComments: false
+        }),
+        new OptimizeCSSAssetsPlugin({})
+    ];
 
     // configure plugins
     const htmlPlugin = new HtmlWebPackPlugin({
@@ -13,12 +20,13 @@ module.exports = (env, args) => {
         template: './src/index.html',
         filename: 'index.html'
     });
+    const eslintPlugin = new ESLintPlugin();
     const extractCssPlugin = new MiniCssExtractPlugin({
         filename: '[name].css'
     });
 
     // populate plugin array
-    let pluginArray = [htmlPlugin, extractCssPlugin];
+    let pluginArray = [htmlPlugin, extractCssPlugin, eslintPlugin];
 
     // return webpack config object
     return {
@@ -31,12 +39,7 @@ module.exports = (env, args) => {
         entry: './src/index.js',
         optimization: {
             minimize: true,
-            minimizer: [
-                new TerserPlugin({
-                    extractComments: false
-                }),
-                new OptimizeCSSAssetsPlugin({})
-            ]
+            minimizer: minimizer
         },
         output: {
             path: path.resolve(__dirname, 'dist/'),
@@ -74,16 +77,9 @@ module.exports = (env, args) => {
                     loader: 'postcss-loader',
                     options: {
                         sourceMap: devMode,
-                        ident: 'postcss',
-                        plugins: () => [
-                            require('autoprefixer')({
-                                browsers: [
-                                    '>1%',
-                                    'last 2 versions',
-                                    'not ie < 11'
-                                ]
-                            })
-                        ]
+                        postcssOptions: {
+                            plugins: ['autoprefixer']
+                        }
                     }
                 }, {
                     loader: 'sass-loader',
