@@ -5,6 +5,11 @@ import { withRouter } from 'react-router';
 
 import LogoutButton from './LogoutButton';
 
+// Student actions
+import {
+    updateStudent
+} from '../redux/actions/studentActions';
+
 class EditStudent extends React.Component {
     constructor(props) {
         super(props);
@@ -33,7 +38,10 @@ class EditStudent extends React.Component {
 
         if (lastStudent !== thisStudent) {
             this.setState({
-                student: this.props.student
+                student: {
+                    ...this.props.student,
+                    list: null
+                }
             });
         }
     }
@@ -49,7 +57,8 @@ class EditStudent extends React.Component {
         this.setState({
             student: {
                 ...studentModel,
-                [event.target.name]: value
+                [event.target.name]: value,
+                list: null
             }
         });
     }
@@ -61,7 +70,7 @@ class EditStudent extends React.Component {
             if (!errors[key]) { return null; }
 
             messages.push(
-                <p className='help has-text-danger has-text-centered' key={`${key}-${errors[key]}`}>
+                <p className='help has-text-danger has-text-centered p-2 has-background-white' key={`${key}-${errors[key]}`}>
                     {`[${display}] ${errors[key]}`}
                 </p>
             );
@@ -71,7 +80,7 @@ class EditStudent extends React.Component {
 
         errors[key].forEach(errorString => {
             messages.push(
-                <p className='help has-text-danger has-text-centered' key={`${key}-${errorString}`}>
+                <p className='help has-text-danger has-text-centered p-2 has-background-white' key={`${key}-${errorString}`}>
                     {`[${display}] ${errorString}`}
                 </p>
             );
@@ -249,6 +258,8 @@ class EditStudent extends React.Component {
                     </div>
                 </form>
 
+                {this.getErrors('text', 'Message', this.props.msg)}
+
                 <div className='columns is-desktop is-centered mt-6'>
 
                     <div className='column'>
@@ -269,7 +280,11 @@ class EditStudent extends React.Component {
                         <a className='button is-success is-block'
                             disabled={false}
                             onClick={() => {
-                                console.log(this.state.student);
+                                /* eslint-disable */
+                                let confirmStatus = confirm('Are you sure you wish to update this student record?');
+                                /* eslint-enable */
+
+                                if (confirmStatus) { this.props.updateStudent(this.state.student); }
                             }}>
 
                             Save
@@ -292,8 +307,14 @@ EditStudent.propTypes = {
     // Validation
     msg: PropTypes.object,
     // Students
-    student: PropTypes.object.isRequired
+    student: PropTypes.object.isRequired,
+    updateStudent: PropTypes.func.isRequired
 };
+
+const mapDispatchToProps = dispatch => ({
+    // Student actions
+    updateStudent: form => dispatch(updateStudent(form))
+});
 
 const mapStateToProps = state => ({
     // Validation reducer
@@ -302,4 +323,4 @@ const mapStateToProps = state => ({
     student: state.student
 });
 
-export default withRouter(connect(mapStateToProps)(EditStudent));
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(EditStudent));

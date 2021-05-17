@@ -70,9 +70,7 @@ class Dashboard extends React.Component {
         let pathname = this.props.location.pathname.split('/');
         let isEditing = false;
 
-        if ((pathname[4]) && (pathname[4].toLowerCase() === 'edit')) {
-            isEditing = true;
-        }
+        if ((pathname[4]) && (pathname[4].toLowerCase() === 'edit')) { isEditing = true; }
 
         let contentColumns = 'is-8-desktop is-9-widescreen is-10-fullhd';
         let listColumns = 'is-4-desktop is-3-widescreen is-2-fullhd';

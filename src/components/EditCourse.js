@@ -5,6 +5,11 @@ import { withRouter } from 'react-router';
 
 import LogoutButton from './LogoutButton';
 
+// Student actions
+import {
+    updateCourse
+} from '../redux/actions/courseActions';
+
 class EditCourse extends React.Component {
     constructor(props) {
         super(props);
@@ -30,7 +35,10 @@ class EditCourse extends React.Component {
 
         if (lastCourse !== thisCourse) {
             this.setState({
-                course: this.props.course
+                course: {
+                    ...this.props.course,
+                    list: null
+                }
             });
         }
     }
@@ -46,7 +54,8 @@ class EditCourse extends React.Component {
         this.setState({
             course: {
                 ...courseModel,
-                [event.target.name]: value
+                [event.target.name]: value,
+                list: null
             }
         });
     }
@@ -58,7 +67,7 @@ class EditCourse extends React.Component {
             if (!errors[key]) { return null; }
 
             messages.push(
-                <p className='help has-text-danger has-text-centered' key={`${key}-${errors[key]}`}>
+                <p className='help has-text-danger has-text-centered p-2 has-background-white' key={`${key}-${errors[key]}`}>
                     {`[${display}] ${errors[key]}`}
                 </p>
             );
@@ -68,7 +77,7 @@ class EditCourse extends React.Component {
 
         errors[key].forEach(errorString => {
             messages.push(
-                <p className='help has-text-danger has-text-centered' key={`${key}-${errorString}`}>
+                <p className='help has-text-danger has-text-centered p-2 has-background-white' key={`${key}-${errorString}`}>
                     {`[${display}] ${errorString}`}
                 </p>
             );
@@ -202,6 +211,8 @@ class EditCourse extends React.Component {
                     </div>
                 </form>
 
+                {this.getErrors('text', 'Message', this.props.msg)}
+
                 <div className='columns is-desktop is-centered mt-6'>
 
                     <div className='column'>
@@ -222,7 +233,11 @@ class EditCourse extends React.Component {
                         <a className='button is-success is-block'
                             disabled={false}
                             onClick={() => {
-                                console.log(this.state.course);
+                                /* eslint-disable */
+                                let confirmStatus = confirm('Are you sure you wish to update this course record?');
+                                /* eslint-enable */
+
+                                if (confirmStatus) { this.props.updateCourse(this.state.course); }
                             }}>
 
                             Save
@@ -244,8 +259,14 @@ EditCourse.propTypes = {
     // Validation
     msg: PropTypes.object,
     // Courses
-    course: PropTypes.object.isRequired
+    course: PropTypes.object.isRequired,
+    updateCourse: PropTypes.func.isRequired
 };
+
+const mapDispatchToProps = dispatch => ({
+    // Student actions
+    updateCourse: form => dispatch(updateCourse(form))
+});
 
 const mapStateToProps = state => ({
     // Validation reducer
@@ -254,4 +275,4 @@ const mapStateToProps = state => ({
     course: state.course
 });
 
-export default withRouter(connect(mapStateToProps)(EditCourse));
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(EditCourse));

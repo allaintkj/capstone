@@ -130,3 +130,121 @@ export const setNewCourse = course_code => (dispatch, getState) => {
         payload: newCourse
     });
 };
+
+export const updateCourse = form => (dispatch, getState) => {
+    // Enable load flag
+    dispatch({
+        type: SET_LOAD_FLAG,
+        payload: true
+    });
+
+    // Empty error and validation messages
+    dispatch({
+        type: CLEAR_MESSAGES
+    });
+
+    // POST form data
+    axios({
+        data: {
+            ...form,
+            type: 'course'
+        },
+        headers: { 'token': getState().auth.token },
+        method: 'POST',
+        timeout: 10000,
+        url: `${getState().api.url}/course/update`
+    }).then(response => {
+        localStorage.removeItem('token');
+        localStorage.setItem('token', response.headers.token);
+
+        let msgBlock = {};
+        msgBlock.text = response.data.text;
+
+        dispatch({
+            type: SET_MESSAGES,
+            payload: msgBlock
+        });
+
+        dispatch(fetchAllCourses(form.course_code));
+
+        dispatch({
+            type: SET_LOAD_FLAG,
+            payload: false
+        });
+    }).catch(error => {
+        console.log(error);
+
+        let msgBlock = {};
+
+        try {
+            localStorage.removeItem('token');
+            localStorage.setItem('token', error.response.headers.token);
+
+            if (error.response.status === 401) {
+                // Set message
+                msgBlock.text = error.response.data.text;
+
+                dispatch({
+                    type: SET_MESSAGES,
+                    payload: msgBlock
+                });
+
+                // Deauth user
+                dispatch({
+                    type: DEAUTH_USER
+                });
+
+                // Clear student state
+                dispatch({
+                    type: CLEAR_STUDENTS
+                });
+
+                // Clear course state
+                dispatch({
+                    type: CLEAR_COURSES
+                });
+
+                // Disable load flag
+                dispatch({
+                    type: SET_LOAD_FLAG,
+                    payload: false
+                });
+
+                return;
+            }
+
+            if (error.response.data.validation) {
+                for (let field in error.response.data.validation) {
+                    msgBlock = {
+                        ...msgBlock,
+                        [field]: error.response.data.validation[field]
+                    };
+                }
+            }
+
+            msgBlock.text = error.response.data.text;
+
+            dispatch({
+                type: SET_MESSAGES,
+                payload: msgBlock
+            });
+
+            // Disable load flag
+            dispatch({
+                type: SET_LOAD_FLAG,
+                payload: false
+            });
+        } catch (exception) {
+            console.log(exception);
+
+            msgBlock = {};
+            msgBlock.text = 'Error';
+
+            // Disable load flag
+            dispatch({
+                type: SET_LOAD_FLAG,
+                payload: false
+            });
+        }
+    });
+};
