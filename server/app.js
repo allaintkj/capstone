@@ -7,8 +7,6 @@ const sanitizer = require('express-sanitizer');
 const validate = require('validate.js');
 
 // node
-const fsys = require('fs');
-const https = require('https');
 const path = require('path');
 
 // other
@@ -19,30 +17,6 @@ const regExp = require(path.resolve(__dirname, 'config.regexp.json'));
 
 const Database = require(path.resolve(__dirname, './services/Database'));
 const Utilities = require(path.resolve(__dirname, './services/Utilities'));
-
-// ssl
-const keypem = '/etc/letsencrypt/live/alp-dev.tomallain.ca/privkey.pem';
-const certpem = '/etc/letsencrypt/live/alp-dev.tomallain.ca/fullchain.pem';
-
-let key;
-let cert;
-let opts;
-
-// cert/key test
-try {
-    // found, using ssl
-    key = fsys.readFileSync(keypem, 'utf-8');
-    cert = fsys.readFileSync(certpem, 'utf-8');
-    opts = {
-        key: key,
-        cert: cert
-    };
-} catch (exception) {
-    // no dice, use http server
-    key = false;
-    cert = false;
-    opts = false;
-}
 
 let app = express();
 
@@ -258,8 +232,6 @@ require(path.resolve(__dirname, 'users/reset'))(app);
 require(path.resolve(__dirname, 'users/update'))(app);
 
 /* ---------- PROGRESS ROUTES ---------- */
-require(path.resolve(__dirname, 'progress/get'))(app);
-require(path.resolve(__dirname, 'progress/update'))(app);
 
 /* ---------- REACT ROUTES ---------- */
 app.get('*', (req, res) => {
@@ -267,12 +239,5 @@ app.get('*', (req, res) => {
     res.sendFile(path.resolve(__dirname, '../dist/index.html'));
 });
 
-if (!key || !cert || !opts) {
-    let utils = new Utilities();
-    // no cert, spin up http server
-    app.listen(PORT, HOST, () => utils.serverLog(`HTTP server listening on http://${HOST}:${PORT}`));
-} else {
-    let utils = new Utilities();
-    // found cert, spin up https server
-    https.createServer(opts, app).listen(PORT, HOST, () => utils.serverLog(`HTTPS server listening on https://${HOST}:${PORT}`));
-}
+let utils = new Utilities();
+app.listen(PORT, HOST, () => utils.serverLog(`HTTP server listening on http://${HOST}:${PORT}`));

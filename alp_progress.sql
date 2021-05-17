@@ -92,25 +92,23 @@ DROP TABLE IF EXISTS `progress`;
 CREATE TABLE IF NOT EXISTS `progress` (
   `prog_id` int(11) NOT NULL AUTO_INCREMENT,
   `nscc_id` varchar(8) NOT NULL,
-  `course_code` varchar(20) NOT NULL,
-  `course_units` int(11) NOT NULL,
+  `course_code` varchar(8) NOT NULL,
   `unit` int(11) NOT NULL,
   `date` date DEFAULT NULL,
   `final` int(11) DEFAULT NULL,
   `comments` text,
   PRIMARY KEY (`prog_id`),
   KEY `nscc_id` (`nscc_id`),
-  KEY `course_code` (`course_code`),
-  KEY `course_units` (`course_units`)
+  KEY `course_code` (`course_code`)
 ) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `progress`
 --
 
-INSERT INTO `progress` (`prog_id`, `nscc_id`, `course_code`, `course_units`, `unit`, `date`, `final`, `comments`) VALUES
-(11, 'W1234567', 'WEBD3027', 2, 1, '2019-03-01', NULL, NULL),
-(12, 'W1234567', 'WEBD3027', 2, 2, NULL, NULL, NULL);
+INSERT INTO `progress` (`prog_id`, `nscc_id`, `course_code`, `unit`, `date`, `final`, `comments`) VALUES
+(11, 'W1234567', 'WEBD3027', 1, '2019-03-01', NULL, NULL),
+(12, 'W1234567', 'WEBD3027', 2, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -154,8 +152,7 @@ INSERT INTO `student` (`nscc_id`, `first_name`, `last_name`, `password`, `salt`,
 --
 ALTER TABLE `progress`
   ADD CONSTRAINT `progress_ibfk_1` FOREIGN KEY (`nscc_id`) REFERENCES `student` (`nscc_id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `progress_ibfk_2` FOREIGN KEY (`course_code`) REFERENCES `course` (`course_code`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `progress_ibfk_3` FOREIGN KEY (`course_units`) REFERENCES `course` (`number_units`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `progress_ibfk_2` FOREIGN KEY (`course_code`) REFERENCES `course` (`course_code`) ON DELETE CASCADE ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

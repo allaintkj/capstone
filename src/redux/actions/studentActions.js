@@ -39,6 +39,12 @@ export const fetchStudent = nscc_id => (dispatch, getState) => {
             type: SET_STUDENT,
             payload: response.data.users
         });
+
+        // Disable load flag
+        dispatch({
+            type: SET_LOAD_FLAG,
+            payload: false
+        });
     }).catch(error => {
         try {
             localStorage.removeItem('token');
@@ -79,14 +85,20 @@ export const fetchStudent = nscc_id => (dispatch, getState) => {
 
             localStorage.setItem('token', error.response.headers.token);
 
+            let msgBlock = {};
+            msgBlock.text = error.response.data.text;
+
+            dispatch({
+                type: SET_MESSAGES,
+                payload: msgBlock
+            });
+
             // Disable load flag
             dispatch({
                 type: SET_LOAD_FLAG,
                 payload: false
             });
         } catch (exception) {
-            console.log(exception);
-
             // Disable load flag
             dispatch({
                 type: SET_LOAD_FLAG,
@@ -149,14 +161,13 @@ export const fetchAllStudents = (nscc_id = '') => (dispatch, getState) => {
     }).catch(error => {
         console.log(error);
 
+        let msgBlock = {};
+        msgBlock.text = error.response.data.text;
+
         try {
             localStorage.removeItem('token');
 
             if (error.response.status === 401) {
-                // Set message
-                let msgBlock = {};
-                msgBlock.text = error.response.data.text;
-
                 dispatch({
                     type: SET_MESSAGES,
                     payload: msgBlock
@@ -187,6 +198,11 @@ export const fetchAllStudents = (nscc_id = '') => (dispatch, getState) => {
             }
 
             localStorage.setItem('token', error.response.headers.token);
+
+            dispatch({
+                type: SET_MESSAGES,
+                payload: msgBlock
+            });
 
             // Disable load flag
             dispatch({
@@ -463,8 +479,6 @@ export const deleteStudent = nscc_id => (dispatch, getState) => {
     dispatch({
         type: CLEAR_MESSAGES
     });
-
-    console.log(nscc_id);
 
     // POST form data
     axios({

@@ -4,10 +4,21 @@ import { connect } from 'react-redux';
 
 import LogoutButton from './LogoutButton';
 
+// import {
+//     fetchStudentProgress
+// } from '../redux/actions/progressActions';
+
 class StudentInformation extends React.Component {
     constructor(props) {
         super(props);
     }
+
+    // componentDidUpdate(lastProps) {
+    //     let lastStudent = lastProps.student.nscc_id;
+    //     let thisStudent = this.props.student.nscc_id;
+
+    //     if (lastStudent !== thisStudent) { this.props.fetchStudentProgress(thisStudent); }
+    // }
 
     render() {
         if (!this.props.visible) { return null; }
@@ -79,6 +90,10 @@ StudentInformation.propTypes = {
     visible: PropTypes.bool,
     student: PropTypes.object.isRequired
 };
+
+// const mapDispatchToProps = dispatch => ({
+//     fetchStudentProgress: nscc_id => dispatch(fetchStudentProgress(nscc_id))
+// });
 
 const mapStateToProps = state => ({
     student: state.student

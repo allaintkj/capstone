@@ -164,7 +164,7 @@ class Dashboard extends React.Component {
                                 <ul style={{display: 'flex'}}>
 
                                     <li className={isEditing ? '' : 'is-active'}>
-                                        <a href={`/admin/${this.type}/${params.id}`}>
+                                        <a href={`/admin/${this.type}/${params.id ? params.id : ''}`}>
                                             {'Info'}
                                         </a>
                                     </li>
