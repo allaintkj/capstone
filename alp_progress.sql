@@ -96,7 +96,6 @@ CREATE TABLE IF NOT EXISTS `progress` (
   `unit` int(11) NOT NULL,
   `date` date DEFAULT NULL,
   `final` int(11) DEFAULT NULL,
-  `comments` text,
   PRIMARY KEY (`prog_id`),
   KEY `nscc_id` (`nscc_id`),
   KEY `course_code` (`course_code`)

@@ -12,6 +12,9 @@ import StudentHome from '../pages/StudentHome';
 
 import store from '../redux/store';
 
+/*
+*   Root component
+*/
 class App extends React.Component {
     constructor(props) {
         super(props);
@@ -22,8 +25,7 @@ class App extends React.Component {
             <Provider store={store}>
                 <React.Fragment>
                     <div className='section card-header has-background-link column'>
-                        <h1 className='title has-text-white'>{this.title}</h1>
-                        <h2 className='subtitle has-text-white'>{this.subtitle}</h2>
+                        <h1 className='title has-text-white'>NSCC ALP Student Progress Tracker</h1>
                     </div>
 
                     <Switch>
@@ -44,6 +46,8 @@ class App extends React.Component {
 
                         <Route component={LoginForm} path='/login' />
                         <Route exact path='/'><Redirect from='/' to='/login' /></Route>
+
+                        {/* FIXME: Add 404 routing */}
                     </Switch>
 
                     <div className='card-footer has-background-grey-lighter is-justify-content-center py-6'>

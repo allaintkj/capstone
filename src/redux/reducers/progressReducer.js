@@ -3,6 +3,7 @@ import {
 } from '../actions/types';
 
 const initialState = {
+    data: []
 };
 
 export default function(state = initialState, action) {
@@ -10,7 +11,7 @@ export default function(state = initialState, action) {
         case SET_PROGRESS:
             return {
                 ...state,
-                ...action.payload
+                data: action.payload
             };
         default:
             return {...state};

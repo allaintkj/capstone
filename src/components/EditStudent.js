@@ -5,18 +5,24 @@ import { withRouter } from 'react-router';
 
 import LogoutButton from './LogoutButton';
 
+// Student actions
 import {
     updateStudent,
     deleteStudent
 } from '../redux/actions/studentActions';
 
+/*
+*   EditStudent form displayed on AdminDashboard
+*/
 class EditStudent extends React.Component {
     constructor(props) {
         super(props);
 
+        // Function binding
         this.fieldUpdate = this.fieldUpdate.bind(this);
         this.getErrors = this.getErrors.bind(this);
 
+        // Set default state
         this.state = {
             student: {
                 active: true,
@@ -36,7 +42,11 @@ class EditStudent extends React.Component {
         let lastStudent = lastProps.match.params.id;
         let thisStudent = this.props.match.params.id;
 
+        // Make sure to empty out the list prop
+        // Don't want to submit form including that
         if (lastStudent !== thisStudent) {
+            // New student selected
+            // Set new student in state
             this.setState({
                 student: {
                     ...this.props.student,
@@ -47,13 +57,18 @@ class EditStudent extends React.Component {
     }
 
     fieldUpdate(event) {
+        // Default to redux prop
         let studentModel = this.props.student;
         let value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
 
+        // If there's an ID in state, the form has been edited
         if (this.state.student.nscc_id.length === 8) {
+            // Use state for student model
             studentModel = this.state.student;
         }
 
+        // Set state with appropriate object and update form value
+        // Verify list is empty
         this.setState({
             student: {
                 ...studentModel,
@@ -66,6 +81,7 @@ class EditStudent extends React.Component {
     getErrors(key, display, errors) {
         let messages = [];
 
+        // Display validation messages
         if (typeof errors[key] !== typeof messages) {
             if (!errors[key]) { return null; }
 
@@ -90,7 +106,10 @@ class EditStudent extends React.Component {
     }
 
     render() {
+        // Only display at the appropriate route ('edit')
         if (!this.props.visible) { return null; }
+
+        // Check there's a valid student selected
         if (this.props.student.nscc_id.length !== 8) {
             return (
                 <React.Fragment>
@@ -110,8 +129,10 @@ class EditStudent extends React.Component {
             );
         }
 
+        // Default to redux prop
         let studentModel = this.props.student;
 
+        // If there's an ID, use state
         if (this.state.student.nscc_id.length === 8) {
             studentModel = this.state.student;
         }
@@ -268,9 +289,8 @@ class EditStudent extends React.Component {
                             onClick={() => {
                                 /* eslint-disable */
                                 let confirmStatus = confirm('Are you sure you wish to delete this student record?');
-                                /* eslint-enable */
-
                                 if (confirmStatus) { this.props.deleteStudent(this.props.student.nscc_id); }
+                                /* eslint-enable */
                             }}>
 
                             Delete
@@ -284,9 +304,8 @@ class EditStudent extends React.Component {
                             onClick={() => {
                                 /* eslint-disable */
                                 let confirmStatus = confirm('Are you sure you wish to update this student record?');
-                                /* eslint-enable */
-
                                 if (confirmStatus) { this.props.updateStudent(this.state.student); }
+                                /* eslint-enable */
                             }}>
 
                             Save
@@ -304,21 +323,27 @@ class EditStudent extends React.Component {
 }
 
 EditStudent.propTypes = {
-    match: PropTypes.object,
     visible: PropTypes.bool,
+    // Router
+    match: PropTypes.object,
+    // Message
     msg: PropTypes.object,
+    // Student
     student: PropTypes.object.isRequired,
     updateStudent: PropTypes.func.isRequired,
     deleteStudent: PropTypes.func.isRequired
 };
 
 const mapDispatchToProps = dispatch => ({
+    // Student actions
     updateStudent: form => dispatch(updateStudent(form)),
     deleteStudent: nscc_id => dispatch(deleteStudent(nscc_id))
 });
 
 const mapStateToProps = state => ({
+    // Message reducer
     msg: state.msg.data,
+    // Student reducer
     student: state.student
 });
 

@@ -9,15 +9,12 @@ class Utilities {
         this._payload = '';
     }
 
-    // gets
     get messages() { return this._messages; }
     get payload() { return this._payload; }
 
-    // sets
     set messages(value) { this._messages = value; }
     set payload(value) { this._payload = value; }
 
-    // helpers
     date(date) {
         let day = date.getDate() < 10 ? '0' + date.getDate() : date.getDate();
         let month = (date.getMonth() + 1) < 10 ? '0' + (date.getMonth() + 1) : (date.getMonth() + 1);
@@ -32,7 +29,6 @@ class Utilities {
         let expiry = {expiresIn: jwtConfig.expiry};
 
         if (status === 401) {
-            // not authorized
             res.status(status);
             res.send(msg);
 

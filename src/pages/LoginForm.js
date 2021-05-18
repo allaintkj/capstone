@@ -15,9 +15,7 @@ import {
 } from '../redux/actions/messageActions';
 
 /*
-*
 *   LoginForm component
-*
 */
 class LoginForm extends React.Component {
     constructor(props) {
@@ -43,6 +41,7 @@ class LoginForm extends React.Component {
     getErrors(key, display, errors) {
         let messages = [];
 
+        // Format and render any validation or general messages in state
         if (typeof errors[key] !== typeof messages) {
             if (!errors[key]) { return null; }
 
@@ -69,17 +68,21 @@ class LoginForm extends React.Component {
     submitLogin(event = null) {
         if (this.props.loading) { return; }
 
+        // Check for keypress
         if (event) {
             event.preventDefault();
+            // Only submit the form if enter was pressed
             if (event.keyCode && (event.keyCode !== 13)) { return; }
         }
 
+        // Submit login form
         this.props.login(this.state.fields);
     }
 
     updateField(event) {
         if (this.props.loading) { return; }
 
+        // Update state with new input value
         this.setState({
             fields: {
                 ...this.state.fields,
@@ -89,8 +92,6 @@ class LoginForm extends React.Component {
     }
 
     render() {
-        let loadingClass = this.props.loading ? 'is-loading' : '';
-
         // Check for token
         if (this.props.token) { return <Redirect to={this.props.getPathFromToken()} />; }
 
@@ -101,15 +102,20 @@ class LoginForm extends React.Component {
                         <div className='section'>
                             <h2 className='subtitle has-text-centered'>hint: try admin/alpAdmin</h2>
 
-                            <LoginField loading={this.props.loading} msg={this.props.msg} strLabel={'ID'}
-                                strName='nscc_id' strPlaceholder='W0123456'
+                            {/* Didn't really need to componentize these */}
+                            <LoginField msg={this.props.msg}
+                                strLabel={'ID'}
+                                strName='nscc_id'
+                                strPlaceholder='W0123456'
                                 strType='text'
                                 submitLogin={this.submitLogin} />
 
                             {this.getErrors('nscc_id', 'ID', this.props.msg)}
 
-                            <LoginField loading={this.props.loading} msg={this.props.msg} strLabel='Password'
-                                strName='password' strPlaceholder='Password'
+                            <LoginField msg={this.props.msg}
+                                strLabel='Password'
+                                strName='password'
+                                strPlaceholder='Password'
                                 strType='password'
                                 submitLogin={this.submitLogin} />
 
@@ -119,7 +125,7 @@ class LoginForm extends React.Component {
                         {this.getErrors('text', 'Message', this.props.msg)}
 
                         <div className='buttons is-centered section'>
-                            <a className={`button is-link is-block ${loadingClass}`}
+                            <a className='button is-link is-block'
                                 onClick={this.submitLogin}>
                                 Login
                             </a>
@@ -132,21 +138,18 @@ class LoginForm extends React.Component {
 }
 
 /*
-*
-*   LoginField component
-*
+*   LoginField component for LoginForm
 */
 class LoginField extends React.Component {
     render() {
         let is_danger = this.props.msg[this.props.strName] ? 'is-danger' : '';
-        let is_disabled = this.props.loading ? 'is-disabled' : '';
 
         return (
             <div className='field'>
                 <label className='label'>{this.props.strLabel}</label>
                 <div className='control'>
-                    <input className={`input ${is_danger} ${is_disabled}`}
-                        disabled={this.props.loading ? true : false}
+                    <input className={`input ${is_danger}`}
+                        disabled={false}
                         name={this.props.strName}
                         onKeyUp={this.props.submitLogin}
                         placeholder={this.props.strPlaceholder}
@@ -160,7 +163,6 @@ class LoginField extends React.Component {
 LoginForm.propTypes = {
     // Auth
     getPathFromToken: PropTypes.func,
-    loading: PropTypes.bool.isRequired,
     token: PropTypes.string,
     // Validation
     clearMessages: PropTypes.func,
@@ -168,7 +170,6 @@ LoginForm.propTypes = {
 };
 
 LoginField.propTypes = {
-    loading: PropTypes.bool.isRequired,
     msg: PropTypes.object,
     strLabel: PropTypes.string,
     strPlaceholder: PropTypes.string,
@@ -187,7 +188,6 @@ const mapDispatchToProps = dispatch => ({
 
 const mapStateToProps = state => ({
     // Auth reducer
-    loading: state.auth.isLoading,
     token: state.auth.token,
     // Validation reducer
     msg: state.msg.data

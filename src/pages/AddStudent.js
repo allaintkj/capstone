@@ -5,17 +5,23 @@ import { Redirect } from 'react-router';
 
 import LogoutButton from '../components/LogoutButton';
 
+// Student actions
 import {
     addStudent
 } from '../redux/actions/studentActions';
 
+/*
+*   AddStudent form page
+*/
 class AddStudent extends React.Component {
     constructor(props) {
         super(props);
 
+        // Function binding
         this.fieldUpdate = this.fieldUpdate.bind(this);
         this.getErrors = this.getErrors.bind(this);
 
+        // Default student state
         this.student = {
             active: true,
             advisor: '',
@@ -28,6 +34,7 @@ class AddStudent extends React.Component {
             progress: {}
         };
 
+        // Construct state
         this.state = {
             student: this.student
         };
@@ -36,6 +43,7 @@ class AddStudent extends React.Component {
     fieldUpdate(event) {
         let value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
 
+        // Update form values
         this.setState({
             student: {
                 ...this.state.student,
@@ -48,6 +56,7 @@ class AddStudent extends React.Component {
     getErrors(key, display, errors) {
         let messages = [];
 
+        // Render validation messages
         if (typeof errors[key] !== typeof messages) {
             if (!errors[key]) { return null; }
 
@@ -72,8 +81,11 @@ class AddStudent extends React.Component {
     }
 
     render() {
+        // Check for authentication
         if (!this.props.token) { return <Redirect to='/' />; }
 
+        // Send user back to dashboard if they've just added a student
+        // So they're not stuck on this form
         if (this.props.msg.text === 'User added successfully') { return <Redirect to='/admin/student' />; }
 
         return (
@@ -226,6 +238,7 @@ class AddStudent extends React.Component {
                             <a className='button is-info is-block'
                                 disabled={false}
                                 href='/admin/student'
+                                /* Clear any possible form data from state */
                                 onClick={() => { this.setState({ student: this.student }); }}>
 
                                 Cancel
@@ -236,6 +249,7 @@ class AddStudent extends React.Component {
                         <div className='column'>
                             <a className='button is-success is-block'
                                 disabled={false}
+                                /* Submit form to API */
                                 onClick={() => { this.props.addStudent(this.state.student); }}>
 
                                 Save
@@ -252,17 +266,23 @@ class AddStudent extends React.Component {
 }
 
 AddStudent.propTypes = {
+    // Message
     msg: PropTypes.object,
+    // Student
     addStudent: PropTypes.func.isRequired,
+    // Auth
     token: PropTypes.string.isRequired
 };
 
 const mapDispatchToProps = dispatch => ({
+    // Student actions
     addStudent: form => dispatch(addStudent(form))
 });
 
 const mapStateToProps = state => ({
+    // Message reducer
     msg: state.msg.data,
+    // Auth reducer
     token: state.auth.token
 });
 

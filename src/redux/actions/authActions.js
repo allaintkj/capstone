@@ -20,12 +20,10 @@ export const getPathFromToken = () => (dispatch, getState) => {
 };
 
 export const submitPasswordReset = fields => (dispatch, getState) => {
-    // Set loading state to true
     dispatch({
         type: AUTH_LOADING
     });
 
-    // Clear messages
     dispatch({
         type: CLEAR_MESSAGES
     });
@@ -50,7 +48,6 @@ export const submitPasswordReset = fields => (dispatch, getState) => {
             let msgBlock = {};
             let response = error.response.data;
 
-            // build error msg object
             if (response.validation) {
                 for (let field in response.validation) {
                     msgBlock = {
@@ -62,7 +59,6 @@ export const submitPasswordReset = fields => (dispatch, getState) => {
 
             if (response.text) { msgBlock.text = response.text; }
 
-            // Invalid token
             if (error.response.status === 401) {
                 dispatch({
                     type: SET_MESSAGES,
@@ -76,7 +72,6 @@ export const submitPasswordReset = fields => (dispatch, getState) => {
                 return;
             }
 
-            // Invalid token
             if (error.response.status === 400) {
                 dispatch({
                     type: SET_MESSAGES,
@@ -92,13 +87,9 @@ export const submitPasswordReset = fields => (dispatch, getState) => {
                 type: AUTH_LOADED
             });
         } catch (exception) {
-            // Clear message block just in case
             let msgBlock = {};
-
-            // Set a general message to notify the user
             msgBlock.text = 'Request aborted';
 
-            // Set the message in redux state
             dispatch({
                 type: SET_MESSAGES,
                 payload: msgBlock
@@ -112,43 +103,34 @@ export const submitPasswordReset = fields => (dispatch, getState) => {
 };
 
 export const login = fields => (dispatch, getState) => {
-    // Set loading state to true
     dispatch({
         type: AUTH_LOADING
     });
 
-    // Clear messages
     dispatch({
         type: CLEAR_MESSAGES
     });
 
-    // Clear token from localStorage just in case
     localStorage.removeItem('token');
 
-    // Submit login to API
     axios({
         data: fields,
         method: 'POST',
         timeout: 10000,
         url: getState().api.url + '/login/student'
     }).then(response => {
-        // Set token in localStorage for Redux store to find
         localStorage.setItem('token', response.headers.token);
 
-        // Clear messages
         dispatch({
             type: CLEAR_MESSAGES
         });
 
-        // Set loading flag
         dispatch({
             type: AUTH_LOADED
         });
     }).catch(error => {
-        // Remove any possible tokens
         localStorage.removeItem('token');
 
-        // Create a message object to store validation messages
         let msgBlock = {};
 
         // Attempt to assign data returned from server

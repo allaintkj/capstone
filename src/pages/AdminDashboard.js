@@ -22,17 +22,17 @@ import {
     fetchAllCourses
 } from '../redux/actions/courseActions';
 
-// Auth actions
-import {
-    logout
-} from '../redux/actions/authActions';
-
-class Dashboard extends React.Component {
+/*
+*   AdminDashboard page
+*/
+class AdminDashboard extends React.Component {
     constructor(props) {
         super(props);
 
+        // Default to student dashboard
         this.type = 'student';
 
+        // Construct state
         this.state = {
             filter: 'all',
             collapseLists: false
@@ -40,6 +40,7 @@ class Dashboard extends React.Component {
     }
 
     componentDidMount() {
+        // Expand list component on window resize
         window.addEventListener('resize', () => {
             this.setState({
                 collapseLists: false
@@ -70,15 +71,14 @@ class Dashboard extends React.Component {
         let pathname = this.props.location.pathname.split('/');
         let isEditing = false;
 
+        // If user is editing, element #5 in pathname array will be 'edit'
+        // []/[admin]/[student]/[:id]/[edit]
         if ((pathname[4]) && (pathname[4].toLowerCase() === 'edit')) { isEditing = true; }
-
-        let contentColumns = 'is-8-desktop is-9-widescreen is-10-fullhd';
-        let listColumns = 'is-4-desktop is-3-widescreen is-2-fullhd';
 
         return (
             <div className='card-content has-text-centered is-paddingless'>
                 <div className='columns is-desktop is-marginless'>
-                    <div className={'card column ' + listColumns + ' is-paddingless has-background-light'}>
+                    <div className='card column is-4-desktop is-3-widescreen is-2-fullhd is-paddingless has-background-light'>
 
                         {/* Collapse button for student/course lists */}
                         <div className='card-header columns is-marginless is-hidden-desktop'>
@@ -154,7 +154,7 @@ class Dashboard extends React.Component {
                         </div>
                     </div>
 
-                    <div className={'card column ' + contentColumns + ' has-background-light p-0'}>
+                    <div className={'card column is-8-desktop is-9-widescreen is-10-fullhd has-background-light p-0'}>
 
                         {/* Information/form component */}
                         <div style={{overflow: 'hidden', height: 'auto'}}>
@@ -195,13 +195,11 @@ class Dashboard extends React.Component {
     }
 }
 
-Dashboard.propTypes = {
+AdminDashboard.propTypes = {
+    // Router
     location: PropTypes.object,
     match: PropTypes.object,
-    // API
-    loading: PropTypes.bool.isRequired,
     // Auth
-    logout: PropTypes.func.isRequired,
     token: PropTypes.string,
     // Students
     fetchAllStudents: PropTypes.func.isRequired,
@@ -212,8 +210,6 @@ Dashboard.propTypes = {
 };
 
 const mapDispatchToProps = dispatch => ({
-    // Auth actions
-    logout: () => dispatch(logout()),
     // Student actions
     fetchAllStudents: nscc_id => dispatch(fetchAllStudents(nscc_id)),
     // Course actions
@@ -221,8 +217,6 @@ const mapDispatchToProps = dispatch => ({
 });
 
 const mapStateToProps = state => ({
-    // API reducer
-    loading: state.api.isLoading,
     // Auth reducer
     token: state.auth.token,
     // Student reducer
@@ -231,4 +225,4 @@ const mapStateToProps = state => ({
     course: state.course
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(Dashboard);
+export default connect(mapStateToProps, mapDispatchToProps)(AdminDashboard);

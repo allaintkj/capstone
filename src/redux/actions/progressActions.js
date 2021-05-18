@@ -34,7 +34,7 @@ export const fetchStudentProgress = nscc_id => (dispatch, getState) => {
 
         dispatch({
             type: SET_PROGRESS,
-            payload: response.data.progress
+            payload: response.data
         });
 
         // Disable load flag

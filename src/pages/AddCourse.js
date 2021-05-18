@@ -5,17 +5,23 @@ import { Redirect } from 'react-router';
 
 import LogoutButton from '../components/LogoutButton';
 
+// Course actions
 import {
     addCourse
 } from '../redux/actions/courseActions';
 
-class EditCourse extends React.Component {
+/*
+*   AddCourse form page
+*/
+class AddCourse extends React.Component {
     constructor(props) {
         super(props);
 
+        // Function binding
         this.fieldUpdate = this.fieldUpdate.bind(this);
         this.getErrors = this.getErrors.bind(this);
 
+        // Default form state
         this.course = {
             comment: '',
             course_code: '',
@@ -25,21 +31,16 @@ class EditCourse extends React.Component {
             number_units: 0
         };
 
+        // Construct state
         this.state = {
-            course: {
-                comment: '',
-                course_code: '',
-                course_desc: '',
-                course_name: '',
-                number_credits: 0,
-                number_units: 0
-            }
+            course: this.course
         };
     }
 
     fieldUpdate(event) {
         let value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
 
+        // Update form field value
         this.setState({
             course: {
                 ...this.state.course,
@@ -52,6 +53,7 @@ class EditCourse extends React.Component {
     getErrors(key, display, errors) {
         let messages = [];
 
+        // Render validation errors
         if (typeof errors[key] !== typeof messages) {
             if (!errors[key]) { return null; }
 
@@ -76,8 +78,10 @@ class EditCourse extends React.Component {
     }
 
     render() {
+        // Auth check
         if (!this.props.token) { return <Redirect to='/' />; }
 
+        // Return the user to the dashboard if they've just added a course
         if (this.props.msg.text === 'Course added successfully') { return <Redirect to='/admin/course' />; }
 
         return (
@@ -209,19 +213,25 @@ class EditCourse extends React.Component {
     }
 }
 
-EditCourse.propTypes = {
+AddCourse.propTypes = {
+    // Message
     msg: PropTypes.object,
+    // Course
     addCourse: PropTypes.func.isRequired,
+    // Auth
     token: PropTypes.string.isRequired
 };
 
 const mapDispatchToProps = dispatch => ({
+    // Course actions
     addCourse: form => dispatch(addCourse(form))
 });
 
 const mapStateToProps = state => ({
+    // Message
     msg: state.msg.data,
+    // Auth
     token: state.auth.token
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(EditCourse);
+export default connect(mapStateToProps, mapDispatchToProps)(AddCourse);

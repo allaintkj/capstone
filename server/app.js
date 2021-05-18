@@ -1,4 +1,3 @@
-// express
 const bodyParser = require('body-parser');
 const crypto = require('crypto');
 const cors = require('cors');
@@ -6,10 +5,8 @@ const express = require('express');
 const sanitizer = require('express-sanitizer');
 const validate = require('validate.js');
 
-// node
 const path = require('path');
 
-// other
 const PORT = process.env.PORT || 5050;
 const HOST = process.env.HOST || 'localhost';
 const dbConfig = require(path.resolve(__dirname, 'config.db.json'));
@@ -18,7 +15,9 @@ const regExp = require(path.resolve(__dirname, 'config.regexp.json'));
 const Database = require(path.resolve(__dirname, './services/Database'));
 const Utilities = require(path.resolve(__dirname, './services/Utilities'));
 
-let app = express();
+const progressRoutes = require('./routes/progressRoutes');
+
+const app = express();
 
 app.use(cors());
 app.use(sanitizer());
@@ -217,6 +216,9 @@ app.post('/api/login/:type', (req, res) => {
     });
 });
 
+/* ---------- PROGRESS ROUTES ---------- */
+app.use('/api/progress', progressRoutes);
+
 /* ---------- COURSE ROUTES ---------- */
 require(path.resolve(__dirname, 'course/add'))(app);
 require(path.resolve(__dirname, 'course/delete'))(app);
@@ -231,13 +233,8 @@ require(path.resolve(__dirname, 'users/get'))(app);
 require(path.resolve(__dirname, 'users/reset'))(app);
 require(path.resolve(__dirname, 'users/update'))(app);
 
-/* ---------- PROGRESS ROUTES ---------- */
-
 /* ---------- REACT ROUTES ---------- */
-app.get('*', (req, res) => {
-    // let react take care of routing these
-    res.sendFile(path.resolve(__dirname, '../dist/index.html'));
-});
+app.get('*', (req, res) => res.sendFile(path.resolve(__dirname, '../dist/index.html')));
 
 let utils = new Utilities();
 app.listen(PORT, HOST, () => utils.serverLog(`HTTP server listening on http://${HOST}:${PORT}`));
