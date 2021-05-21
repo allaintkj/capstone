@@ -1,6 +1,5 @@
 const bodyParser = require('body-parser');
 const crypto = require('crypto');
-const cors = require('cors');
 const express = require('express');
 const sanitizer = require('express-sanitizer');
 const validate = require('validate.js');
@@ -19,10 +18,12 @@ const progressRoutes = require('./routes/progressRoutes');
 
 const app = express();
 
-app.use(cors());
 app.use(sanitizer());
 app.use(bodyParser.json());
 app.use(express.static(path.resolve(__dirname, '../dist')));
+
+/* ---------- PROGRESS ROUTES ---------- */
+app.use('/api/progress', progressRoutes);
 
 /* ---------- LOGIN ROUTE ---------- */
 app.post('/api/login/:type', (req, res) => {
@@ -215,9 +216,6 @@ app.post('/api/login/:type', (req, res) => {
         database.close();
     });
 });
-
-/* ---------- PROGRESS ROUTES ---------- */
-app.use('/api/progress', progressRoutes);
 
 /* ---------- COURSE ROUTES ---------- */
 require(path.resolve(__dirname, 'course/add'))(app);

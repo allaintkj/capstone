@@ -159,8 +159,6 @@ export const fetchAllStudents = (nscc_id = '') => (dispatch, getState) => {
             payload: false
         });
     }).catch(error => {
-        console.log(error);
-
         let msgBlock = {};
         msgBlock.text = error.response.data.text;
 
@@ -210,8 +208,6 @@ export const fetchAllStudents = (nscc_id = '') => (dispatch, getState) => {
                 payload: false
             });
         } catch (exception) {
-            console.log(exception);
-
             // Disable load flag
             dispatch({
                 type: SET_LOAD_FLAG,
@@ -272,8 +268,6 @@ export const addStudent = form => (dispatch, getState) => {
             payload: false
         });
     }).catch(error => {
-        console.log(error);
-
         let msgBlock = {};
 
         try {
@@ -335,8 +329,6 @@ export const addStudent = form => (dispatch, getState) => {
                 payload: false
             });
         } catch (exception) {
-            console.log(exception);
-
             msgBlock = {};
             msgBlock.text = 'Error';
 
@@ -391,8 +383,6 @@ export const updateStudent = form => (dispatch, getState) => {
             payload: false
         });
     }).catch(error => {
-        console.log(error);
-
         let msgBlock = {};
 
         try {
@@ -454,8 +444,6 @@ export const updateStudent = form => (dispatch, getState) => {
                 payload: false
             });
         } catch (exception) {
-            console.log(exception);
-
             msgBlock = {};
             msgBlock.text = 'Error';
 
@@ -506,8 +494,6 @@ export const deleteStudent = nscc_id => (dispatch, getState) => {
             payload: false
         });
     }).catch(error => {
-        console.log(error);
-
         let msgBlock = {};
 
         try {
@@ -569,8 +555,6 @@ export const deleteStudent = nscc_id => (dispatch, getState) => {
                 payload: false
             });
         } catch (exception) {
-            console.log(exception);
-
             msgBlock = {};
             msgBlock.text = 'Error';
 

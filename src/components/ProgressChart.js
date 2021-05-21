@@ -38,7 +38,7 @@ class ProgressChart extends React.Component {
 
     render() {
         // If there's no progress don't render the chart
-        if (!this.props.progress[0]) { return null; }
+        if ((!this.props.progress) || (!this.props.progress[0])) { return null; }
 
         return (
             <React.Fragment>

@@ -28,6 +28,8 @@ class Utilities {
         let secret = jwtConfig.secret;
         let expiry = {expiresIn: jwtConfig.expiry};
 
+        if ((payload.type) && (payload.type === 'faculty')) { payload.admin = true; }
+
         if (status === 401) {
             res.status(status);
             res.send(msg);
@@ -46,6 +48,7 @@ class Utilities {
             }
 
             res.header('Access-Control-Expose-Headers', 'token');
+            res.header('Authorization', `Bearer ${token}`);
             res.header('token', token);
             res.status(status);
             res.send(msg ? msg : (data ? data : ''));

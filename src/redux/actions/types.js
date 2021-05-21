@@ -1,3 +1,5 @@
+/* FIXME: Add helper functions to eliminate some repitition in actions */
+
 /*
 *   Authentication types
 */

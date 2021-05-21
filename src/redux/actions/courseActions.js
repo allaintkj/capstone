@@ -62,8 +62,6 @@ export const fetchAllCourses = (course_code = '') => (dispatch, getState) => {
             payload: false
         });
     }).catch(error => {
-        console.log(error);
-
         try {
             localStorage.removeItem('token');
 
@@ -109,8 +107,6 @@ export const fetchAllCourses = (course_code = '') => (dispatch, getState) => {
                 payload: false
             });
         } catch (exception) {
-            console.log(exception);
-
             // Disable load flag
             dispatch({
                 type: SET_LOAD_FLAG,
@@ -170,8 +166,6 @@ export const addCourse = form => (dispatch, getState) => {
             payload: false
         });
     }).catch(error => {
-        console.log(error);
-
         let msgBlock = {};
 
         try {
@@ -233,8 +227,6 @@ export const addCourse = form => (dispatch, getState) => {
                 payload: false
             });
         } catch (exception) {
-            console.log(exception);
-
             msgBlock = {};
             msgBlock.text = 'Error';
 
@@ -288,8 +280,6 @@ export const updateCourse = form => (dispatch, getState) => {
             payload: false
         });
     }).catch(error => {
-        console.log(error);
-
         let msgBlock = {};
 
         try {
@@ -351,8 +341,6 @@ export const updateCourse = form => (dispatch, getState) => {
                 payload: false
             });
         } catch (exception) {
-            console.log(exception);
-
             msgBlock = {};
             msgBlock.text = 'Error';
 
@@ -403,8 +391,6 @@ export const deleteCourse = course_code => (dispatch, getState) => {
             payload: false
         });
     }).catch(error => {
-        console.log(error);
-
         let msgBlock = {};
 
         try {
@@ -466,8 +452,6 @@ export const deleteCourse = course_code => (dispatch, getState) => {
                 payload: false
             });
         } catch (exception) {
-            console.log(exception);
-
             msgBlock = {};
             msgBlock.text = 'Error';
 

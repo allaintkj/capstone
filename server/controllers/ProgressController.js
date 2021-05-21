@@ -1,54 +1,51 @@
-const path = require('path');
-
 const ProgressModel = require('../models/ProgressModel');
 
-const Utilities = require(path.resolve(__dirname, '../services/Utilities'));
+const {
+    createToken,
+    verifyToken
+} = require('../services/token');
 
-exports.fetchStudentProgress = async(req, res) => {
-    let utils = new Utilities();
+const {
+    validateId
+} = require('../services/validation');
+
+exports.fetchStudentProgress = async(request, response) => {
+    // Validate ID parameter first
+    if (!validateId(request.params.id)) {
+        response.status(400);
+        response.send({ text: 'Invalid ID requested' });
+        return;
+    }
+
+    // Create new token for the response
+    let token = createToken({
+        nscc_id: request.params.id,
+        admin: true,
+        type: 'faculty'
+    });
 
     try {
-        // Verification
-        let decoded = utils.verifyToken(req);
-
-        if (!decoded) {
-            // Failed
-            utils.respond(res, 401, {text: utils.messages});
-
+        // Attempt to verify JWT in authorization header
+        if (!verifyToken(request)) {
+            response.status(401);
+            response.send({ text: 'Invalid token' });
             return;
-        }
-
-        utils.payload = {
-            // Success, set payload for token refresh
-            nscc_id: decoded.nscc_id,
-            type: decoded.type
-        };
-
-        try {
-            req.params.nscc_id = req.sanitize(req.params.id);
-        } catch (exception) {
-            utils.respond(res, 400, {text: 'Invalid user ID'});
-
-            return;
-        }
-
-        if (utils.payload.nscc_id !== req.params.nscc_id) {
-            if (utils.payload.type !== 'faculty') {
-                // Valid token, not authorized for this resource
-                utils.respond(res, 401, {text: 'You are not authorized to access that resource'});
-
-                return;
-            }
         }
 
         // Get all progress records for ID
         let progressModel = new ProgressModel();
-        let progress = await progressModel.getProgress(req.params.id);
+        let progress = await progressModel.getProgress(request.sanitize(request.params.id));
 
-        utils.respond(res, 200, progress);
-    } catch (err) {
-        console.log(err);
+        response.status(200);
+        response.header('Authorization', `Bearer ${token}`);
+        response.header('token', token);
+        response.send({ progress });
+    } catch (error) {
+        console.log(error);
 
-        utils.respond(res, 500, {text: 'Internal error querying database'});
+        response.status(500);
+        response.header('Authorization', `Bearer ${token}`);
+        response.header('token', token);
+        response.send({ text: 'Internal error' });
     }
 };

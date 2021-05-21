@@ -1,6 +1,7 @@
-const path = require('path');
-
-const Database = require(path.resolve(__dirname, '../services/Database'));
+const {
+    queryDatabase,
+    closeDatabase
+} = require('../services/db');
 
 class ProgressModel {
     constructor() {
@@ -8,13 +9,12 @@ class ProgressModel {
     }
 
     async getProgress(nscc_id) {
-        let database = new Database();
         let statement = 'SELECT * FROM progress WHERE nscc_id = ?;';
         let params = [nscc_id];
 
-        return await database.query(statement, params).then(rows => {
+        return await queryDatabase(statement, params).then(rows => {
             if (rows.length < 1) {
-                database.close();
+                closeDatabase();
                 return;
             }
 
@@ -46,9 +46,11 @@ class ProgressModel {
                 this.progress.push(courseUnitProgress);
             }
 
+            closeDatabase();
             return this.progress;
-        }).catch(error => {
-            console.log(error);
+        }).catch(() => {
+            closeDatabase();
+            return ['Internal error'];
         });
     }
 }

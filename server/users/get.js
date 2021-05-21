@@ -41,7 +41,6 @@ module.exports = function(app) {
             req.params.type = req.sanitize(req.params.type);
         } catch (exception) {
             utils.respond(res, 500, {text: 'Internal error assigning variables'});
-            utils.serverLog(exception);
 
             return;
         }
@@ -110,7 +109,6 @@ module.exports = function(app) {
             }
         }).catch(error => {
             utils.respond(res, 500, {text: 'Internal error querying database'});
-            utils.serverLog(error);
             database.close();
         });
     });
