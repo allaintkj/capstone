@@ -13,14 +13,18 @@ const config = require('./config/config.json');
 const Database = require(path.resolve(__dirname, './services/Database'));
 const Utilities = require(path.resolve(__dirname, './services/Utilities'));
 
-const progressRoutes = require('./routes/progressRoutes');
+const courseRoutes = require('./routes/courseRoutes');
 const studentRoutes = require('./routes/studentRoutes');
+const progressRoutes = require('./routes/progressRoutes');
 
 const app = express();
 
 app.use(sanitizer());
 app.use(bodyParser.json());
 app.use(express.static(path.resolve(__dirname, '../dist')));
+
+/* COURSE ROUTES */
+app.use('/api/courses', courseRoutes);
 
 /* STUDENT ROUTES */
 app.use('/api/students', studentRoutes);
@@ -223,8 +227,6 @@ app.post('/api/login/:type', (req, res) => {
 /* ---------- COURSE ROUTES ---------- */
 require(path.resolve(__dirname, 'course/add'))(app);
 require(path.resolve(__dirname, 'course/delete'))(app);
-require(path.resolve(__dirname, 'course/get-all'))(app);
-require(path.resolve(__dirname, 'course/get-single'))(app);
 require(path.resolve(__dirname, 'course/update'))(app);
 
 /* ---------- GENERAL USER ROUTES ---------- */

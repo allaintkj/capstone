@@ -6,20 +6,15 @@ const {
 class StudentModel {
     constructor() { }
 
-    async fetchAllStudents() {
+    static async fetchAllStudents() {
         let statement = 'SELECT * FROM student ORDER BY last_name';
 
-        return await queryDatabase(statement).then(rows => {
-            if ((!rows) || (rows.length < 1)) {
-                closeDatabase();
-                return;
-            }
+        return await queryDatabase(statement).then(students => {
+            closeDatabase();
 
-            // Initialize array to contain students
-            let students = [];
+            if ((!students) || (students.length < 1)) { return; }
 
-            // Iterate returned records and manicure the data
-            rows.forEach(student => {
+            return students.map(student => {
                 student.comment = student.comment ? student.comment : '';
                 if (student.start_date) { student.start_date = new Date(student.start_date); }
                 if (student.end_date) { student.end_date = new Date(student.end_date); }
@@ -28,30 +23,26 @@ class StudentModel {
                 delete student.password_reset_req;
                 delete student.salt;
 
-                students.push(student);
+                return student;
             });
-
-            closeDatabase();
-            return (students);
         }).catch(() => {
             closeDatabase();
             return ['Internal error'];
         });
     }
 
-    async fetchStudent(request) {
+    static async fetchStudent(request) {
         let statement = 'SELECT * FROM student WHERE nscc_id = ? ORDER BY last_name';
         let params = [request.params.id];
 
-        return await queryDatabase(statement, params).then(rows => {
-            // Only a single result should be return
-            // Otherwise we've introduced a duplicate user somehow
-            if ((!rows) || (rows.length !== 1)) {
-                closeDatabase();
-                return;
-            }
+        return await queryDatabase(statement, params).then(students => {
+            closeDatabase();
 
-            let student = rows[0];
+            // Only a single result should be returned
+            // Otherwise we've introduced a duplicate user somehow
+            if ((!students) || (students.length !== 1)) { return; }
+
+            let student = students[0];
 
             student.comment = student.comment ? student.comment : '';
             if (student.start_date) { student.start_date = new Date(student.start_date); }
@@ -61,8 +52,7 @@ class StudentModel {
             delete student.password_reset_req;
             delete student.salt;
 
-            closeDatabase();
-            return (student);
+            return student;
         }).catch(() => {
             closeDatabase();
             return ['Internal error'];

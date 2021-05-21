@@ -22,14 +22,11 @@ exports.fetchAllStudents = async(request, response) => {
     });
 
     try {
-        let studentModel = new StudentModel();
-        let students = await studentModel.fetchAllStudents();
-
         // Return students and new token
         response.status(200);
         response.header('Authorization', `Bearer ${token}`);
         response.header('token', token);
-        response.send({ students });
+        response.send({ students: await StudentModel.fetchAllStudents() });
     } catch (error) {
         console.log(error);
 
@@ -59,14 +56,11 @@ exports.fetchStudent = async(request, response) => {
     });
 
     try {
-        let studentModel = new StudentModel();
-        let student = await studentModel.fetchStudent(request);
-
         // Return students and new token
         response.status(200);
         response.header('Authorization', `Bearer ${token}`);
         response.header('token', token);
-        response.send({ student });
+        response.send({ student: await StudentModel.fetchStudent(request) });
     } catch (error) {
         console.log(error);
 

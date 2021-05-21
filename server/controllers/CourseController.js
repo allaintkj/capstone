@@ -1,15 +1,11 @@
-const ProgressModel = require('../models/ProgressModel');
+const CourseModel = require('../models/CourseModel');
 
 const {
     createToken,
     verifyToken
 } = require('../services/token');
 
-const {
-    validateId
-} = require('../services/validation');
-
-exports.fetchStudentProgress = async(request, response) => {
+exports.fetchAllCourses = async(request, response) => {
     // Attempt to verify JWT in authorization header
     if (!verifyToken(request)) {
         response.status(401);
@@ -25,23 +21,12 @@ exports.fetchStudentProgress = async(request, response) => {
         type: 'faculty'
     });
 
-    // Validate ID parameter
-    if (!validateId(request.params.id)) {
-        // Invalid ID requested
-        // Return error and new token
-        response.status(400);
-        response.header('Authorization', `Bearer ${token}`);
-        response.header('token', token);
-        response.send({ text: 'Invalid ID requested' });
-        return;
-    }
-
     try {
-        // Return progress and new token
+        // Return students and new token
         response.status(200);
         response.header('Authorization', `Bearer ${token}`);
         response.header('token', token);
-        response.send({ progress: await ProgressModel.getProgress(request) });
+        response.send({ courses: await CourseModel.fetchAllCourses() });
     } catch (error) {
         console.log(error);
 

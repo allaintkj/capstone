@@ -30,14 +30,14 @@ export const fetchAllStudents = (nscc_id = '') => (dispatch, getState) => {
 
     // Request all students
     axios({
-        headers: { 'token': getState().auth.token },
+        headers: { 'Authorization': `Bearer ${getState().auth.token}` },
         method: 'GET',
         timeout: 10000,
         url: `${getState().api.url}/students/all`
     }).then(response => {
         // Update token
         localStorage.removeItem('token');
-        localStorage.setItem('token', response.headers.token);
+        localStorage.setItem('token', response.headers['authorization'].split(' ')[1]);
         
         // Set the entire list of students in state
         dispatch({
@@ -98,7 +98,7 @@ export const fetchAllStudents = (nscc_id = '') => (dispatch, getState) => {
                 return;
             }
 
-            localStorage.setItem('token', error.response.headers.token);
+            localStorage.setItem('token', error.response.headers['authorization'].split(' ')[1]);
 
             dispatch({
                 type: SET_MESSAGES,
@@ -134,14 +134,14 @@ export const fetchStudent = nscc_id => (dispatch, getState) => {
 
     // Request student
     axios({
-        headers: { 'token': getState().auth.token },
+        headers: { 'Authorization': `Bearer ${getState().auth.token}` },
         method: 'GET',
         timeout: 10000,
         url: `${getState().api.url}/students/${nscc_id}`
     }).then(response => {
         // Update token
         localStorage.removeItem('token');
-        localStorage.setItem('token', response.headers.token);
+        localStorage.setItem('token', response.headers['authorization'].split(' ')[1]);
 
         // Set response in state
         dispatch({
@@ -192,7 +192,7 @@ export const fetchStudent = nscc_id => (dispatch, getState) => {
                 return;
             }
 
-            localStorage.setItem('token', error.response.headers.token);
+            localStorage.setItem('token', error.response.headers['authorization'].split(' ')[1]);
 
             let msgBlock = {};
             msgBlock.text = error.response.data.text;

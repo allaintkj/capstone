@@ -4,20 +4,18 @@ const {
 } = require('../services/db');
 
 class ProgressModel {
-    constructor() {
-        this.progress = [];
-    }
+    constructor() { }
 
-    async getProgress(nscc_id) {
+    static async getProgress(request) {
         let statement = 'SELECT * FROM progress WHERE nscc_id = ?;';
-        let params = [nscc_id];
+        let params = [request.sanitize(request.params.id)];
 
         return await queryDatabase(statement, params).then(rows => {
-            if ((!rows) || (rows.length < 1)) {
-                closeDatabase();
-                return;
-            }
+            closeDatabase();
 
+            if ((!rows) || (rows.length < 1)) { return; }
+
+            let progress = [];
             let sortedProgressRecords = {};
 
             rows.forEach(progressRecord => {
@@ -43,11 +41,10 @@ class ProgressModel {
                     }
                 }
 
-                this.progress.push(courseUnitProgress);
+                progress.push(courseUnitProgress);
             }
 
-            closeDatabase();
-            return this.progress;
+            return progress;
         }).catch(() => {
             closeDatabase();
             return ['Internal error'];

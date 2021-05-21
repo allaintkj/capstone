@@ -30,14 +30,14 @@ export const fetchAllCourses = (course_code = '') => (dispatch, getState) => {
 
     // Request all courses
     axios({
-        headers: { 'token': getState().auth.token },
+        headers: { 'Authorization': `Bearer ${getState().auth.token}` },
         method: 'GET',
         timeout: 10000,
-        url: `${getState().api.url}/course/get/all`
+        url: `${getState().api.url}/courses/all`
     }).then(response => {
         // Update token
         localStorage.removeItem('token');
-        localStorage.setItem('token', response.headers.token);
+        localStorage.setItem('token', response.headers['authorization'].split(' ')[1]);
         
         // Set the entire list of courses in state
         dispatch({
@@ -99,7 +99,7 @@ export const fetchAllCourses = (course_code = '') => (dispatch, getState) => {
                 return;
             }
 
-            localStorage.setItem('token', error.response.headers.token);
+            localStorage.setItem('token', error.response.headers['authorization'].split(' ')[1]);
 
             // Disable load flag
             dispatch({
