@@ -4,7 +4,7 @@ import {
 
 const initialState = {
     isLoading: false,
-    url: 'http://localhost:5050/api'
+    url: 'http://localhost:8080/api'
 };
 
 export default function(state = initialState, action) {

@@ -56,6 +56,30 @@ INSERT INTO `course` (`course_code`, `course_name`, `course_desc`, `number_units
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `administrators`
+--
+
+DROP TABLE IF EXISTS `administrators`;
+CREATE TABLE IF NOT EXISTS `administrators` (
+  `nscc_id` varchar(8) NOT NULL,
+  `first_name` varchar(30) NOT NULL,
+  `last_name` varchar(30) NOT NULL,
+  `password` text,
+  `salt` text,
+  `password_reset_req` tinyint(1) NOT NULL DEFAULT '1',
+  PRIMARY KEY (`nscc_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `administrators`
+--
+
+INSERT INTO `administrators` (`nscc_id`, `first_name`, `last_name`, `password`, `salt`, `password_reset_req`) VALUES
+('W0000001', 'admin', 'admin', 'a23d85014f9fc9fa6cda13b0357cbd057456fe5950dec81fb16e0c1b11ca86703691f619a98688bd95c8fafa867c63a13b535d1c5a630c8e4afddef3149d5383', 'be6a51466e7d078f948c57a5adf31d6a79e60be977917a2ec4477b2d55f7ba46', 0);
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `faculty`
 --
 

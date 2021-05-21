@@ -11,103 +11,6 @@ import {
     CLEAR_COURSES
 } from './types';
 
-export const fetchStudent = nscc_id => (dispatch, getState) => {
-    // Enable load flag
-    dispatch({
-        type: SET_LOAD_FLAG,
-        payload: true
-    });
-
-    // Clear error/validation messages
-    dispatch({
-        type: CLEAR_MESSAGES
-    });
-
-    // Request student
-    axios({
-        headers: { 'token': getState().auth.token },
-        method: 'GET',
-        timeout: 10000,
-        url: `${getState().api.url}/student/get/${nscc_id}`
-    }).then(response => {
-        // Update token
-        localStorage.removeItem('token');
-        localStorage.setItem('token', response.headers.token);
-
-        // Set response in state
-        dispatch({
-            type: SET_STUDENT,
-            payload: response.data.users
-        });
-
-        // Disable load flag
-        dispatch({
-            type: SET_LOAD_FLAG,
-            payload: false
-        });
-    }).catch(error => {
-        try {
-            localStorage.removeItem('token');
-
-            if (error.response.status === 401) {
-                // Set message
-                let msgBlock = {};
-                msgBlock.text = error.response.data.text;
-
-                dispatch({
-                    type: SET_MESSAGES,
-                    payload: msgBlock
-                });
-
-                // Deauth user
-                dispatch({
-                    type: DEAUTH_USER
-                });
-
-                // Clear student state
-                dispatch({
-                    type: CLEAR_STUDENTS
-                });
-
-                // Clear course state
-                dispatch({
-                    type: CLEAR_COURSES
-                });
-
-                // Disable load flag
-                dispatch({
-                    type: SET_LOAD_FLAG,
-                    payload: false
-                });
-
-                return;
-            }
-
-            localStorage.setItem('token', error.response.headers.token);
-
-            let msgBlock = {};
-            msgBlock.text = error.response.data.text;
-
-            dispatch({
-                type: SET_MESSAGES,
-                payload: msgBlock
-            });
-
-            // Disable load flag
-            dispatch({
-                type: SET_LOAD_FLAG,
-                payload: false
-            });
-        } catch (exception) {
-            // Disable load flag
-            dispatch({
-                type: SET_LOAD_FLAG,
-                payload: false
-            });
-        }
-    });
-};
-
 export const fetchAllStudents = (nscc_id = '') => (dispatch, getState) => {
     // Enable load flag
     dispatch({
@@ -130,7 +33,7 @@ export const fetchAllStudents = (nscc_id = '') => (dispatch, getState) => {
         headers: { 'token': getState().auth.token },
         method: 'GET',
         timeout: 10000,
-        url: `${getState().api.url}/student/get/all`
+        url: `${getState().api.url}/students/all`
     }).then(response => {
         // Update token
         localStorage.removeItem('token');
@@ -139,7 +42,7 @@ export const fetchAllStudents = (nscc_id = '') => (dispatch, getState) => {
         // Set the entire list of students in state
         dispatch({
             type: SET_STUDENTS,
-            payload: response.data.users
+            payload: response.data.students
         });
 
         // Check for provided ID
@@ -196,6 +99,103 @@ export const fetchAllStudents = (nscc_id = '') => (dispatch, getState) => {
             }
 
             localStorage.setItem('token', error.response.headers.token);
+
+            dispatch({
+                type: SET_MESSAGES,
+                payload: msgBlock
+            });
+
+            // Disable load flag
+            dispatch({
+                type: SET_LOAD_FLAG,
+                payload: false
+            });
+        } catch (exception) {
+            // Disable load flag
+            dispatch({
+                type: SET_LOAD_FLAG,
+                payload: false
+            });
+        }
+    });
+};
+
+export const fetchStudent = nscc_id => (dispatch, getState) => {
+    // Enable load flag
+    dispatch({
+        type: SET_LOAD_FLAG,
+        payload: true
+    });
+
+    // Clear error/validation messages
+    dispatch({
+        type: CLEAR_MESSAGES
+    });
+
+    // Request student
+    axios({
+        headers: { 'token': getState().auth.token },
+        method: 'GET',
+        timeout: 10000,
+        url: `${getState().api.url}/students/${nscc_id}`
+    }).then(response => {
+        // Update token
+        localStorage.removeItem('token');
+        localStorage.setItem('token', response.headers.token);
+
+        // Set response in state
+        dispatch({
+            type: SET_STUDENT,
+            payload: response.data.student
+        });
+
+        // Disable load flag
+        dispatch({
+            type: SET_LOAD_FLAG,
+            payload: false
+        });
+    }).catch(error => {
+        try {
+            localStorage.removeItem('token');
+
+            if (error.response.status === 401) {
+                // Set message
+                let msgBlock = {};
+                msgBlock.text = error.response.data.text;
+
+                dispatch({
+                    type: SET_MESSAGES,
+                    payload: msgBlock
+                });
+
+                // Deauth user
+                dispatch({
+                    type: DEAUTH_USER
+                });
+
+                // Clear student state
+                dispatch({
+                    type: CLEAR_STUDENTS
+                });
+
+                // Clear course state
+                dispatch({
+                    type: CLEAR_COURSES
+                });
+
+                // Disable load flag
+                dispatch({
+                    type: SET_LOAD_FLAG,
+                    payload: false
+                });
+
+                return;
+            }
+
+            localStorage.setItem('token', error.response.headers.token);
+
+            let msgBlock = {};
+            msgBlock.text = error.response.data.text;
 
             dispatch({
                 type: SET_MESSAGES,

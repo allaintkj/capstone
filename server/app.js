@@ -6,15 +6,15 @@ const validate = require('validate.js');
 
 const path = require('path');
 
-const PORT = process.env.PORT || 5050;
-const HOST = process.env.HOST || 'localhost';
 const dbConfig = require(path.resolve(__dirname, 'config.db.json'));
 const regExp = require(path.resolve(__dirname, 'config.regexp.json'));
+const config = require('./config/config.json');
 
 const Database = require(path.resolve(__dirname, './services/Database'));
 const Utilities = require(path.resolve(__dirname, './services/Utilities'));
 
 const progressRoutes = require('./routes/progressRoutes');
+const studentRoutes = require('./routes/studentRoutes');
 
 const app = express();
 
@@ -22,7 +22,10 @@ app.use(sanitizer());
 app.use(bodyParser.json());
 app.use(express.static(path.resolve(__dirname, '../dist')));
 
-/* ---------- PROGRESS ROUTES ---------- */
+/* STUDENT ROUTES */
+app.use('/api/students', studentRoutes);
+
+/* PROGRESS ROUTES */
 app.use('/api/progress', progressRoutes);
 
 /* ---------- LOGIN ROUTE ---------- */
@@ -227,12 +230,15 @@ require(path.resolve(__dirname, 'course/update'))(app);
 /* ---------- GENERAL USER ROUTES ---------- */
 require(path.resolve(__dirname, 'users/add'))(app);
 require(path.resolve(__dirname, 'users/delete'))(app);
-require(path.resolve(__dirname, 'users/get'))(app);
 require(path.resolve(__dirname, 'users/reset'))(app);
 require(path.resolve(__dirname, 'users/update'))(app);
 
 /* ---------- REACT ROUTES ---------- */
 app.get('*', (req, res) => res.sendFile(path.resolve(__dirname, '../dist/index.html')));
 
-let utils = new Utilities();
-app.listen(PORT, HOST, () => utils.serverLog(`HTTP server listening on http://${HOST}:${PORT}`));
+// Run the server
+app.listen(
+    config.server.port,
+    config.server.host,
+    () => console.log(`HTTP server listening on http://${config.server.host}:${config.server.port}`)
+);

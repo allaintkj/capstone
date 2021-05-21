@@ -13,7 +13,7 @@ class ProgressModel {
         let params = [nscc_id];
 
         return await queryDatabase(statement, params).then(rows => {
-            if (rows.length < 1) {
+            if ((!rows) || (rows.length < 1)) {
                 closeDatabase();
                 return;
             }

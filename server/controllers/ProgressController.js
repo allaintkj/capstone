@@ -10,32 +10,38 @@ const {
 } = require('../services/validation');
 
 exports.fetchStudentProgress = async(request, response) => {
-    // Validate ID parameter first
-    if (!validateId(request.params.id)) {
-        response.status(400);
-        response.send({ text: 'Invalid ID requested' });
+    // Attempt to verify JWT in authorization header
+    if (!verifyToken(request)) {
+        response.status(401);
+        response.send({ text: 'Invalid token' });
         return;
     }
 
+    // Provided token is valid
     // Create new token for the response
     let token = createToken({
-        nscc_id: request.params.id,
+        nscc_id: verifyToken(request).nscc_id,
         admin: true,
         type: 'faculty'
     });
 
-    try {
-        // Attempt to verify JWT in authorization header
-        if (!verifyToken(request)) {
-            response.status(401);
-            response.send({ text: 'Invalid token' });
-            return;
-        }
+    // Validate ID parameter
+    if (!validateId(request.params.id)) {
+        // Invalid ID requested
+        // Return error and new token
+        response.status(400);
+        response.header('Authorization', `Bearer ${token}`);
+        response.header('token', token);
+        response.send({ text: 'Invalid ID requested' });
+        return;
+    }
 
+    try {
         // Get all progress records for ID
         let progressModel = new ProgressModel();
         let progress = await progressModel.getProgress(request.sanitize(request.params.id));
 
+        // Return progress and new token
         response.status(200);
         response.header('Authorization', `Bearer ${token}`);
         response.header('token', token);
@@ -43,6 +49,8 @@ exports.fetchStudentProgress = async(request, response) => {
     } catch (error) {
         console.log(error);
 
+        // Exception
+        // Return new token with generic message
         response.status(500);
         response.header('Authorization', `Bearer ${token}`);
         response.header('token', token);
