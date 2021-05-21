@@ -13,6 +13,7 @@ const config = require('./config/config.json');
 const Database = require(path.resolve(__dirname, './services/Database'));
 const Utilities = require(path.resolve(__dirname, './services/Utilities'));
 
+const authRoutes = require('./routes/authRoutes');
 const courseRoutes = require('./routes/courseRoutes');
 const studentRoutes = require('./routes/studentRoutes');
 const progressRoutes = require('./routes/progressRoutes');
@@ -22,6 +23,9 @@ const app = express();
 app.use(sanitizer());
 app.use(bodyParser.json());
 app.use(express.static(path.resolve(__dirname, '../dist')));
+
+/* AUTH ROUTES */
+app.use('/api/login', authRoutes);
 
 /* COURSE ROUTES */
 app.use('/api/courses', courseRoutes);
