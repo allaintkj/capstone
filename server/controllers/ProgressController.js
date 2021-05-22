@@ -30,7 +30,6 @@ exports.fetchStudentProgress = async(request, response) => {
         // Return error and new token
         response.status(400);
         response.header('Authorization', `Bearer ${token}`);
-        response.header('token', token);
         response.send({ text: 'Invalid ID requested' });
         return;
     }
@@ -39,7 +38,6 @@ exports.fetchStudentProgress = async(request, response) => {
         // Return progress and new token
         response.status(200);
         response.header('Authorization', `Bearer ${token}`);
-        response.header('token', token);
         response.send({ progress: await ProgressModel.getProgress(request) });
     } catch (error) {
         console.log(error);
@@ -48,7 +46,6 @@ exports.fetchStudentProgress = async(request, response) => {
         // Return new token with generic message
         response.status(500);
         response.header('Authorization', `Bearer ${token}`);
-        response.header('token', token);
         response.send({ text: 'Internal error' });
     }
 };

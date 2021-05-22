@@ -22,19 +22,22 @@ class EditStudent extends React.Component {
         this.fieldUpdate = this.fieldUpdate.bind(this);
         this.getErrors = this.getErrors.bind(this);
 
+        // Default student state
+        this.student = {
+            active: true,
+            advisor: '',
+            comment: '',
+            nscc_id: '',
+            start_date: '',
+            end_date: '',
+            first_name: '',
+            last_name: '',
+            progress: {}
+        };
+
         // Set default state
         this.state = {
-            student: {
-                active: true,
-                advisor: '',
-                comment: '',
-                nscc_id: '',
-                start_date: '',
-                end_date: '',
-                first_name: '',
-                last_name: '',
-                progress: {}
-            }
+            student: this.student
         };
     }
 
@@ -289,7 +292,10 @@ class EditStudent extends React.Component {
                             onClick={() => {
                                 /* eslint-disable */
                                 let confirmStatus = confirm('Are you sure you wish to delete this student record?');
-                                if (confirmStatus) { this.props.deleteStudent(this.props.student.nscc_id); }
+                                if (confirmStatus) {
+                                    this.props.deleteStudent(this.props.student.nscc_id);
+                                    this.setState({ student: this.student });
+                                }
                                 /* eslint-enable */
                             }}>
 
@@ -304,7 +310,10 @@ class EditStudent extends React.Component {
                             onClick={() => {
                                 /* eslint-disable */
                                 let confirmStatus = confirm('Are you sure you wish to update this student record?');
-                                if (confirmStatus) { this.props.updateStudent(this.state.student); }
+                                if (confirmStatus) {
+                                    this.props.updateStudent(this.state.student);
+                                    this.setState({ student: this.student });
+                                }
                                 /* eslint-enable */
                             }}>
 

@@ -80,35 +80,6 @@ INSERT INTO `administrators` (`nscc_id`, `first_name`, `last_name`, `password`, 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `faculty`
---
-
-DROP TABLE IF EXISTS `faculty`;
-CREATE TABLE IF NOT EXISTS `faculty` (
-  `nscc_id` varchar(8) NOT NULL,
-  `first_name` varchar(30) NOT NULL,
-  `last_name` varchar(30) NOT NULL,
-  `password` text,
-  `salt` text,
-  `comment` text,
-  `active` tinyint(1) NOT NULL DEFAULT '1',
-  `password_reset_req` tinyint(1) NOT NULL DEFAULT '1',
-  PRIMARY KEY (`nscc_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
---
--- Dumping data for table `faculty`
---
-
-INSERT INTO `faculty` (`nscc_id`, `first_name`, `last_name`, `password`, `salt`, `comment`, `active`, `password_reset_req`) VALUES
-('W0000001', 'admin', 'admin', 'a23d85014f9fc9fa6cda13b0357cbd057456fe5950dec81fb16e0c1b11ca86703691f619a98688bd95c8fafa867c63a13b535d1c5a630c8e4afddef3149d5383', 'be6a51466e7d078f948c57a5adf31d6a79e60be977917a2ec4477b2d55f7ba46', NULL, 1, 0),
-('W1468495', 'Kirestin', 'Mcmahon', NULL, NULL, 'lacus@mollis.edu', 1, 1),
-('W5508469', 'Julian', 'Ayers', NULL, NULL, NULL, 0, 1),
-('W8992702', 'Jarrod', 'Huber', NULL, NULL, 'testing faculty', 1, 1);
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `progress`
 --
 
@@ -118,7 +89,7 @@ CREATE TABLE IF NOT EXISTS `progress` (
   `nscc_id` varchar(8) NOT NULL,
   `course_code` varchar(8) NOT NULL,
   `unit` int(11) NOT NULL,
-  `date` date DEFAULT NULL,
+  `date` bigint DEFAULT NULL,
   `final` int(11) DEFAULT NULL,
   PRIMARY KEY (`prog_id`),
   KEY `nscc_id` (`nscc_id`),
@@ -130,7 +101,7 @@ CREATE TABLE IF NOT EXISTS `progress` (
 --
 
 INSERT INTO `progress` (`prog_id`, `nscc_id`, `course_code`, `unit`, `date`, `final`) VALUES
-(11, 'W1234567', 'WEBD3027', 1, '2019-03-01', NULL),
+(11, 'W1234567', 'WEBD3027', 1, NULL, NULL),
 (12, 'W1234567', 'WEBD3027', 2, NULL, NULL);
 
 -- --------------------------------------------------------
@@ -146,8 +117,8 @@ CREATE TABLE IF NOT EXISTS `student` (
   `last_name` varchar(30) NOT NULL,
   `password` text,
   `salt` text,
-  `start_date` date NOT NULL,
-  `end_date` date NOT NULL,
+  `start_date` bigint DEFAULT NULL,
+  `end_date` bigint DEFAULT NULL,
   `advisor` varchar(50) NOT NULL,
   `comment` text,
   `active` tinyint(1) NOT NULL DEFAULT '1',
@@ -161,10 +132,10 @@ CREATE TABLE IF NOT EXISTS `student` (
 --
 
 INSERT INTO `student` (`nscc_id`, `first_name`, `last_name`, `password`, `salt`, `start_date`, `end_date`, `advisor`, `comment`, `active`, `password_reset_req`) VALUES
-('W1234567', 'John', 'Doe', NULL, NULL, '1999-09-09', '2001-05-01', 'Jane Doe', NULL, 1, 1),
-('W3429361', 'Marcia', 'Pierce', NULL, NULL, '1963-11-22', '1965-11-22', 'Ferris Gonzalez', NULL, 1, 1),
-('W7770595', 'Shepherd', 'Fitzgerald', NULL, NULL, '1961-03-21', '1963-03-21', 'Pascale Flowers', NULL, 1, 1),
-('W8671282', 'Ivy', 'Kramer', NULL, NULL, '1968-04-12', '1970-04-12', 'Sophia Nixon', NULL, 1, 1);
+('W1234567', 'John', 'Doe', NULL, NULL, 1619827200000, 1619827200000, 'Jane Doe', NULL, 1, 1),
+('W3429361', 'Marcia', 'Pierce', NULL, NULL, NULL, NULL, 'Ferris Gonzalez', NULL, 1, 1),
+('W7770595', 'Shepherd', 'Fitzgerald', NULL, NULL, NULL, NULL, 'Pascale Flowers', NULL, 1, 1),
+('W8671282', 'Ivy', 'Kramer', NULL, NULL, NULL, NULL, 'Sophia Nixon', NULL, 1, 1);
 
 --
 -- Constraints for dumped tables

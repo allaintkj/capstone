@@ -36,7 +36,6 @@ require(path.resolve(__dirname, 'course/update'))(app);
 /* ---------- GENERAL USER ROUTES ---------- */
 require(path.resolve(__dirname, 'users/add'))(app);
 require(path.resolve(__dirname, 'users/delete'))(app);
-require(path.resolve(__dirname, 'users/update'))(app);
 
 /* ---------- REACT ROUTES ---------- */
 app.get('*', (req, res) => res.sendFile(path.resolve(__dirname, '../dist/index.html')));

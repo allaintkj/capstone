@@ -11,6 +11,8 @@ import {
 } from './types';
 
 export const fetchStudentProgress = nscc_id => (dispatch, getState) => {
+    if (!nscc_id) { return; }
+
     // Enable load flag
     dispatch({
         type: SET_LOAD_FLAG,

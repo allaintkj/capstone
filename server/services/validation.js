@@ -13,7 +13,7 @@ exports.validateLogin = form => {
     const constraints = {
         nscc_id: {
             format: {
-                pattern: validation.patterns.nscc_id,
+                pattern: RegExp(validation.patterns.nscc_id),
                 message: 'Not a valid ID'
             },
             length: {
@@ -25,7 +25,7 @@ exports.validateLogin = form => {
         },
         password: {
             format: {
-                pattern: form.nscc_id === 'W0000001' ? validation.patterns.all : validation.patterns.password,
+                pattern: RegExp(form.nscc_id === 'W0000001' ? validation.patterns.all : validation.patterns.password),
                 message: 'Not a valid password (a-z, A-Z, at least one digit)'
             },
             length: {
@@ -46,7 +46,7 @@ exports.validatePasswords = form => {
     const constraints = {
         password: {
             format: {
-                pattern: validation.patterns.password,
+                pattern: RegExp(validation.patterns.password),
                 message: 'Not a valid password (a-z, A-Z, at least one digit)'
             },
             length: {
@@ -59,7 +59,7 @@ exports.validatePasswords = form => {
         },
         passwordConfirm: {
             format: {
-                pattern: validation.patterns.password,
+                pattern: RegExp(validation.patterns.password),
                 message: 'Not a valid password (a-z, A-Z, at least one digit)'
             },
             length: {
@@ -73,5 +73,52 @@ exports.validatePasswords = form => {
     };
 
     validate.options = { fullMessages: false };
+    return validate(form, constraints);
+};
+
+exports.validateStudent = form => {
+    const constraints = {
+        advisor: {
+            format: {
+                pattern: RegExp(validation.patterns.alphabetical),
+                message: 'Not a valid name (a-z, A-Z, 0-9, hyphens)'
+            },
+            length: {
+                maximum: 50,
+                minimum: 3,
+                tooLong: 'Maximum 50 characters',
+                tooShort: 'Minimum 3 characters'
+            },
+            presence: { message: 'Must not be empty' }
+        },
+        first_name: {
+            format: {
+                pattern: RegExp(validation.patterns.alphabetical),
+                message: 'Not a valid name (a-z, A-Z, 0-9, hyphens)'
+            },
+            length: {
+                maximum: 50,
+                minimum: 3,
+                tooLong: 'Maximum 50 characters',
+                tooShort: 'Minimum 3 characters'
+            },
+            presence: { message: 'Must not be empty' }
+        },
+        last_name: {
+            format: {
+                pattern: RegExp(validation.patterns.alphabetical),
+                message: 'Not a valid name (a-z, A-Z, 0-9, hyphens)'
+            },
+            length: {
+                maximum: 50,
+                minimum: 3,
+                tooLong: 'Maximum 50 characters',
+                tooShort: 'Minimum 3 characters'
+            },
+            presence: { message: 'Must not be empty' }
+        }
+    };
+
+    validate.options = {fullMessages: false};
     return validate(form, constraints);
 };

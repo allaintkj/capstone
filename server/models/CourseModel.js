@@ -18,8 +18,11 @@ class CourseModel {
                 course.comment = course.comment ? course.comment : '';
                 return course;
             });
-        }).catch(() => {
+        }).catch(error => {
+            console.log(error);
+
             closeDatabase();
+            
             return ['Internal error'];
         });
     }

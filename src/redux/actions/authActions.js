@@ -195,6 +195,8 @@ export const login = fields => (dispatch, getState) => {
 };
 
 export const logout = () => dispatch => {
+    /* FIXME: Scroll user back to top after logout */
+
     // Clear student state
     dispatch({
         type: CLEAR_STUDENTS

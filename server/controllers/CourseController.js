@@ -24,7 +24,6 @@ exports.fetchAllCourses = async(request, response) => {
         // Return students and new token
         response.status(200);
         response.header('Authorization', `Bearer ${token}`);
-        response.header('token', token);
         response.send({ courses: await CourseModel.fetchAllCourses() });
     } catch (error) {
         console.log(error);
@@ -33,7 +32,6 @@ exports.fetchAllCourses = async(request, response) => {
         // Return new token with generic message
         response.status(500);
         response.header('Authorization', `Bearer ${token}`);
-        response.header('token', token);
         response.send({ text: 'Internal error' });
     }
 };

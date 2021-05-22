@@ -45,8 +45,11 @@ class ProgressModel {
             }
 
             return progress;
-        }).catch(() => {
+        }).catch(error => {
+            console.log(error);
+
             closeDatabase();
+            
             return ['Internal error'];
         });
     }

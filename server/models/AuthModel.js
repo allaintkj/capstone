@@ -61,8 +61,11 @@ class AuthModel {
                 error: null,
                 isAdmin: isAdmin
             };
-        }).catch(() => {
+        }).catch(error => {
+            console.log(error);
+
             closeDatabase();
+
             return {
                 failed: true,
                 error: 'Internal error'
@@ -114,8 +117,11 @@ class AuthModel {
                 failed: false,
                 error: null
             };
-        }).catch(() => {
+        }).catch(error => {
+            console.log(error);
+
             closeDatabase();
+
             return {
                 failed: true,
                 error: 'Internal error'
@@ -178,8 +184,11 @@ class AuthModel {
                 failed: false,
                 error: null
             };
-        }).catch(() => {
+        }).catch(error => {
+            console.log(error);
+
             closeDatabase();
+            
             return {
                 failed: true,
                 error: 'Internal error'
