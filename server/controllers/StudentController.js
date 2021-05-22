@@ -73,6 +73,9 @@ exports.fetchStudent = async(request, response) => {
 };
 
 exports.updateStudent = async(request, response) => {
+    const updating = request.url === '/update';
+    let attempt;
+
     // Attempt to verify JWT in authorization header
     if (!verifyToken(request)) {
         response.status(401);
@@ -111,16 +114,17 @@ exports.updateStudent = async(request, response) => {
         return;
     }
 
-    let updateAttempt = await StudentModel.updateStudent(form);
+    if (updating) { attempt = await StudentModel.updateStudent(form); }
+    if (!updating) { attempt = await StudentModel.addStudent(form); }
 
-    if (updateAttempt.failed) {
+    if (attempt.failed) {
         response.status(500);
         response.header('Authorization', `Bearer ${token}`);
-        response.send({ text: updateAttempt.error });
+        response.send({ text: attempt.error });
         return;
     }
 
     response.status(200);
     response.header('Authorization', `Bearer ${token}`);
-    response.send({ text: 'User update successfully' });
+    response.send({ text: `User ${updating ? 'updated' : 'added'} successfully` });
 };

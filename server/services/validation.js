@@ -122,3 +122,66 @@ exports.validateStudent = form => {
     validate.options = {fullMessages: false};
     return validate(form, constraints);
 };
+
+exports.validateCourse = form => {
+    const constraints = {
+        course_code: {
+            format: {
+                pattern: RegExp(validation.patterns.course_code),
+                message: 'Not a valid course code '
+            },
+            presence: { message: 'Must not be empty' }
+        },
+        course_name: {
+            format: {
+                pattern: RegExp(validation.patterns.alphabetical),
+                message: 'Not a valid name (a-z, A-Z, 0-9, hyphens)'
+            },
+            length: {
+                maximum: 100,
+                minimum: 10,
+                tooLong: 'Maximum 100 characters',
+                tooShort: 'Minimum 10 characters'
+            },
+            presence: { message: 'Must not be empty' }
+        },
+        course_desc: {
+            format: {
+                pattern: RegExp(validation.patterns.alphabetical),
+                message: 'Not a valid description (a-z, A-Z, 0-9, hyphens)'
+            },
+            length: {
+                maximum: 150,
+                minimum: 10,
+                tooLong: 'Maximum 150 characters',
+                tooShort: 'Minimum 10 characters'
+            },
+            presence: { message: 'Must not be empty' }
+        },
+        number_credits: {
+            numericality: {
+                greaterThan: 0,
+                lessThan: 11,
+                onlyInteger: true,
+                notGreaterThan: 'Must be at least 1',
+                notInteger: 'Must be a whole number',
+                notLessThan: 'Maximum 10 credits'
+            },
+            presence: { message: 'Must not be empty' }
+        },
+        number_units: {
+            numericality: {
+                greaterThan: 0,
+                lessThan: 13,
+                onlyInteger: true,
+                notGreaterThan: 'Must be at least 1',
+                notInteger: 'Must be a whole number',
+                notLessThan: 'Maximum 12 units'
+            },
+            presence: { message: 'Must not be empty' }
+        }
+    };
+
+    validate.options = {fullMessages: false};
+    return validate(form, constraints);
+};

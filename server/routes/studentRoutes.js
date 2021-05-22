@@ -10,6 +10,9 @@ const {
 router.route('/all')
     .get(fetchAllStudents);
 
+router.route('/add')
+    .put(updateStudent);
+
 router.route('/update')
     .post(updateStudent);
 

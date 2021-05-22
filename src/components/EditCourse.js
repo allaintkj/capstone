@@ -23,15 +23,18 @@ class EditCourse extends React.Component {
         this.getErrors = this.getErrors.bind(this);
 
         // Default form state
+        this.course = {
+            comment: '',
+            course_code: '',
+            course_desc: '',
+            course_name: '',
+            number_credits: 0,
+            number_units: 0
+        };
+
+        // Default form state
         this.state = {
-            course: {
-                comment: '',
-                course_code: '',
-                course_desc: '',
-                course_name: '',
-                number_credits: 0,
-                number_units: 0
-            }
+            course: this.course
         };
     }
 
@@ -239,7 +242,10 @@ class EditCourse extends React.Component {
                             onClick={() => {
                                 /* eslint-disable */
                                 let confirmStatus = confirm('Are you sure you wish to delete this course record?');
-                                if (confirmStatus) { this.props.deleteCourse(this.props.course.course_code); }
+                                if (confirmStatus) {
+                                    this.props.deleteCourse(this.props.course.course_code);
+                                    this.setState({ course: this.course });
+                                }
                                 /* eslint-enable */
                             }}>
 
@@ -254,7 +260,10 @@ class EditCourse extends React.Component {
                             onClick={() => {
                                 /* eslint-disable */
                                 let confirmStatus = confirm('Are you sure you wish to update this course record?');
-                                if (confirmStatus) { this.props.updateCourse(this.state.course); }
+                                if (confirmStatus) {
+                                    this.props.updateCourse(this.state.course);
+                                    this.setState({ course: this.course });
+                                }
                                 /* eslint-enable */
                             }}>
 

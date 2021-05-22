@@ -31,10 +31,8 @@ app.use('/api/progress', progressRoutes);
 /* ---------- COURSE ROUTES ---------- */
 require(path.resolve(__dirname, 'course/add'))(app);
 require(path.resolve(__dirname, 'course/delete'))(app);
-require(path.resolve(__dirname, 'course/update'))(app);
 
 /* ---------- GENERAL USER ROUTES ---------- */
-require(path.resolve(__dirname, 'users/add'))(app);
 require(path.resolve(__dirname, 'users/delete'))(app);
 
 /* ---------- REACT ROUTES ---------- */

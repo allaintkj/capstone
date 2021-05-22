@@ -145,13 +145,13 @@ export const addCourse = form => (dispatch, getState) => {
             ...form,
             type: 'course'
         },
-        headers: { 'token': getState().auth.token },
+        headers: { 'Authorization': `Bearer ${getState().auth.token}` },
         method: 'PUT',
         timeout: 10000,
-        url: `${getState().api.url}/course/add`
+        url: `${getState().api.url}/courses/add`
     }).then(response => {
         localStorage.removeItem('token');
-        localStorage.setItem('token', response.headers.token);
+        localStorage.setItem('token', response.headers['authorization'].split(' ')[1]);
 
         let msgBlock = {};
         msgBlock.text = response.data.text;
@@ -170,7 +170,7 @@ export const addCourse = form => (dispatch, getState) => {
 
         try {
             localStorage.removeItem('token');
-            localStorage.setItem('token', error.response.headers.token);
+            localStorage.setItem('token', error.response.headers['authorization'].split(' ')[1]);
 
             if (error.response.status === 401) {
                 // Set message
@@ -257,13 +257,13 @@ export const updateCourse = form => (dispatch, getState) => {
             ...form,
             type: 'course'
         },
-        headers: { 'token': getState().auth.token },
+        headers: { 'Authorization': `Bearer ${getState().auth.token}` },
         method: 'POST',
         timeout: 10000,
-        url: `${getState().api.url}/course/update`
+        url: `${getState().api.url}/courses/update`
     }).then(response => {
         localStorage.removeItem('token');
-        localStorage.setItem('token', response.headers.token);
+        localStorage.setItem('token', response.headers['authorization'].split(' ')[1]);
 
         let msgBlock = {};
         msgBlock.text = response.data.text;
@@ -284,7 +284,7 @@ export const updateCourse = form => (dispatch, getState) => {
 
         try {
             localStorage.removeItem('token');
-            localStorage.setItem('token', error.response.headers.token);
+            localStorage.setItem('token', error.response.headers['authorization'].split(' ')[1]);
 
             if (error.response.status === 401) {
                 // Set message

@@ -256,13 +256,13 @@ export const addStudent = form => (dispatch, getState) => {
             type: 'student',
             active: form.active == false ? 0 : 1
         },
-        headers: { 'token': getState().auth.token },
+        headers: { 'Authorization': `Bearer ${getState().auth.token}` },
         method: 'PUT',
         timeout: 10000,
-        url: `${getState().api.url}/student/add`
+        url: `${getState().api.url}/students/add`
     }).then(response => {
         localStorage.removeItem('token');
-        localStorage.setItem('token', response.headers.token);
+        localStorage.setItem('token', response.headers['authorization'].split(' ')[1]);
 
         let msgBlock = {};
         msgBlock.text = response.data.text;
@@ -281,7 +281,7 @@ export const addStudent = form => (dispatch, getState) => {
 
         try {
             localStorage.removeItem('token');
-            localStorage.setItem('token', error.response.headers.token);
+            localStorage.setItem('token', error.response.headers['authorization'].split(' ')[1]);
 
             if (error.response.status === 401) {
                 // Set message
@@ -365,8 +365,8 @@ export const updateStudent = form => (dispatch, getState) => {
     });
 
     // Convert date entries to milliseconds since epoch
-    form.start_date = form.start_date ? new Date(form.start_date).getTime() : null;
-    form.end_date = form.end_date ? new Date(form.end_date).getTime() : null;
+    form.start_date = form.start_date ? new Date(form.start_date).getTime() : 0;
+    form.end_date = form.end_date ? new Date(form.end_date).getTime() : 0;
     form.password_reset_req  = form.password_reset_req ? 1 : 0;
 
     // POST form data

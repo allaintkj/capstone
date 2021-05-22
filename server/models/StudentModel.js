@@ -65,6 +65,75 @@ class StudentModel {
         });
     }
 
+    static async addStudent(form) {
+        // Check if student already exists
+        let statement = 'SELECT nscc_id FROM student WHERE nscc_id = ?;';
+        let params = [form.nscc_id];
+
+        return await queryDatabase(statement, params).then(rows => {
+            closeDatabase();
+
+            // Should be exactly one result
+            if (rows.length >= 1) {
+                // Already exists
+                return {
+                    failed: true,
+                    error: 'User already exists'
+                };
+            }
+
+            // Student is not pre-existing
+            // Prepare insert statement
+            let columns = '(`nscc_id`, `first_name`, `last_name`, `start_date`, `end_date`, `advisor`, `active`, `comment`, `password_reset_req`)';
+
+            let statement = `INSERT INTO student ${columns} VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);`;
+
+            // Form data
+            let params = [
+                form.nscc_id,
+                form.first_name,
+                form.last_name,
+                form.start_date ? form.start_date : 0,
+                form.end_date ? form.end_date : 0,
+                form.advisor,
+                form.active,
+                form.comment,
+                1
+            ];
+
+            // Execute query
+            return queryDatabase(statement, params);
+        }).then(rows => {
+            closeDatabase();
+
+            // No result
+            if (!rows) {
+                return {
+                    failed: true,
+                    error: 'Internal error'
+                };
+            }
+
+            // Rows have been affected
+            // Insert successful
+            if (rows.affectedRows) {
+                return {
+                    failed: false,
+                    error: null
+                };
+            }
+        }).catch(error => {
+            console.log(error);
+
+            closeDatabase();
+
+            return {
+                failed: true,
+                error: 'Internal error'
+            };
+        });
+    }
+
     static async updateStudent(form) {
         let columns = 'active = ?, advisor = ?, comment = ?, end_date = ?, first_name = ?, last_name = ?, nscc_id = ?, start_date = ?';
 
@@ -72,11 +141,11 @@ class StudentModel {
             form.active,
             form.advisor,
             form.comment,
-            form.end_date,
+            form.end_date ? form.end_date : 0,
             form.first_name,
             form.last_name,
             form.nscc_id,
-            form.start_date,
+            form.start_date ? form.start_date : 0,
             form.nscc_id
         ];
 
@@ -96,7 +165,7 @@ class StudentModel {
             closeDatabase();
 
             if (rows) {
-                if (rows.affectedRows < 1) {
+                if (rows.affectedRows < 1 || rows.changedRows < 1) {
                     return {
                         failed: true,
                         error: 'Could not update user'
