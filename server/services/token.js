@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 
-const config = require('../config/config.json');
+const config = require('../config.json');
 
 exports.createToken = payload => {
     // Generate a new JWT with a fresh expiry

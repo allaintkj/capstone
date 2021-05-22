@@ -188,6 +188,39 @@ class StudentModel {
             };
         });
     }
+
+    static async deleteStudent(nscc_id) {
+        let statement = 'DELETE FROM student WHERE nscc_id = ?';
+        let params = [nscc_id];
+
+        return await queryDatabase(statement, params).then(rows => {
+            // Check result
+            if (rows) {
+                if (rows.affectedRows < 1) {
+                    // No affected rows means nothing happened
+                    return {
+                        failed: true,
+                        error: 'User not found'
+                    };
+                }
+
+                // Successful delete
+                return {
+                    failed: false,
+                    error: null
+                };
+            }
+        }).catch(error => {
+            console.log(error);
+
+            closeDatabase();
+
+            return {
+                failed: true,
+                error: 'Internal error'
+            };
+        });
+    }
 }
 
 module.exports = StudentModel;

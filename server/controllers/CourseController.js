@@ -92,3 +92,33 @@ exports.updateCourse = async(request, response) => {
     response.header('Authorization', `Bearer ${token}`);
     response.send({ text: `Course ${updating ? 'update' : 'added'} successfully` });
 };
+
+exports.deleteCourse = async(request, response) => {
+    // Attempt to verify JWT in authorization header
+    if (!verifyToken(request)) {
+        response.status(401);
+        response.send({ text: 'Invalid token' });
+        return;
+    }
+
+    // Provided token is valid
+    // Create new token for the response
+    let token = createToken({
+        nscc_id: verifyToken(request).nscc_id,
+        // Must be admin if verification passed
+        admin: true
+    });
+
+    let attempt = await CourseModel.deleteCourse(request.params.id);
+
+    if (attempt.failed) {
+        response.status(500);
+        response.header('Authorization', `Bearer ${token}`);
+        response.send({ text: attempt.error });
+        return;
+    }
+
+    response.status(200);
+    response.header('Authorization', `Bearer ${token}`);
+    response.send({ text: 'Course deleted successfully' });
+};

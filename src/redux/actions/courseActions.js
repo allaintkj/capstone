@@ -367,14 +367,13 @@ export const deleteCourse = course_code => (dispatch, getState) => {
 
     // POST form data
     axios({
-        data: { course_code: course_code },
-        headers: { 'token': getState().auth.token },
+        headers: { 'Authorization': `Bearer ${getState().auth.token}` },
         method: 'DELETE',
         timeout: 10000,
-        url: `${getState().api.url}/course/delete`
+        url: `${getState().api.url}/courses/${course_code}`
     }).then(response => {
         localStorage.removeItem('token');
-        localStorage.setItem('token', response.headers.token);
+        localStorage.setItem('token', response.headers['authorization'].split(' ')[1]);
 
         let msgBlock = {};
         msgBlock.text = response.data.text;
@@ -395,7 +394,7 @@ export const deleteCourse = course_code => (dispatch, getState) => {
 
         try {
             localStorage.removeItem('token');
-            localStorage.setItem('token', error.response.headers.token);
+            localStorage.setItem('token', error.response.headers['authorization'].split(' ')[1]);
 
             if (error.response.status === 401) {
                 // Set message

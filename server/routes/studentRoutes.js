@@ -4,7 +4,8 @@ const router = express.Router();
 const {
     fetchAllStudents,
     updateStudent,
-    fetchStudent
+    fetchStudent,
+    deleteStudent
 } = require('../controllers/StudentController');
 
 router.route('/all')
@@ -17,6 +18,7 @@ router.route('/update')
     .post(updateStudent);
 
 router.route('/:id')
-    .get(fetchStudent);
+    .get(fetchStudent)
+    .delete(deleteStudent);
 
 module.exports = router;

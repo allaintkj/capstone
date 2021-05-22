@@ -3,7 +3,8 @@ const router = express.Router();
 
 const {
     fetchAllCourses,
-    updateCourse
+    updateCourse,
+    deleteCourse
 } = require('../controllers/CourseController');
 
 router.route('/all')
@@ -14,5 +15,8 @@ router.route('/add')
 
 router.route('/update')
     .post(updateCourse);
+
+router.route('/:id')
+    .delete(deleteCourse);
 
 module.exports = router;

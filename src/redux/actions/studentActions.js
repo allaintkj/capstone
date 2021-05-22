@@ -486,14 +486,13 @@ export const deleteStudent = nscc_id => (dispatch, getState) => {
 
     // POST form data
     axios({
-        data: { nscc_id: nscc_id },
-        headers: { 'token': getState().auth.token },
+        headers: { 'Authorization': `Bearer ${getState().auth.token}` },
         method: 'DELETE',
         timeout: 10000,
-        url: `${getState().api.url}/student/delete`
+        url: `${getState().api.url}/students/${nscc_id}`
     }).then(response => {
         localStorage.removeItem('token');
-        localStorage.setItem('token', response.headers.token);
+        localStorage.setItem('token', response.headers['authorization'].split(' ')[1]);
 
         let msgBlock = {};
         msgBlock.text = response.data.text;
@@ -514,7 +513,7 @@ export const deleteStudent = nscc_id => (dispatch, getState) => {
 
         try {
             localStorage.removeItem('token');
-            localStorage.setItem('token', error.response.headers.token);
+            localStorage.setItem('token', error.response.headers['authorization'].split(' ')[1]);
 
             if (error.response.status === 401) {
                 // Set message

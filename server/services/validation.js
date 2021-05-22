@@ -1,6 +1,6 @@
 const validate = require('validate.js');
 
-const { validation } = require('../config/config.json');
+const { validation } = require('../config.json');
 
 exports.validateId = nscc_id => {
     let expression = RegExp(validation.patterns.nscc_id);

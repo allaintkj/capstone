@@ -130,6 +130,39 @@ class CourseModel {
             };
         });
     }
+
+    static async deleteCourse(course_code) {
+        let statement = 'DELETE FROM course WHERE course_code = ?';
+        let params = [course_code];
+
+        return await queryDatabase(statement, params).then(rows => {
+            // Check result
+            if (rows) {
+                if (rows.affectedRows < 1) {
+                    // No affected rows means nothing happened
+                    return {
+                        failed: true,
+                        error: 'Course not found'
+                    };
+                }
+
+                // Successful delete
+                return {
+                    failed: false,
+                    error: null
+                };
+            }
+        }).catch(error => {
+            console.log(error);
+
+            closeDatabase();
+
+            return {
+                failed: true,
+                error: 'Internal error'
+            };
+        });
+    }
 }
 
 module.exports = CourseModel;
