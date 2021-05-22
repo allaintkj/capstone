@@ -30,14 +30,14 @@ export const fetchAllCourses = (course_code = '') => (dispatch, getState) => {
 
     // Request all courses
     axios({
-        headers: { 'token': getState().auth.token },
+        headers: { 'Authorization': `Bearer ${getState().auth.token}` },
         method: 'GET',
         timeout: 10000,
-        url: `${getState().api.url}/course/get/all`
+        url: `${getState().api.url}/courses/all`
     }).then(response => {
         // Update token
         localStorage.removeItem('token');
-        localStorage.setItem('token', response.headers.token);
+        localStorage.setItem('token', response.headers['authorization'].split(' ')[1]);
         
         // Set the entire list of courses in state
         dispatch({
@@ -62,8 +62,6 @@ export const fetchAllCourses = (course_code = '') => (dispatch, getState) => {
             payload: false
         });
     }).catch(error => {
-        console.log(error);
-
         try {
             localStorage.removeItem('token');
 
@@ -101,7 +99,7 @@ export const fetchAllCourses = (course_code = '') => (dispatch, getState) => {
                 return;
             }
 
-            localStorage.setItem('token', error.response.headers.token);
+            localStorage.setItem('token', error.response.headers['authorization'].split(' ')[1]);
 
             // Disable load flag
             dispatch({
@@ -109,8 +107,6 @@ export const fetchAllCourses = (course_code = '') => (dispatch, getState) => {
                 payload: false
             });
         } catch (exception) {
-            console.log(exception);
-
             // Disable load flag
             dispatch({
                 type: SET_LOAD_FLAG,
@@ -149,13 +145,13 @@ export const addCourse = form => (dispatch, getState) => {
             ...form,
             type: 'course'
         },
-        headers: { 'token': getState().auth.token },
+        headers: { 'Authorization': `Bearer ${getState().auth.token}` },
         method: 'PUT',
         timeout: 10000,
-        url: `${getState().api.url}/course/add`
+        url: `${getState().api.url}/courses/add`
     }).then(response => {
         localStorage.removeItem('token');
-        localStorage.setItem('token', response.headers.token);
+        localStorage.setItem('token', response.headers['authorization'].split(' ')[1]);
 
         let msgBlock = {};
         msgBlock.text = response.data.text;
@@ -170,13 +166,11 @@ export const addCourse = form => (dispatch, getState) => {
             payload: false
         });
     }).catch(error => {
-        console.log(error);
-
         let msgBlock = {};
 
         try {
             localStorage.removeItem('token');
-            localStorage.setItem('token', error.response.headers.token);
+            localStorage.setItem('token', error.response.headers['authorization'].split(' ')[1]);
 
             if (error.response.status === 401) {
                 // Set message
@@ -233,8 +227,6 @@ export const addCourse = form => (dispatch, getState) => {
                 payload: false
             });
         } catch (exception) {
-            console.log(exception);
-
             msgBlock = {};
             msgBlock.text = 'Error';
 
@@ -265,13 +257,13 @@ export const updateCourse = form => (dispatch, getState) => {
             ...form,
             type: 'course'
         },
-        headers: { 'token': getState().auth.token },
+        headers: { 'Authorization': `Bearer ${getState().auth.token}` },
         method: 'POST',
         timeout: 10000,
-        url: `${getState().api.url}/course/update`
+        url: `${getState().api.url}/courses/update`
     }).then(response => {
         localStorage.removeItem('token');
-        localStorage.setItem('token', response.headers.token);
+        localStorage.setItem('token', response.headers['authorization'].split(' ')[1]);
 
         let msgBlock = {};
         msgBlock.text = response.data.text;
@@ -288,13 +280,11 @@ export const updateCourse = form => (dispatch, getState) => {
             payload: false
         });
     }).catch(error => {
-        console.log(error);
-
         let msgBlock = {};
 
         try {
             localStorage.removeItem('token');
-            localStorage.setItem('token', error.response.headers.token);
+            localStorage.setItem('token', error.response.headers['authorization'].split(' ')[1]);
 
             if (error.response.status === 401) {
                 // Set message
@@ -351,8 +341,6 @@ export const updateCourse = form => (dispatch, getState) => {
                 payload: false
             });
         } catch (exception) {
-            console.log(exception);
-
             msgBlock = {};
             msgBlock.text = 'Error';
 
@@ -379,14 +367,13 @@ export const deleteCourse = course_code => (dispatch, getState) => {
 
     // POST form data
     axios({
-        data: { course_code: course_code },
-        headers: { 'token': getState().auth.token },
+        headers: { 'Authorization': `Bearer ${getState().auth.token}` },
         method: 'DELETE',
         timeout: 10000,
-        url: `${getState().api.url}/course/delete`
+        url: `${getState().api.url}/courses/${course_code}`
     }).then(response => {
         localStorage.removeItem('token');
-        localStorage.setItem('token', response.headers.token);
+        localStorage.setItem('token', response.headers['authorization'].split(' ')[1]);
 
         let msgBlock = {};
         msgBlock.text = response.data.text;
@@ -403,13 +390,11 @@ export const deleteCourse = course_code => (dispatch, getState) => {
             payload: false
         });
     }).catch(error => {
-        console.log(error);
-
         let msgBlock = {};
 
         try {
             localStorage.removeItem('token');
-            localStorage.setItem('token', error.response.headers.token);
+            localStorage.setItem('token', error.response.headers['authorization'].split(' ')[1]);
 
             if (error.response.status === 401) {
                 // Set message
@@ -466,8 +451,6 @@ export const deleteCourse = course_code => (dispatch, getState) => {
                 payload: false
             });
         } catch (exception) {
-            console.log(exception);
-
             msgBlock = {};
             msgBlock.text = 'Error';
 

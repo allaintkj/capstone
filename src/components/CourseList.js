@@ -8,6 +8,9 @@ import {
     setNewCourse
 } from '../redux/actions/courseActions';
 
+/*
+*   CourseList component displayed in left/upper panel
+*/
 class CourseList extends React.Component {
     render() {
         if (!this.props.visible) { return null; }
@@ -43,11 +46,12 @@ class CourseList extends React.Component {
 
 CourseList.propTypes = {
     currentListItem: PropTypes.string,
-    history: PropTypes.object.isRequired,
     isEditing: PropTypes.bool,
     list: PropTypes.arrayOf(PropTypes.object).isRequired,
     listFilter: PropTypes.string.isRequired,
     visible: PropTypes.bool.isRequired,
+    // Router
+    history: PropTypes.object.isRequired,
     // Courses
     setNewCourse: PropTypes.func.isRequired
 };

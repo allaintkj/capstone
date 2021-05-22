@@ -1,3 +1,5 @@
+/* FIXME: Add helper functions to eliminate some repitition in actions */
+
 /*
 *   Authentication types
 */
@@ -29,3 +31,8 @@ export const SET_COURSES = 'SET_COURSES';
 *   API types
 */
 export const SET_LOAD_FLAG = 'SET_LOAD_FLAG';
+
+/*
+*   Progress Type
+*/
+export const SET_PROGRESS = 'SET_PROGRESS';

@@ -7,6 +7,9 @@ import {
     logout
 } from '../redux/actions/authActions';
 
+/*
+*   LogoutButton component used in all forms and information components
+*/
 class LogoutButton extends React.Component {
     render() {
         return (

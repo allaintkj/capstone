@@ -4,14 +4,19 @@ import { connect } from 'react-redux';
 
 import LogoutButton from './LogoutButton';
 
+/*
+*   CourseInformation component displayed on AdminDashboard
+*/
 class CourseInformation extends React.Component {
     constructor(props) {
         super(props);
     }
 
     render() {
+        // Visibility disabled if user is viewing StudentList and not CourseList
         if (!this.props.visible) { return null; }
         
+        // Check for proper course ID
         if (this.props.course.course_code.length != 8) {
             return (
                 <React.Fragment>
@@ -77,10 +82,12 @@ class CourseInformation extends React.Component {
 
 CourseInformation.propTypes = {
     visible: PropTypes.bool,
+    // Course
     course: PropTypes.object.isRequired
 };
 
 const mapStateToProps = state => ({
+    // Course reducer
     course: state.course
 });
 

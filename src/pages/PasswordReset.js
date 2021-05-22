@@ -10,19 +10,25 @@ import {
     logout
 } from '../redux/actions/authActions';
 
+/*
+*   PasswordReset form
+*/
 class PasswordReset extends React.Component {
     constructor(props) {
         super(props);
 
+        // Function binding
         this.getErrors = this.getErrors.bind(this);
         this.submitPassword = this.submitPassword.bind(this);
         this.updateField = this.updateField.bind(this);
 
+        // Default fields
         this.fields = {
             password: '',
             passwordConfirm: ''
         };
 
+        // Construct state
         this.state = {
             fields: this.fields
         };
@@ -31,6 +37,7 @@ class PasswordReset extends React.Component {
     getErrors(key, display, errors) {
         let messages = [];
 
+        // Render validation errors and/or messages
         if (typeof errors[key] !== typeof messages) {
             if (!errors[key]) { return null; }
 
@@ -59,6 +66,7 @@ class PasswordReset extends React.Component {
 
         if (event) {
             event.preventDefault();
+            // Only submit if enter key pressed
             if (event.keyCode && (event.keyCode !== 13)) { return; }
         }
 
@@ -68,6 +76,7 @@ class PasswordReset extends React.Component {
     updateField(event) {
         if (this.props.loading) { return; }
 
+        // Update form value
         this.setState({
             fields: {
                 ...this.state.fields,
@@ -77,16 +86,16 @@ class PasswordReset extends React.Component {
     }
 
     render() {
-        // Send back to splash page if there's no valid token
+        // Send back to login if there's no valid token
         if (!this.props.token || this.props.token.length === 0) {
             return <Redirect to='/' />;
         }
         
+        // If we don't get the '/password' route back, then the password reset has been submitted
+        // Move the user on to their destination
         if ((this.props.token) && (this.props.getPathFromToken() !== '/password')) {
             return <Redirect to={this.props.getPathFromToken()} />;
         }
-
-        let is_loading = this.props.loading ? 'is-loading' : '';
 
         return (
             <div className='has-background-light'>
@@ -98,7 +107,6 @@ class PasswordReset extends React.Component {
 
                         <div className='section'>
                             <PasswordField keyUp={this.submitPassword}
-                                loading={this.props.loading}
                                 msg={this.props.msg}
                                 strLabel={'Password'}
                                 strName='password'
@@ -108,7 +116,6 @@ class PasswordReset extends React.Component {
                             {this.getErrors('password', 'Password', this.props.msg)}
 
                             <PasswordField keyUp={this.submitPassword}
-                                loading={this.props.loading}
                                 msg={this.props.msg}
                                 strLabel='Confirm Password'
                                 strName='passwordConfirm'
@@ -123,12 +130,12 @@ class PasswordReset extends React.Component {
                 </form>
 
                 <div className='buttons is-centered section'>
-                    <a className={`button is-danger inline ${is_loading}`}
+                    <a className='button is-danger inline'
                         onClick={() => { this.props.logout(); }}>
                         Go Back
                     </a>
 
-                    <a className={`button is-link inline ${is_loading}`}
+                    <a className='button is-link inline'
                         onClick={this.submitPassword}>
                         Change Password
                     </a>
@@ -138,17 +145,19 @@ class PasswordReset extends React.Component {
     }
 }
 
+/*
+*   PasswordField component for PasswordReset form
+*/
 class PasswordField extends React.Component {
     render() {
         let is_danger = this.props.msg[this.props.strName] ? 'is-danger' : '';
-        let is_disabled = this.props.loading ? 'is-disabled' : '';
 
         return (
             <div className='field'>
                 <label className='label'>{this.props.strLabel}</label>
                 <div className='control'>
-                    <input className={`input ${is_danger} ${is_disabled}`}
-                        disabled={this.props.loading ? true : false}
+                    <input className={`input ${is_danger}`}
+                        disabled={false}
                         name={this.props.strName}
                         onKeyUp={this.props.keyUp}
                         placeholder={this.props.strPlaceholder}
@@ -161,7 +170,6 @@ class PasswordField extends React.Component {
 
 PasswordReset.propTypes = {
     // Auth
-    loading: PropTypes.bool.isRequired,
     getPathFromToken: PropTypes.func,
     submitPasswordReset: PropTypes.func.isRequired,
     logout: PropTypes.func.isRequired
@@ -169,7 +177,6 @@ PasswordReset.propTypes = {
 
 PasswordField.propTypes = {
     keyUp: PropTypes.func.isRequired,
-    loading: PropTypes.bool.isRequired,
     msg: PropTypes.object,
     strLabel: PropTypes.string,
     strPlaceholder: PropTypes.string,
@@ -187,7 +194,6 @@ const mapDispatchToProps = dispatch => ({
 const mapStateToProps = state => ({
     // Auth
     token: state.auth.token,
-    loading: state.auth.isLoading,
     // Validation
     msg: state.msg.data
 });

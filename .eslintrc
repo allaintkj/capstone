@@ -190,8 +190,6 @@
                 "before": true
             }
         ],
-        "new-cap": "warn",
-        "multiline-ternary": ["error", "never"],
         "new-parens": "error",
         "no-array-constructor": "error",
         "no-bitwise": "error",

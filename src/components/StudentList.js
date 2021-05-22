@@ -8,6 +8,9 @@ import {
     setNewStudent
 } from '../redux/actions/studentActions';
 
+/*
+*   StudentList component displayed in left/upper panel
+*/
 class StudentList extends React.Component {
     render() {
         if (!this.props.visible) { return null; }
@@ -44,11 +47,12 @@ class StudentList extends React.Component {
 
 StudentList.propTypes = {
     currentListItem: PropTypes.string,
-    history: PropTypes.object.isRequired,
     isEditing: PropTypes.bool,
     list: PropTypes.arrayOf(PropTypes.object).isRequired,
     listFilter: PropTypes.string.isRequired,
     visible: PropTypes.bool.isRequired,
+    // Router
+    history: PropTypes.object.isRequired,
     // Students
     setNewStudent: PropTypes.func.isRequired
 };

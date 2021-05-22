@@ -15,6 +15,9 @@ import {
     fetchStudent
 } from '../redux/actions/studentActions';
 
+/*
+*   StudentHome default route for student
+*/
 class StudentHome extends React.Component {
     constructor(props) {
         super(props);

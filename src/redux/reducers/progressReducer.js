@@ -1,22 +1,19 @@
 import {
-    SET_LOAD_FLAG
+    SET_PROGRESS
 } from '../actions/types';
 
 const initialState = {
-    isLoading: false,
-    url: 'http://localhost:8080/api'
+    data: []
 };
 
 export default function(state = initialState, action) {
     switch (action.type) {
-        case SET_LOAD_FLAG:
+        case SET_PROGRESS:
             return {
                 ...state,
-                isLoading: action.payload
+                data: action.payload
             };
         default:
-            return {
-                ...state
-            };
+            return {...state};
     }
 }

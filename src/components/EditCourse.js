@@ -5,27 +5,36 @@ import { withRouter } from 'react-router';
 
 import LogoutButton from './LogoutButton';
 
+// Course actions
 import {
     updateCourse,
     deleteCourse
 } from '../redux/actions/courseActions';
 
+/*
+*   EditCourse form displayed on AdminDashboard
+*/
 class EditCourse extends React.Component {
     constructor(props) {
         super(props);
 
+        // Function binding
         this.fieldUpdate = this.fieldUpdate.bind(this);
         this.getErrors = this.getErrors.bind(this);
 
+        // Default form state
+        this.course = {
+            comment: '',
+            course_code: '',
+            course_desc: '',
+            course_name: '',
+            number_credits: 0,
+            number_units: 0
+        };
+
+        // Default form state
         this.state = {
-            course: {
-                comment: '',
-                course_code: '',
-                course_desc: '',
-                course_name: '',
-                number_credits: 0,
-                number_units: 0
-            }
+            course: this.course
         };
     }
 
@@ -33,7 +42,10 @@ class EditCourse extends React.Component {
         let lastCourse = lastProps.match.params.id;
         let thisCourse = this.props.match.params.id;
 
+        // Empty list prop so it doesn't get submitted with the form
         if (lastCourse !== thisCourse) {
+            // New course selected
+            // Set new course in state
             this.setState({
                 course: {
                     ...this.props.course,
@@ -44,13 +56,17 @@ class EditCourse extends React.Component {
     }
 
     fieldUpdate(event) {
+        // Default to redux prop
         let courseModel = this.props.course;
         let value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
 
+        // Use state if the form has been edited
         if (this.state.course.course_code.length === 8) {
             courseModel = this.state.course;
         }
 
+        // Set state with appropriate object and update form value
+        // Verify list is empty
         this.setState({
             course: {
                 ...courseModel,
@@ -63,6 +79,7 @@ class EditCourse extends React.Component {
     getErrors(key, display, errors) {
         let messages = [];
 
+        // Display validation messages
         if (typeof errors[key] !== typeof messages) {
             if (!errors[key]) { return null; }
 
@@ -87,8 +104,10 @@ class EditCourse extends React.Component {
     }
 
     render() {
+        // Only display on correct route ('edit')
         if (!this.props.visible) { return null; }
 
+        // Check for valid course ID
         if (this.props.course.course_code.length !== 8) {
             return (
                 <React.Fragment>
@@ -108,8 +127,10 @@ class EditCourse extends React.Component {
             );
         }
 
+        // Default to redux prop
         let courseModel = this.props.course;
 
+        // Use state if the form has been edited
         if (this.state.course.course_code.length === 8) {
             courseModel = this.state.course;
         }
@@ -221,9 +242,11 @@ class EditCourse extends React.Component {
                             onClick={() => {
                                 /* eslint-disable */
                                 let confirmStatus = confirm('Are you sure you wish to delete this course record?');
+                                if (confirmStatus) {
+                                    this.props.deleteCourse(this.props.course.course_code);
+                                    this.setState({ course: this.course });
+                                }
                                 /* eslint-enable */
-
-                                if (confirmStatus) { this.props.deleteCourse(this.props.course.course_code); }
                             }}>
 
                             Delete
@@ -237,16 +260,18 @@ class EditCourse extends React.Component {
                             onClick={() => {
                                 /* eslint-disable */
                                 let confirmStatus = confirm('Are you sure you wish to update this course record?');
+                                if (confirmStatus) {
+                                    this.props.updateCourse(this.state.course);
+                                    this.setState({ course: this.course });
+                                }
                                 /* eslint-enable */
-
-                                if (confirmStatus) { this.props.updateCourse(this.state.course); }
                             }}>
 
                             Save
 
                         </a>
                     </div>
-
+                    
                 </div>
 
                 <LogoutButton />
@@ -257,21 +282,27 @@ class EditCourse extends React.Component {
 }
 
 EditCourse.propTypes = {
-    match: PropTypes.object.isRequired,
     visible: PropTypes.bool,
+    // Router
+    match: PropTypes.object.isRequired,
+    // Message
     msg: PropTypes.object,
+    // Course
     course: PropTypes.object.isRequired,
     updateCourse: PropTypes.func.isRequired,
     deleteCourse: PropTypes.func.isRequired
 };
 
 const mapDispatchToProps = dispatch => ({
+    // Course actions
     updateCourse: form => dispatch(updateCourse(form)),
     deleteCourse: course_code => dispatch(deleteCourse(course_code))
 });
 
 const mapStateToProps = state => ({
+    // Message reducer
     msg: state.msg.data,
+    // Course reducer
     course: state.course
 });
 

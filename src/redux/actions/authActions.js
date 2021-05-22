@@ -1,5 +1,4 @@
 import axios from 'axios';
-import * as jwt from 'jsonwebtoken';
 
 import {
     AUTH_LOADED,
@@ -12,33 +11,36 @@ import {
 } from './types';
 
 export const getPathFromToken = () => (dispatch, getState) => {
-    let decoded = jwt.decode(getState().auth.token);
+    let token = getState().auth.token;
+    // Decode payload and check for 'admin' flag
+    let payload = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
 
-    if (decoded.password_reset) { return '/password'; }
-    if (decoded.type === 'student') { return `/student/${decoded.nscc_id}`; }
-    if (decoded.type === 'faculty') { return '/admin/student'; }
+    if (payload.password_reset) { return '/password'; }
+    if (!payload.admin) { return `/student/${payload.nscc_id}`; }
+    if (payload.admin) { return '/admin/student'; }
 };
 
 export const submitPasswordReset = fields => (dispatch, getState) => {
-    // Set loading state to true
     dispatch({
         type: AUTH_LOADING
     });
 
-    // Clear messages
     dispatch({
         type: CLEAR_MESSAGES
     });
 
+    let token = getState().auth.token;
+    let payload = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+
     axios({
         data: fields,
-        headers: { 'token': getState().auth.token },
+        headers: { 'Authorization': `Bearer ${getState().auth.token}` },
         method: 'POST',
         timeout: 10000,
-        url: `${getState().api.url}/password/reset`
+        url: `${getState().api.url}/auth/reset/${payload.nscc_id}`
     }).then(response => {
         localStorage.removeItem('token');
-        localStorage.setItem('token', response.headers.token);
+        localStorage.setItem('token', response.headers['authorization'].split(' ')[1]);
 
         dispatch({
             type: AUTH_LOADED
@@ -50,7 +52,6 @@ export const submitPasswordReset = fields => (dispatch, getState) => {
             let msgBlock = {};
             let response = error.response.data;
 
-            // build error msg object
             if (response.validation) {
                 for (let field in response.validation) {
                     msgBlock = {
@@ -62,7 +63,6 @@ export const submitPasswordReset = fields => (dispatch, getState) => {
 
             if (response.text) { msgBlock.text = response.text; }
 
-            // Invalid token
             if (error.response.status === 401) {
                 dispatch({
                     type: SET_MESSAGES,
@@ -76,7 +76,6 @@ export const submitPasswordReset = fields => (dispatch, getState) => {
                 return;
             }
 
-            // Invalid token
             if (error.response.status === 400) {
                 dispatch({
                     type: SET_MESSAGES,
@@ -86,19 +85,15 @@ export const submitPasswordReset = fields => (dispatch, getState) => {
                 return;
             }
 
-            localStorage.setItem('token', error.response.headers.token);
+            localStorage.setItem('token', response.headers['authorization'].split(' ')[1]);
 
             dispatch({
                 type: AUTH_LOADED
             });
         } catch (exception) {
-            // Clear message block just in case
             let msgBlock = {};
-
-            // Set a general message to notify the user
             msgBlock.text = 'Request aborted';
 
-            // Set the message in redux state
             dispatch({
                 type: SET_MESSAGES,
                 payload: msgBlock
@@ -112,43 +107,34 @@ export const submitPasswordReset = fields => (dispatch, getState) => {
 };
 
 export const login = fields => (dispatch, getState) => {
-    // Set loading state to true
     dispatch({
         type: AUTH_LOADING
     });
 
-    // Clear messages
     dispatch({
         type: CLEAR_MESSAGES
     });
 
-    // Clear token from localStorage just in case
     localStorage.removeItem('token');
 
-    // Submit login to API
     axios({
         data: fields,
         method: 'POST',
         timeout: 10000,
-        url: getState().api.url + '/login/student'
+        url: getState().api.url + '/auth/login'
     }).then(response => {
-        // Set token in localStorage for Redux store to find
-        localStorage.setItem('token', response.headers.token);
+        localStorage.setItem('token', response.headers['authorization'].split(' ')[1]);
 
-        // Clear messages
         dispatch({
             type: CLEAR_MESSAGES
         });
 
-        // Set loading flag
         dispatch({
             type: AUTH_LOADED
         });
     }).catch(error => {
-        // Remove any possible tokens
         localStorage.removeItem('token');
 
-        // Create a message object to store validation messages
         let msgBlock = {};
 
         // Attempt to assign data returned from server
@@ -180,7 +166,7 @@ export const login = fields => (dispatch, getState) => {
             // HTTP 300 means the account has been flagged for password reset
             if (error.response.status === 300) {
                 localStorage.removeItem('token');
-                localStorage.setItem('token', error.response.headers.token);
+                localStorage.setItem('token', error.response.headers['authorization'].split(' ')[1]);
             }
 
             // Set loading state false
@@ -209,6 +195,8 @@ export const login = fields => (dispatch, getState) => {
 };
 
 export const logout = () => dispatch => {
+    /* FIXME: Scroll user back to top after logout */
+
     // Clear student state
     dispatch({
         type: CLEAR_STUDENTS
