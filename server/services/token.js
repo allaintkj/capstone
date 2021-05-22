@@ -21,7 +21,7 @@ exports.verifyToken = request => {
     if (!payload.admin) {
         // Not admin
         // Check that the ID in the payload matches the ID in the request
-        if (payload.nscc_id !== request.params.id) { return false; }
+        if (payload.nscc_id.toUpperCase() !== request.params.id.toUpperCase()) { return false; }
     }
 
     return jwt.verify(token, config.jwt.secret);

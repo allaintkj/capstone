@@ -1,5 +1,4 @@
 import axios from 'axios';
-import * as jwt from 'jsonwebtoken';
 
 import {
     AUTH_LOADED,
@@ -12,11 +11,13 @@ import {
 } from './types';
 
 export const getPathFromToken = () => (dispatch, getState) => {
-    let decoded = jwt.decode(getState().auth.token);
+    let token = getState().auth.token;
+    // Decode payload and check for 'admin' flag
+    let payload = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
 
-    if (decoded.password_reset) { return '/password'; }
-    if (decoded.type === 'student') { return `/student/${decoded.nscc_id}`; }
-    if (decoded.type === 'faculty') { return '/admin/student'; }
+    if (payload.password_reset) { return '/password'; }
+    if (!payload.admin) { return `/student/${payload.nscc_id}`; }
+    if (payload.admin) { return '/admin/student'; }
 };
 
 export const submitPasswordReset = fields => (dispatch, getState) => {
@@ -28,15 +29,18 @@ export const submitPasswordReset = fields => (dispatch, getState) => {
         type: CLEAR_MESSAGES
     });
 
+    let token = getState().auth.token;
+    let payload = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+
     axios({
         data: fields,
-        headers: { 'token': getState().auth.token },
+        headers: { 'Authorization': `Bearer ${getState().auth.token}` },
         method: 'POST',
         timeout: 10000,
-        url: `${getState().api.url}/password/reset`
+        url: `${getState().api.url}/auth/reset/${payload.nscc_id}`
     }).then(response => {
         localStorage.removeItem('token');
-        localStorage.setItem('token', response.headers.token);
+        localStorage.setItem('token', response.headers['authorization'].split(' ')[1]);
 
         dispatch({
             type: AUTH_LOADED
@@ -81,7 +85,7 @@ export const submitPasswordReset = fields => (dispatch, getState) => {
                 return;
             }
 
-            localStorage.setItem('token', error.response.headers.token);
+            localStorage.setItem('token', response.headers['authorization'].split(' ')[1]);
 
             dispatch({
                 type: AUTH_LOADED
@@ -117,9 +121,9 @@ export const login = fields => (dispatch, getState) => {
         data: fields,
         method: 'POST',
         timeout: 10000,
-        url: getState().api.url + '/login/student'
+        url: getState().api.url + '/auth/login'
     }).then(response => {
-        localStorage.setItem('token', response.headers.token);
+        localStorage.setItem('token', response.headers['authorization'].split(' ')[1]);
 
         dispatch({
             type: CLEAR_MESSAGES
@@ -162,7 +166,7 @@ export const login = fields => (dispatch, getState) => {
             // HTTP 300 means the account has been flagged for password reset
             if (error.response.status === 300) {
                 localStorage.removeItem('token');
-                localStorage.setItem('token', error.response.headers.token);
+                localStorage.setItem('token', error.response.headers['authorization'].split(' ')[1]);
             }
 
             // Set loading state false

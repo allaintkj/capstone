@@ -17,8 +17,7 @@ exports.fetchAllCourses = async(request, response) => {
     // Create new token for the response
     let token = createToken({
         nscc_id: verifyToken(request).nscc_id,
-        admin: true,
-        type: 'faculty'
+        admin: true
     });
 
     try {

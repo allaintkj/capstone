@@ -129,9 +129,9 @@ CREATE TABLE IF NOT EXISTS `progress` (
 -- Dumping data for table `progress`
 --
 
-INSERT INTO `progress` (`prog_id`, `nscc_id`, `course_code`, `unit`, `date`, `final`, `comments`) VALUES
-(11, 'W1234567', 'WEBD3027', 1, '2019-03-01', NULL, NULL),
-(12, 'W1234567', 'WEBD3027', 2, NULL, NULL, NULL);
+INSERT INTO `progress` (`prog_id`, `nscc_id`, `course_code`, `unit`, `date`, `final`) VALUES
+(11, 'W1234567', 'WEBD3027', 1, '2019-03-01', NULL),
+(12, 'W1234567', 'WEBD3027', 2, NULL, NULL);
 
 -- --------------------------------------------------------
 
