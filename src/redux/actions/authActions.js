@@ -1,13 +1,13 @@
 import axios from 'axios';
 
 import {
-    AUTH_LOADED,
-    AUTH_LOADING,
+    CLEAR_COURSES,
     CLEAR_MESSAGES,
-    SET_MESSAGES,
-    DEAUTH_USER,
     CLEAR_STUDENTS,
-    CLEAR_COURSES
+    DEAUTH_USER,
+    SET_LOAD_FLAG,
+    SET_MESSAGES,
+    SET_TOKEN
 } from './types';
 
 export const getPathFromToken = () => (dispatch, getState) => {
@@ -15,130 +15,56 @@ export const getPathFromToken = () => (dispatch, getState) => {
     // Decode payload and check for 'admin' flag
     let payload = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
 
+    // Reset flag encountered, direct user to password reset form
     if (payload.password_reset) { return '/password'; }
+    // User is a student, direct them to their own page
     if (!payload.admin) { return `/student/${payload.nscc_id}`; }
+    // User is admin, send to dashboard
     if (payload.admin) { return '/admin/student'; }
 };
 
-export const submitPasswordReset = fields => (dispatch, getState) => {
-    dispatch({
-        type: AUTH_LOADING
-    });
-
-    dispatch({
-        type: CLEAR_MESSAGES
-    });
-
-    let token = getState().auth.token;
-    let payload = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
-
-    axios({
-        data: fields,
-        headers: { 'Authorization': `Bearer ${getState().auth.token}` },
-        method: 'POST',
-        timeout: 10000,
-        url: `${getState().api.url}/auth/reset/${payload.nscc_id}`
-    }).then(response => {
-        localStorage.removeItem('token');
-        localStorage.setItem('token', response.headers['authorization'].split(' ')[1]);
-
-        dispatch({
-            type: AUTH_LOADED
-        });
-    }).catch(error => {
-        try {
-            localStorage.removeItem('token');
-
-            let msgBlock = {};
-            let response = error.response.data;
-
-            if (response.validation) {
-                for (let field in response.validation) {
-                    msgBlock = {
-                        ...msgBlock,
-                        [field]: response.validation[field]
-                    };
-                }
-            }
-
-            if (response.text) { msgBlock.text = response.text; }
-
-            if (error.response.status === 401) {
-                dispatch({
-                    type: SET_MESSAGES,
-                    payload: msgBlock
-                });
-
-                dispatch({
-                    type: DEAUTH_USER
-                });
-
-                return;
-            }
-
-            if (error.response.status === 400) {
-                dispatch({
-                    type: SET_MESSAGES,
-                    payload: msgBlock
-                });
-
-                return;
-            }
-
-            localStorage.setItem('token', response.headers['authorization'].split(' ')[1]);
-
-            dispatch({
-                type: AUTH_LOADED
-            });
-        } catch (exception) {
-            let msgBlock = {};
-            msgBlock.text = 'Request aborted';
-
-            dispatch({
-                type: SET_MESSAGES,
-                payload: msgBlock
-            });
-
-            dispatch({
-                type: AUTH_LOADED
-            });
-        }
-    });
-};
-
 export const login = fields => (dispatch, getState) => {
+    // Toggle loading state
     dispatch({
-        type: AUTH_LOADING
+        type: SET_LOAD_FLAG,
+        payload: true
     });
-
-    dispatch({
-        type: CLEAR_MESSAGES
-    });
-
+    // Clear any possible validation or error messages
+    dispatch({ type: CLEAR_MESSAGES });
+    // Clear token from local storage just in case
     localStorage.removeItem('token');
 
+    // Post form data to API
     axios({
+        // Form fields from LoginForm
         data: fields,
         method: 'POST',
         timeout: 10000,
         url: getState().api.url + '/auth/login'
     }).then(response => {
+        // Successful login and response code 200
+        // Set received token in local storage
         localStorage.setItem('token', response.headers['authorization'].split(' ')[1]);
-
+        
+        // Clear messages from state again just in case
+        dispatch({ type: CLEAR_MESSAGES });
+        // Add token to state
+        dispatch({ type: SET_TOKEN });
+        // Toggle loading state
         dispatch({
-            type: CLEAR_MESSAGES
-        });
-
-        dispatch({
-            type: AUTH_LOADED
+            type: SET_LOAD_FLAG,
+            payload: false
         });
     }).catch(error => {
+        // Any error with the login request should mean the user remains unauthorized
+        // Remove any potential token from storage
         localStorage.removeItem('token');
 
+        // Create object to hold potential error/validation messages
         let msgBlock = {};
 
         // Attempt to assign data returned from server
-        // If this fails, request has probably timed out and we should abort
+        // If this fails, request has probably timed out and we should abort (see catch)
         try {
             // Data object composed by API
             let response = error.response.data;
@@ -165,13 +91,14 @@ export const login = fields => (dispatch, getState) => {
 
             // HTTP 300 means the account has been flagged for password reset
             if (error.response.status === 300) {
-                localStorage.removeItem('token');
+                // Set new token for password reset
                 localStorage.setItem('token', error.response.headers['authorization'].split(' ')[1]);
             }
 
-            // Set loading state false
+            // Toggle loading state
             dispatch({
-                type: AUTH_LOADED
+                type: SET_LOAD_FLAG,
+                payload: false
             });
         } catch (exception) {
             // Clear message block just in case
@@ -186,9 +113,10 @@ export const login = fields => (dispatch, getState) => {
                 payload: msgBlock
             });
 
-            // Set loading state to false
+            // Toggle loading state
             dispatch({
-                type: AUTH_LOADED
+                type: SET_LOAD_FLAG,
+                payload: false
             });
         }
     });
@@ -198,15 +126,9 @@ export const logout = () => dispatch => {
     /* FIXME: Scroll user back to top after logout */
 
     // Clear student state
-    dispatch({
-        type: CLEAR_STUDENTS
-    });
-
+    dispatch({ type: CLEAR_STUDENTS });
     // Clear course state
-    dispatch({
-        type: CLEAR_COURSES
-    });
-
+    dispatch({ type: CLEAR_COURSES });
     // Remove token
     localStorage.removeItem('token');
 
@@ -216,13 +138,108 @@ export const logout = () => dispatch => {
     msgBlock.text = 'You have been logged out';
 
     // Clear auth state from redux
-    dispatch({
-        type: DEAUTH_USER
-    });
-
+    dispatch({ type: DEAUTH_USER });
     // Set message in state to be rendered
     dispatch({
         type: SET_MESSAGES,
         payload: msgBlock
+    });
+};
+
+export const submitPasswordReset = fields => (dispatch, getState) => {
+    // Toggle loading state
+    dispatch({
+        type: SET_LOAD_FLAG,
+        payload: true
+    });
+    // Clear message state
+    dispatch({ type: CLEAR_MESSAGES });
+
+    // Check payload of token for API url
+    let token = getState().auth.token;
+    let payload = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+
+    axios({
+        // Password form
+        data: fields,
+        // Token received from login request
+        headers: { 'Authorization': `Bearer ${getState().auth.token}` },
+        method: 'POST',
+        timeout: 10000,
+        url: `${getState().api.url}/auth/reset/${payload.nscc_id}`
+    }).then(response => {
+        // Remove old token
+        localStorage.removeItem('token');
+        // Set refresh token
+        localStorage.setItem('token', response.headers['authorization'].split(' ')[1]);
+        // Toggle loading state
+        dispatch({
+            type: SET_LOAD_FLAG,
+            payload: false
+        });
+    }).catch(error => {
+        try {
+            // Remove token first, in case user should be de-authed
+            localStorage.removeItem('token');
+
+            // Setup message object
+            let msgBlock = {};
+            let response = error.response.data;
+
+            // Check for validation messages
+            if (response.validation) {
+                for (let field in response.validation) {
+                    msgBlock = {
+                        ...msgBlock,
+                        [field]: response.validation[field]
+                    };
+                }
+            }
+
+            if (response.text) { msgBlock.text = response.text; }
+
+            // Token failed verification server-side
+            if (error.response.status === 401) {
+                // Notify the user by setting message in state
+                dispatch({
+                    type: SET_MESSAGES,
+                    payload: msgBlock
+                });
+                // Remove token from state
+                dispatch({ type: DEAUTH_USER });
+                return;
+            }
+
+            if (error.response.status === 400) {
+                // Something malformed about our request
+                // Notify the user
+                dispatch({
+                    type: SET_MESSAGES,
+                    payload: msgBlock
+                });
+            }
+
+            // Set token if returned from request
+            localStorage.setItem('token', response.headers['authorization'].split(' ')[1]);
+            // Toggle loading state
+            dispatch({
+                type: SET_LOAD_FLAG,
+                payload: false
+            });
+        } catch (exception) {
+            // Something wrong here
+            let msgBlock = {};
+            msgBlock.text = 'Request aborted';
+            // Notify user if we have any messages
+            dispatch({
+                type: SET_MESSAGES,
+                payload: msgBlock
+            });
+            // Toggle loading state
+            dispatch({
+                type: SET_LOAD_FLAG,
+                payload: false
+            });
+        }
     });
 };

@@ -1,14 +1,14 @@
 import axios from 'axios';
 
 import {
-    SET_MESSAGES,
+    CLEAR_COURSES,
     CLEAR_MESSAGES,
-    SET_LOAD_FLAG,
-    SET_STUDENT,
-    SET_STUDENTS,
     CLEAR_STUDENTS,
     DEAUTH_USER,
-    CLEAR_COURSES
+    SET_LOAD_FLAG,
+    SET_MESSAGES,
+    SET_STUDENT,
+    SET_STUDENTS
 } from './types';
 
 export const fetchAllStudents = (nscc_id = '') => (dispatch, getState) => {
@@ -17,16 +17,10 @@ export const fetchAllStudents = (nscc_id = '') => (dispatch, getState) => {
         type: SET_LOAD_FLAG,
         payload: true
     });
-
     // Clear error/validation messages
-    dispatch({
-        type: CLEAR_MESSAGES
-    });
-
+    dispatch({ type: CLEAR_MESSAGES });
     // Clear student state
-    dispatch({
-        type: CLEAR_STUDENTS
-    });
+    dispatch({ type: CLEAR_STUDENTS });
 
     // Request all students
     axios({
@@ -35,6 +29,7 @@ export const fetchAllStudents = (nscc_id = '') => (dispatch, getState) => {
         timeout: 10000,
         url: `${getState().api.url}/students/all`
     }).then(response => {
+        // Success
         // Update token
         localStorage.removeItem('token');
         localStorage.setItem('token', response.headers['authorization'].split(' ')[1]);
@@ -43,6 +38,7 @@ export const fetchAllStudents = (nscc_id = '') => (dispatch, getState) => {
         dispatch({
             type: SET_STUDENTS,
             payload: response.data.students.map(student => {
+                // Make sure dates are a valid format for the form to read
                 student.start_date = student.start_date > 1 ? new Date(student.start_date).toJSON().substring(0, 10) : '';
                 student.end_date = student.end_date > 1 ? new Date(student.end_date).toJSON().substring(0, 10) : '';
 
@@ -67,33 +63,28 @@ export const fetchAllStudents = (nscc_id = '') => (dispatch, getState) => {
             payload: false
         });
     }).catch(error => {
+        // Set message from server in state
         let msgBlock = {};
         msgBlock.text = error.response.data.text;
 
         try {
+            // Remove old token
             localStorage.removeItem('token');
 
+            // Set messages in state
+            dispatch({
+                type: SET_MESSAGES,
+                payload: msgBlock
+            });
+
+            // Authorization failed
             if (error.response.status === 401) {
-                dispatch({
-                    type: SET_MESSAGES,
-                    payload: msgBlock
-                });
-
                 // Deauth user
-                dispatch({
-                    type: DEAUTH_USER
-                });
-
+                dispatch({ type: DEAUTH_USER });
                 // Blank student state
-                dispatch({
-                    type: CLEAR_STUDENTS
-                });
-
+                dispatch({ type: CLEAR_STUDENTS });
                 // Blank course state
-                dispatch({
-                    type: CLEAR_COURSES
-                });
-
+                dispatch({ type: CLEAR_COURSES });
                 // Disable load flag
                 dispatch({
                     type: SET_LOAD_FLAG,
@@ -103,12 +94,8 @@ export const fetchAllStudents = (nscc_id = '') => (dispatch, getState) => {
                 return;
             }
 
+            // Set fresh token in storage
             localStorage.setItem('token', error.response.headers['authorization'].split(' ')[1]);
-
-            dispatch({
-                type: SET_MESSAGES,
-                payload: msgBlock
-            });
 
             // Disable load flag
             dispatch({
@@ -131,11 +118,8 @@ export const fetchStudent = nscc_id => (dispatch, getState) => {
         type: SET_LOAD_FLAG,
         payload: true
     });
-
     // Clear error/validation messages
-    dispatch({
-        type: CLEAR_MESSAGES
-    });
+    dispatch({ type: CLEAR_MESSAGES });
 
     // Request student
     axios({
@@ -144,10 +128,12 @@ export const fetchStudent = nscc_id => (dispatch, getState) => {
         timeout: 10000,
         url: `${getState().api.url}/students/${nscc_id}`
     }).then(response => {
+        // Success
         // Update token
         localStorage.removeItem('token');
         localStorage.setItem('token', response.headers['authorization'].split(' ')[1]);
 
+        // Make sure dates are good format
         let student = response.data.student;
         student.start_date = student.start_date > 1 ? new Date(student.start_date).toJSON().substring(0, 10) : '';
         student.end_date = student.end_date > 1 ? new Date(student.end_date).toJSON().substring(0, 10) : '';
@@ -157,41 +143,33 @@ export const fetchStudent = nscc_id => (dispatch, getState) => {
             type: SET_STUDENT,
             payload: student
         });
-
         // Disable load flag
         dispatch({
             type: SET_LOAD_FLAG,
             payload: false
         });
     }).catch(error => {
+        // Set message
+        let msgBlock = {};
+        msgBlock.text = error.response.data.text;
+
         try {
+            // Remove old token
             localStorage.removeItem('token');
 
+            // Set messages in state
+            dispatch({
+                type: SET_MESSAGES,
+                payload: msgBlock
+            });
+
             if (error.response.status === 401) {
-                // Set message
-                let msgBlock = {};
-                msgBlock.text = error.response.data.text;
-
-                dispatch({
-                    type: SET_MESSAGES,
-                    payload: msgBlock
-                });
-
                 // Deauth user
-                dispatch({
-                    type: DEAUTH_USER
-                });
-
+                dispatch({ type: DEAUTH_USER });
                 // Clear student state
-                dispatch({
-                    type: CLEAR_STUDENTS
-                });
-
+                dispatch({ type: CLEAR_STUDENTS });
                 // Clear course state
-                dispatch({
-                    type: CLEAR_COURSES
-                });
-
+                dispatch({ type: CLEAR_COURSES });
                 // Disable load flag
                 dispatch({
                     type: SET_LOAD_FLAG,
@@ -201,15 +179,8 @@ export const fetchStudent = nscc_id => (dispatch, getState) => {
                 return;
             }
 
+            // Set fresh token
             localStorage.setItem('token', error.response.headers['authorization'].split(' ')[1]);
-
-            let msgBlock = {};
-            msgBlock.text = error.response.data.text;
-
-            dispatch({
-                type: SET_MESSAGES,
-                payload: msgBlock
-            });
 
             // Disable load flag
             dispatch({
@@ -243,11 +214,8 @@ export const addStudent = form => (dispatch, getState) => {
         type: SET_LOAD_FLAG,
         payload: true
     });
-
     // Clear error/validation messages
-    dispatch({
-        type: CLEAR_MESSAGES
-    });
+    dispatch({ type: CLEAR_MESSAGES });
 
     // POST form data
     axios({
@@ -261,17 +229,20 @@ export const addStudent = form => (dispatch, getState) => {
         timeout: 10000,
         url: `${getState().api.url}/students/add`
     }).then(response => {
+        // Remove old token and refresh
         localStorage.removeItem('token');
         localStorage.setItem('token', response.headers['authorization'].split(' ')[1]);
 
+        // Setup messages
         let msgBlock = {};
         msgBlock.text = response.data.text;
 
+        // Set messages in state for rendering
         dispatch({
             type: SET_MESSAGES,
             payload: msgBlock
         });
-
+        // Toggle loading state
         dispatch({
             type: SET_LOAD_FLAG,
             payload: false
@@ -280,33 +251,24 @@ export const addStudent = form => (dispatch, getState) => {
         let msgBlock = {};
 
         try {
+            // Remove old token
             localStorage.removeItem('token');
-            localStorage.setItem('token', error.response.headers['authorization'].split(' ')[1]);
+
+            // Set message
+            msgBlock.text = error.response.data.text;
 
             if (error.response.status === 401) {
-                // Set message
-                msgBlock.text = error.response.data.text;
-
+                // Set error in state
                 dispatch({
                     type: SET_MESSAGES,
                     payload: msgBlock
                 });
-
                 // Deauth user
-                dispatch({
-                    type: DEAUTH_USER
-                });
-
+                dispatch({ type: DEAUTH_USER });
                 // Clear student state
-                dispatch({
-                    type: CLEAR_STUDENTS
-                });
-
+                dispatch({ type: CLEAR_STUDENTS });
                 // Clear course state
-                dispatch({
-                    type: CLEAR_COURSES
-                });
-
+                dispatch({ type: CLEAR_COURSES });
                 // Disable load flag
                 dispatch({
                     type: SET_LOAD_FLAG,
@@ -316,6 +278,10 @@ export const addStudent = form => (dispatch, getState) => {
                 return;
             }
 
+            // Set new token
+            localStorage.setItem('token', error.response.headers['authorization'].split(' ')[1]);
+
+            // Check for validation messages
             if (error.response.data.validation) {
                 for (let field in error.response.data.validation) {
                     msgBlock = {
@@ -325,19 +291,18 @@ export const addStudent = form => (dispatch, getState) => {
                 }
             }
 
-            msgBlock.text = error.response.data.text;
-
+            // Set messages in state
             dispatch({
                 type: SET_MESSAGES,
                 payload: msgBlock
             });
-
             // Disable load flag
             dispatch({
                 type: SET_LOAD_FLAG,
                 payload: false
             });
         } catch (exception) {
+            // Set generic error message
             msgBlock = {};
             msgBlock.text = 'Error';
 
@@ -358,11 +323,8 @@ export const updateStudent = form => (dispatch, getState) => {
         type: SET_LOAD_FLAG,
         payload: true
     });
-
     // Clear error/validation messages
-    dispatch({
-        type: CLEAR_MESSAGES
-    });
+    dispatch({ type: CLEAR_MESSAGES });
 
     // Convert date entries to milliseconds since epoch
     form.start_date = form.start_date ? new Date(form.start_date).getTime() : 0;
@@ -381,19 +343,23 @@ export const updateStudent = form => (dispatch, getState) => {
         timeout: 10000,
         url: `${getState().api.url}/students/update`
     }).then(response => {
+        // Success
+        // Remove and refresh token
         localStorage.removeItem('token');
         localStorage.setItem('token', response.headers['authorization'].split(' ')[1]);
 
+        // Create message object and set server message
         let msgBlock = {};
         msgBlock.text = response.data.text;
 
+        // Set messages in state for renderin
         dispatch({
             type: SET_MESSAGES,
             payload: msgBlock
         });
-
+        // Fetch all students to update our list and set the selected student in state
         dispatch(fetchAllStudents(form.nscc_id));
-
+        // Toggle loading state
         dispatch({
             type: SET_LOAD_FLAG,
             payload: false
@@ -402,33 +368,25 @@ export const updateStudent = form => (dispatch, getState) => {
         let msgBlock = {};
 
         try {
+            // Remove old token
             localStorage.removeItem('token');
-            localStorage.setItem('token', error.response.headers['authorization'].split(' ')[1]);
 
+            // Set message
+            msgBlock.text = error.response.data.text;
+
+            // Authorization failed
             if (error.response.status === 401) {
-                // Set message
-                msgBlock.text = error.response.data.text;
-
+                // Set messages in state
                 dispatch({
                     type: SET_MESSAGES,
                     payload: msgBlock
                 });
-
                 // Deauth user
-                dispatch({
-                    type: DEAUTH_USER
-                });
-
+                dispatch({ type: DEAUTH_USER });
                 // Clear student state
-                dispatch({
-                    type: CLEAR_STUDENTS
-                });
-
+                dispatch({ type: CLEAR_STUDENTS });
                 // Clear course state
-                dispatch({
-                    type: CLEAR_COURSES
-                });
-
+                dispatch({ type: CLEAR_COURSES });
                 // Disable load flag
                 dispatch({
                     type: SET_LOAD_FLAG,
@@ -438,6 +396,10 @@ export const updateStudent = form => (dispatch, getState) => {
                 return;
             }
 
+            // Set fresh token
+            localStorage.setItem('token', error.response.headers['authorization'].split(' ')[1]);
+
+            // Check for validation messages
             if (error.response.data.validation) {
                 for (let field in error.response.data.validation) {
                     msgBlock = {
@@ -447,19 +409,18 @@ export const updateStudent = form => (dispatch, getState) => {
                 }
             }
 
-            msgBlock.text = error.response.data.text;
-
+            // Set messages in state
             dispatch({
                 type: SET_MESSAGES,
                 payload: msgBlock
             });
-
             // Disable load flag
             dispatch({
                 type: SET_LOAD_FLAG,
                 payload: false
             });
         } catch (exception) {
+            // Set generic error message
             msgBlock = {};
             msgBlock.text = 'Error';
 
@@ -478,11 +439,8 @@ export const deleteStudent = nscc_id => (dispatch, getState) => {
         type: SET_LOAD_FLAG,
         payload: true
     });
-
     // Clear error/validation messages
-    dispatch({
-        type: CLEAR_MESSAGES
-    });
+    dispatch({ type: CLEAR_MESSAGES });
 
     // POST form data
     axios({
@@ -491,19 +449,23 @@ export const deleteStudent = nscc_id => (dispatch, getState) => {
         timeout: 10000,
         url: `${getState().api.url}/students/${nscc_id}`
     }).then(response => {
+        // Success
+        // Remove and refresh token
         localStorage.removeItem('token');
         localStorage.setItem('token', response.headers['authorization'].split(' ')[1]);
 
+        // Set server message
         let msgBlock = {};
         msgBlock.text = response.data.text;
 
+        // Add message to state
         dispatch({
             type: SET_MESSAGES,
             payload: msgBlock
         });
-
+        // Fetch all students to update our list
         dispatch(fetchAllStudents());
-
+        // Toggle loading state
         dispatch({
             type: SET_LOAD_FLAG,
             payload: false
@@ -512,33 +474,25 @@ export const deleteStudent = nscc_id => (dispatch, getState) => {
         let msgBlock = {};
 
         try {
+            // Remove old token
             localStorage.removeItem('token');
-            localStorage.setItem('token', error.response.headers['authorization'].split(' ')[1]);
 
+            // Set message
+            msgBlock.text = error.response.data.text;
+
+            // Authorization failed
             if (error.response.status === 401) {
-                // Set message
-                msgBlock.text = error.response.data.text;
-
+                // Set error in state
                 dispatch({
                     type: SET_MESSAGES,
                     payload: msgBlock
                 });
-
                 // Deauth user
-                dispatch({
-                    type: DEAUTH_USER
-                });
-
+                dispatch({ type: DEAUTH_USER });
                 // Clear student state
-                dispatch({
-                    type: CLEAR_STUDENTS
-                });
-
+                dispatch({ type: CLEAR_STUDENTS });
                 // Clear course state
-                dispatch({
-                    type: CLEAR_COURSES
-                });
-
+                dispatch({ type: CLEAR_COURSES });
                 // Disable load flag
                 dispatch({
                     type: SET_LOAD_FLAG,
@@ -548,6 +502,10 @@ export const deleteStudent = nscc_id => (dispatch, getState) => {
                 return;
             }
 
+            // Set fresh token in state
+            localStorage.setItem('token', error.response.headers['authorization'].split(' ')[1]);
+
+            // Check for validation messages
             if (error.response.data.validation) {
                 for (let field in error.response.data.validation) {
                     msgBlock = {
@@ -557,19 +515,18 @@ export const deleteStudent = nscc_id => (dispatch, getState) => {
                 }
             }
 
-            msgBlock.text = error.response.data.text;
-
+            // Set validation in state
             dispatch({
                 type: SET_MESSAGES,
                 payload: msgBlock
             });
-
             // Disable load flag
             dispatch({
                 type: SET_LOAD_FLAG,
                 payload: false
             });
         } catch (exception) {
+            // Set generic error
             msgBlock = {};
             msgBlock.text = 'Error';
 

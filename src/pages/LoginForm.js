@@ -103,7 +103,8 @@ class LoginForm extends React.Component {
                             <h2 className='subtitle has-text-centered'>hint: try admin/alpAdmin</h2>
 
                             {/* Didn't really need to componentize these */}
-                            <LoginField msg={this.props.msg}
+                            <LoginField loading={this.props.loading}
+                                msg={this.props.msg}
                                 strLabel={'ID'}
                                 strName='nscc_id'
                                 strPlaceholder='W0123456'
@@ -112,7 +113,8 @@ class LoginForm extends React.Component {
 
                             {this.getErrors('nscc_id', 'ID', this.props.msg)}
 
-                            <LoginField msg={this.props.msg}
+                            <LoginField loading={this.props.loading}
+                                msg={this.props.msg}
                                 strLabel='Password'
                                 strName='password'
                                 strPlaceholder='Password'
@@ -149,7 +151,7 @@ class LoginField extends React.Component {
                 <label className='label'>{this.props.strLabel}</label>
                 <div className='control'>
                     <input className={`input ${is_danger}`}
-                        disabled={false}
+                        disabled={this.props.loading}
                         name={this.props.strName}
                         onKeyUp={this.props.submitLogin}
                         placeholder={this.props.strPlaceholder}
@@ -161,6 +163,8 @@ class LoginField extends React.Component {
 }
 
 LoginForm.propTypes = {
+    // API
+    loading: PropTypes.bool,
     // Auth
     getPathFromToken: PropTypes.func,
     token: PropTypes.string,
@@ -170,6 +174,7 @@ LoginForm.propTypes = {
 };
 
 LoginField.propTypes = {
+    loading: PropTypes.bool,
     msg: PropTypes.object,
     strLabel: PropTypes.string,
     strPlaceholder: PropTypes.string,
@@ -187,6 +192,8 @@ const mapDispatchToProps = dispatch => ({
 });
 
 const mapStateToProps = state => ({
+    // API reducer
+    loading: state.api.isLoading,
     // Auth reducer
     token: state.auth.token,
     // Validation reducer

@@ -3,9 +3,8 @@
 /*
 *   Authentication types
 */
-export const AUTH_LOADED = 'AUTH_LOADED';
-export const AUTH_LOADING = 'AUTH_LOADING';
 export const DEAUTH_USER = 'DEAUTH_USER';
+export const SET_TOKEN = 'SET_TOKEN';
 
 /*
 *   Validation handling types
