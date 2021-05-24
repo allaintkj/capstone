@@ -18,7 +18,7 @@ class CourseList extends React.Component {
         return (
             <ul className='buttons is-block' style={{maxHeight: '400px'}}>
                 {this.props.list.map((course, index) => {
-                    let className = `button is-block mx-0 ${this.props.currentListItem === course.course_code ? ' is-dark' : ''}`;
+                    let className = `button is-block m-0 mb-1 ${this.props.currentListItem === course.course_code ? ' is-dark' : ''}`;
                     let courseName = `${course.course_code}  ${course.course_name}`;
                     let route = `/admin/course/${course.course_code}`;
                     route += this.props.isEditing ? '/edit' : '';

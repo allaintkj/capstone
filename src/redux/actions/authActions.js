@@ -45,7 +45,6 @@ export const login = fields => (dispatch, getState) => {
         // Successful login and response code 200
         // Set received token in local storage
         localStorage.setItem('token', response.headers['authorization'].split(' ')[1]);
-        
         // Clear messages from state again just in case
         dispatch({ type: CLEAR_MESSAGES });
         // Add token to state
@@ -93,6 +92,8 @@ export const login = fields => (dispatch, getState) => {
             if (error.response.status === 300) {
                 // Set new token for password reset
                 localStorage.setItem('token', error.response.headers['authorization'].split(' ')[1]);
+                // Add token to state
+                dispatch({ type: SET_TOKEN });
             }
 
             // Toggle loading state
@@ -103,7 +104,6 @@ export const login = fields => (dispatch, getState) => {
         } catch (exception) {
             // Clear message block just in case
             msgBlock = {};
-
             // Set a general message to notify the user
             msgBlock.text = 'Request aborted';
 
@@ -112,7 +112,6 @@ export const login = fields => (dispatch, getState) => {
                 type: SET_MESSAGES,
                 payload: msgBlock
             });
-
             // Toggle loading state
             dispatch({
                 type: SET_LOAD_FLAG,
@@ -125,18 +124,17 @@ export const login = fields => (dispatch, getState) => {
 export const logout = () => dispatch => {
     /* FIXME: Scroll user back to top after logout */
 
-    // Clear student state
-    dispatch({ type: CLEAR_STUDENTS });
-    // Clear course state
-    dispatch({ type: CLEAR_COURSES });
-    // Remove token
-    localStorage.removeItem('token');
-
     // Clear message block just in case
     let msgBlock = {};
     // Set a general message to notify the user
     msgBlock.text = 'You have been logged out';
 
+    // Remove token
+    localStorage.removeItem('token');
+    // Clear student state
+    dispatch({ type: CLEAR_STUDENTS });
+    // Clear course state
+    dispatch({ type: CLEAR_COURSES });
     // Clear auth state from redux
     dispatch({ type: DEAUTH_USER });
     // Set message in state to be rendered
@@ -172,6 +170,8 @@ export const submitPasswordReset = fields => (dispatch, getState) => {
         localStorage.removeItem('token');
         // Set refresh token
         localStorage.setItem('token', response.headers['authorization'].split(' ')[1]);
+        // Add token to state
+        dispatch({ type: SET_TOKEN });
         // Toggle loading state
         dispatch({
             type: SET_LOAD_FLAG,
@@ -221,6 +221,8 @@ export const submitPasswordReset = fields => (dispatch, getState) => {
 
             // Set token if returned from request
             localStorage.setItem('token', response.headers['authorization'].split(' ')[1]);
+            // Add token to state
+            dispatch({ type: SET_TOKEN });
             // Toggle loading state
             dispatch({
                 type: SET_LOAD_FLAG,
@@ -230,6 +232,7 @@ export const submitPasswordReset = fields => (dispatch, getState) => {
             // Something wrong here
             let msgBlock = {};
             msgBlock.text = 'Request aborted';
+
             // Notify user if we have any messages
             dispatch({
                 type: SET_MESSAGES,

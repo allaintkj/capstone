@@ -1,6 +1,5 @@
 const {
-    queryDatabase,
-    closeDatabase
+    queryDatabase
 } = require('../services/db');
 
 class CourseModel {
@@ -9,20 +8,19 @@ class CourseModel {
     static async fetchAllCourses() {
         let statement = 'SELECT * FROM course ORDER BY course_code';
 
-        return await queryDatabase(statement).then(courses => {
-            closeDatabase();
-            
-            if ((!courses) || (courses.length < 1)) { return; }
+        return await queryDatabase(statement).then(result => {
+            result.connection.destroy();
 
-            return courses.map(course => {
+            if ((!result.rows) || (result.rows.length < 1)) { return; }
+
+            return result.rows.map(course => {
                 course.comment = course.comment ? course.comment : '';
                 return course;
             });
-        }).catch(error => {
-            console.log(error);
+        }).catch(result => {
+            result.connection.destroy();
+            console.log(result.error);
 
-            closeDatabase();
-            
             return ['Internal error'];
         });
     }
@@ -31,11 +29,11 @@ class CourseModel {
         let statement = 'SELECT * FROM course WHERE course_code = ?';
         let params = [form.course_code];
 
-        return await queryDatabase(statement, params).then(rows => {
-            closeDatabase();
+        return await queryDatabase(statement, params).then(result => {
+            result.connection.destroy();
 
             // Check for pre-existing course
-            if (rows.length >= 1) {
+            if (result.rows.length >= 1) {
                 // Already exists
                 return {
                     failed: true,
@@ -57,11 +55,11 @@ class CourseModel {
             ];
 
             return queryDatabase(statement, params);
-        }).then(rows => {
-            closeDatabase();
+        }).then(result => {
+            result.connection.destroy();
 
             // No result
-            if (!rows) {
+            if (!result.rows) {
                 return {
                     failed: true,
                     error: 'Internal error'
@@ -70,16 +68,15 @@ class CourseModel {
 
             // Rows have been affected
             // Insert successful
-            if (rows.affectedRows) {
+            if (result.rows.affectedRows) {
                 return {
                     failed: false,
                     error: null
                 };
             }
-        }).catch(error => {
-            console.log(error);
-
-            closeDatabase();
+        }).catch(result => {
+            result.connection.destroy();
+            console.log(result.error);
 
             return {
                 failed: true,
@@ -101,13 +98,12 @@ class CourseModel {
             form.course_code
         ];
 
-        return await queryDatabase(statement, params).then(rows => {
-            closeDatabase();
-
+        return await queryDatabase(statement, params).then(result => {
             /* FIXME: Check progress records and update as necessary if unit numbers change */
+            result.connection.destroy();
 
-            if (rows) {
-                if (rows.affectedRows < 1 || rows.changedRows < 1) {
+            if (result.rows) {
+                if (result.rows.affectedRows < 1 || result.rows.changedRows < 1) {
                     return {
                         failed: true,
                         error: 'Could not update course'
@@ -119,10 +115,9 @@ class CourseModel {
                     error: null
                 };
             }
-        }).catch(error => {
-            console.log(error);
-
-            closeDatabase();
+        }).catch(result => {
+            result.connection.destroy();
+            console.log(result.error);
 
             return {
                 failed: true,
@@ -135,10 +130,12 @@ class CourseModel {
         let statement = 'DELETE FROM course WHERE course_code = ?';
         let params = [course_code];
 
-        return await queryDatabase(statement, params).then(rows => {
+        return await queryDatabase(statement, params).then(result => {
+            result.connection.destroy();
+
             // Check result
-            if (rows) {
-                if (rows.affectedRows < 1) {
+            if (result.rows) {
+                if (result.rows.affectedRows < 1) {
                     // No affected rows means nothing happened
                     return {
                         failed: true,
@@ -152,10 +149,9 @@ class CourseModel {
                     error: null
                 };
             }
-        }).catch(error => {
-            console.log(error);
-
-            closeDatabase();
+        }).catch(result => {
+            result.connection.destroy();
+            console.log(result.error);
 
             return {
                 failed: true,

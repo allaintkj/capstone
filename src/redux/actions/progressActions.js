@@ -7,7 +7,8 @@ import {
     CLEAR_STUDENTS,
     SET_LOAD_FLAG,
     SET_MESSAGES,
-    SET_PROGRESS
+    SET_PROGRESS,
+    SET_TOKEN
 } from './types';
 
 export const fetchStudentProgress = nscc_id => (dispatch, getState) => {
@@ -39,6 +40,8 @@ export const fetchStudentProgress = nscc_id => (dispatch, getState) => {
             type: SET_PROGRESS,
             payload: response.data.progress
         });
+        // Set token in state
+        dispatch({ type: SET_TOKEN });
         // Disable load flag
         dispatch({
             type: SET_LOAD_FLAG,
@@ -79,7 +82,8 @@ export const fetchStudentProgress = nscc_id => (dispatch, getState) => {
 
             // Put new token in storage
             localStorage.setItem('token', error.response.headers['authorization'].split(' ')[1]);
-            
+            // Set token in state
+            dispatch({ type: SET_TOKEN });
             // Disable load flag
             dispatch({
                 type: SET_LOAD_FLAG,

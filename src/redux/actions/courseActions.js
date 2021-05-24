@@ -8,7 +8,8 @@ import {
     SET_COURSE,
     SET_COURSES,
     SET_LOAD_FLAG,
-    SET_MESSAGES
+    SET_MESSAGES,
+    SET_TOKEN
 } from './types';
 
 export const addCourse = form => (dispatch, getState) => {
@@ -45,6 +46,8 @@ export const addCourse = form => (dispatch, getState) => {
             type: SET_MESSAGES,
             payload: msgBlock
         });
+        // Set token in state
+        dispatch({ type: SET_TOKEN });
         // Toggle loading state
         dispatch({
             type: SET_LOAD_FLAG,
@@ -103,6 +106,8 @@ export const addCourse = form => (dispatch, getState) => {
                 type: SET_MESSAGES,
                 payload: msgBlock
             });
+            // Set token in state
+            dispatch({ type: SET_TOKEN });
             // Toggle loading state
             dispatch({
                 type: SET_LOAD_FLAG,
@@ -113,6 +118,7 @@ export const addCourse = form => (dispatch, getState) => {
             // Set generic error message
             msgBlock = {};
             msgBlock.text = 'Error';
+
             // Toggle loading state
             dispatch({
                 type: SET_LOAD_FLAG,
@@ -154,6 +160,8 @@ export const deleteCourse = course_code => (dispatch, getState) => {
         });
         // Fetch all courses to update our list in state
         dispatch(fetchAllCourses());
+        // Set token in state
+        dispatch({ type: SET_TOKEN });
         // Toggle loading state
         dispatch({
             type: SET_LOAD_FLAG,
@@ -213,6 +221,8 @@ export const deleteCourse = course_code => (dispatch, getState) => {
                 type: SET_MESSAGES,
                 payload: msgBlock
             });
+            // Set token in state
+            dispatch({ type: SET_TOKEN });
             // Toggle loading state
             dispatch({
                 type: SET_LOAD_FLAG,
@@ -270,6 +280,8 @@ export const fetchAllCourses = (course_code = '') => (dispatch, getState) => {
             });
         }
 
+        // Set token in state
+        dispatch({ type: SET_TOKEN });
         // Toggle loading state
         dispatch({
             type: SET_LOAD_FLAG,
@@ -310,6 +322,8 @@ export const fetchAllCourses = (course_code = '') => (dispatch, getState) => {
 
             // Set new token in the event of an error that's not auth-related
             localStorage.setItem('token', error.response.headers['authorization'].split(' ')[1]);
+            // Set token in state
+            dispatch({ type: SET_TOKEN });
             // Toggle loading state
             dispatch({
                 type: SET_LOAD_FLAG,
@@ -335,12 +349,12 @@ export const setNewCourse = course_code => (dispatch, getState) => {
 
     // Filter list from state to get the course we want
     let newCourse = getState().course.list.filter(course => course.course_code == course_code)[0];
+
     // Set course in state
     dispatch({
         type: SET_COURSE,
         payload: newCourse
     });
-
     // Toggle laoding state
     dispatch({
         type: SET_LOAD_FLAG,
@@ -384,6 +398,8 @@ export const updateCourse = form => (dispatch, getState) => {
         });
         // Fetch all our courses to fresh the list
         dispatch(fetchAllCourses(form.course_code));
+        // Set token in state
+        dispatch({ type: SET_TOKEN });
         // Toggle loading state
         dispatch({
             type: SET_LOAD_FLAG,
@@ -443,6 +459,8 @@ export const updateCourse = form => (dispatch, getState) => {
                 type: SET_MESSAGES,
                 payload: msgBlock
             });
+            // Set token in state
+            dispatch({ type: SET_TOKEN });
             // Disable load flag
             dispatch({
                 type: SET_LOAD_FLAG,
@@ -452,6 +470,7 @@ export const updateCourse = form => (dispatch, getState) => {
             // Set generic error message
             msgBlock = {};
             msgBlock.text = 'Error';
+            
             // Disable load flag
             dispatch({
                 type: SET_LOAD_FLAG,

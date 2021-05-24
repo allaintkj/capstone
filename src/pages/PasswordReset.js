@@ -98,14 +98,14 @@ class PasswordReset extends React.Component {
         }
 
         return (
-            <div className='has-background-light'>
-                <form className='columns card-content' onChange={this.updateField}>
-                    <div className='column is-6-desktop is-offset-3-desktop is-4-widescreen is-offset-4-widescreen'>
-                        <h1 className='has-text-centered section subtitle'>
-                            This account requires a password reset
-                        </h1>
+            <div className='section has-background-light pt-3'>
+                <div className='container'>
+                    <form className='columns' onChange={this.updateField}>
+                        <div className='column is-6-widescreen is-offset-3-widescreen'>
+                            <h1 className='subtitle has-text-centered section'>
+                                This account requires a password reset
+                            </h1>
 
-                        <div className='section'>
                             <PasswordField keyUp={this.submitPassword}
                                 msg={this.props.msg}
                                 strLabel={'Password'}
@@ -123,22 +123,22 @@ class PasswordReset extends React.Component {
                                 strType='password' />
 
                             {this.getErrors('passwordConfirm', 'Confirm Password', this.props.msg)}
+
+                            {this.getErrors('text', 'Error', this.props.msg)}
                         </div>
+                    </form>
 
-                        {this.getErrors('text', 'Error', this.props.msg)}
+                    <div className='buttons is-centered section'>
+                        <a className='button is-danger inline'
+                            onClick={() => { this.props.logout(); }}>
+                            Go Back
+                        </a>
+
+                        <a className='button is-link inline'
+                            onClick={this.submitPassword}>
+                            Change Password
+                        </a>
                     </div>
-                </form>
-
-                <div className='buttons is-centered section'>
-                    <a className='button is-danger inline'
-                        onClick={() => { this.props.logout(); }}>
-                        Go Back
-                    </a>
-
-                    <a className='button is-link inline'
-                        onClick={this.submitPassword}>
-                        Change Password
-                    </a>
                 </div>
             </div>
         );

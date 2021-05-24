@@ -24,8 +24,14 @@ class App extends React.Component {
         return (
             <Provider store={store}>
                 <React.Fragment>
-                    <div className='section card-header has-background-link column'>
-                        <h1 className='title has-text-white'>NSCC ALP Student Progress Tracker</h1>
+                    <div className='section has-background-link'>
+                        <div className='container'>
+                            <div className='columns'>
+                                <h1 className='column is-12 title has-text-white'>
+                                    NSCC ALP Student Progress Tracker
+                                </h1>
+                            </div>
+                        </div>
                     </div>
 
                     <Switch>
@@ -50,19 +56,17 @@ class App extends React.Component {
                         {/* FIXME: Add 404 routing */}
                     </Switch>
 
-                    <div className='card-footer has-background-grey-lighter is-justify-content-center py-6'>
-                        <div className='has-text-centered py-6'>
-                            <p>
-                                Designed with <a href='https://bulma.io' rel='noopener noreferrer' target='_blank'>Bulma</a>
-                            </p>
+                    <div className='has-text-centered py-6'>
+                        <p>
+                            Designed with <a href='https://bulma.io' rel='noopener noreferrer' target='_blank'>Bulma</a>
+                        </p>
 
-                            <p>
-                                Powered by
-                                <a href='https://reactjs.org' rel='noopener noreferrer' target='_blank'> React</a>,
-                                <a href='https://nodejs.org/' rel='noopener noreferrer' target='_blank'> Node.js</a>, and
-                                <a href='https://www.mysql.com/' rel='noopener noreferrer' target='_blank'> MySQL</a>
-                            </p>
-                        </div>
+                        <p>
+                            Powered by
+                            <a href='https://reactjs.org' rel='noopener noreferrer' target='_blank'> React</a>,
+                            <a href='https://nodejs.org/' rel='noopener noreferrer' target='_blank'> Node.js</a>, and
+                            <a href='https://www.mysql.com/' rel='noopener noreferrer' target='_blank'> MySQL</a>
+                        </p>
                     </div>
                 </React.Fragment>
             </Provider>

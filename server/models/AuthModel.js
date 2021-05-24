@@ -1,8 +1,7 @@
 const crypto = require('crypto');
 
 const {
-    queryDatabase,
-    closeDatabase
+    queryDatabase
 } = require('../services/db');
 
 class AuthModel {
@@ -14,21 +13,25 @@ class AuthModel {
         let statement = 'SELECT password_reset_req FROM student WHERE nscc_id = ?;';
         let params = [form.nscc_id];
 
-        return await queryDatabase(statement, params).then(rows => {
-            if ((!rows) || (rows.length < 1)) {
+        return await queryDatabase(statement, params).then(result => {
+            result.connection.destroy();
+
+            if ((!result.rows) || (result.rows.length < 1)) {
                 // Not in students
                 // Check admin table
                 let statement = 'SELECT password_reset_req FROM administrators WHERE nscc_id = ?;';
                 // Pass this back to controller
                 // Saves us some trouble in login()
                 isAdmin = true;
+
                 return queryDatabase(statement, params);
             }
 
-            return rows;
-        }).then(rows => {
-            if ((!rows) || (rows.length < 1)) {
-                closeDatabase();
+            return result;
+        }).then(result => {
+            result.connection.destroy();
+
+            if ((!result.rows) || (result.rows.length < 1)) {
                 // Does not exist in either users table
                 return {
                     failed: true,
@@ -36,8 +39,7 @@ class AuthModel {
                 };
             }
 
-            if (rows.length !== 1) {
-                closeDatabase();
+            if (result.rows.length !== 1) {
                 // Should be exactly one result
                 return {
                     failed: true,
@@ -45,8 +47,7 @@ class AuthModel {
                 };
             }
 
-            if (parseInt(rows[0].password_reset_req, 10) === 1) {
-                closeDatabase();
+            if (parseInt(result.rows[0].password_reset_req, 10) === 1) {
                 // Reset required
                 // Return null error object so the controller knows it's HTTP 300
                 return {
@@ -61,10 +62,9 @@ class AuthModel {
                 error: null,
                 isAdmin: isAdmin
             };
-        }).catch(error => {
-            console.log(error);
-
-            closeDatabase();
+        }).catch(result => {
+            result.connection.destroy();
+            console.log(result.error);
 
             return {
                 failed: true,
@@ -80,9 +80,10 @@ class AuthModel {
         // This is where the isAdmin flag from passwordResetCheck() comes in handy
         if (isAdmin) { statement = 'SELECT password, salt FROM administrators WHERE nscc_id = ?;'; }
 
-        return await queryDatabase(statement, params).then(rows => {
-            if ((!rows) || (rows.length < 1)) {
-                closeDatabase();
+        return await queryDatabase(statement, params).then(result => {
+            result.connection.destroy();
+
+            if ((!result.rows) || (result.rows.length < 1)) {
                 // Does not exist in either users table
                 return {
                     failed: true,
@@ -90,8 +91,7 @@ class AuthModel {
                 };
             }
 
-            if (rows.length !== 1) {
-                closeDatabase();
+            if (result.rows.length !== 1) {
                 // Should be exactly one result
                 return {
                     failed: true,
@@ -99,12 +99,14 @@ class AuthModel {
                 };
             }
 
-            let storedHash = rows[0].password;
-            let salt = rows[0].salt;
+            // Pre-existing hash from the database
+            let storedHash = result.rows[0].password;
+            // Salt and hash provided password
+            let salt = result.rows[0].salt;
             let hash = crypto.pbkdf2Sync(form.password, salt, 1000, 64, 'sha512').toString('hex');
 
+            // Check for match
             if (storedHash !== hash) {
-                closeDatabase();
                 // Password incorrect
                 return {
                     failed: true,
@@ -117,10 +119,9 @@ class AuthModel {
                 failed: false,
                 error: null
             };
-        }).catch(error => {
-            console.log(error);
-
-            closeDatabase();
+        }).catch(result => {
+            result.connection.destroy();
+            console.log(result.error);
 
             return {
                 failed: true,
@@ -135,10 +136,10 @@ class AuthModel {
 
         if (form.admin) { statement = 'SELECT * FROM administrators WHERE nscc_id = ?;'; }
 
-        return await queryDatabase(statement, params).then(rows => {
-            closeDatabase();
+        return await queryDatabase(statement, params).then(result => {
+            result.connection.destroy();
 
-            if ((!rows) || (rows.length < 1)) {
+            if ((!result.rows) || (result.rows.length < 1)) {
                 // Does not exist in either users table
                 return {
                     failed: true,
@@ -146,7 +147,7 @@ class AuthModel {
                 };
             }
 
-            if (rows.length !== 1) {
+            if (result.rows.length !== 1) {
                 // Should be exactly one result
                 return {
                     failed: true,
@@ -170,10 +171,10 @@ class AuthModel {
 
             // Exceute query
             return queryDatabase(statement, params);
-        }).then(rows => {
-            closeDatabase();
+        }).then(result => {
+            result.connection.destroy();
 
-            if (!rows) {
+            if (!result.rows) {
                 return {
                     failed: true,
                     error: 'Internal error'
@@ -184,10 +185,9 @@ class AuthModel {
                 failed: false,
                 error: null
             };
-        }).catch(error => {
-            console.log(error);
-
-            closeDatabase();
+        }).catch(result => {
+            result.connection.destroy();
+            console.log(result.error);
             
             return {
                 failed: true,

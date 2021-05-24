@@ -1,6 +1,5 @@
 const {
-    queryDatabase,
-    closeDatabase
+    queryDatabase
 } = require('../services/db');
 
 class StudentModel {
@@ -9,12 +8,12 @@ class StudentModel {
     static async fetchAllStudents() {
         let statement = 'SELECT * FROM student ORDER BY last_name';
 
-        return await queryDatabase(statement).then(students => {
-            closeDatabase();
+        return await queryDatabase(statement).then(result => {
+            result.connection.destroy();
 
-            if ((!students) || (students.length < 1)) { return; }
+            if ((!result.rows) || (result.rows.length < 1)) { return; }
 
-            return students.map(student => {
+            return result.rows.map(student => {
                 student.comment = student.comment ? student.comment : '';
                 student.start_date = student.start_date > 1 ? student.start_date : 0;
                 student.end_date = student.end_date > 1 ? student.end_date : 0;
@@ -25,10 +24,9 @@ class StudentModel {
 
                 return student;
             });
-        }).catch(error => {
-            console.log(error);
-
-            closeDatabase();
+        }).catch(result => {
+            result.connection.destroy();
+            console.log(result.error);
             
             return ['Internal error'];
         });
@@ -38,14 +36,14 @@ class StudentModel {
         let statement = 'SELECT * FROM student WHERE nscc_id = ? ORDER BY last_name';
         let params = [request.params.id];
 
-        return await queryDatabase(statement, params).then(students => {
-            closeDatabase();
+        return await queryDatabase(statement, params).then(result => {
+            result.connection.destroy();
 
             // Only a single result should be returned
             // Otherwise we've introduced a duplicate user somehow
-            if ((!students) || (students.length !== 1)) { return; }
+            if ((!result.rows) || (result.rows.length !== 1)) { return; }
 
-            let student = students[0];
+            let student = result.rows[0];
 
             student.comment = student.comment ? student.comment : '';
             student.start_date = student.start_date > 1 ? student.start_date : 0;
@@ -56,10 +54,9 @@ class StudentModel {
             delete student.salt;
 
             return student;
-        }).catch(error => {
-            console.log(error);
-
-            closeDatabase();
+        }).catch(result => {
+            result.connection.destroy();
+            console.log(result.error);
             
             return ['Internal error'];
         });
@@ -70,11 +67,11 @@ class StudentModel {
         let statement = 'SELECT nscc_id FROM student WHERE nscc_id = ?;';
         let params = [form.nscc_id];
 
-        return await queryDatabase(statement, params).then(rows => {
-            closeDatabase();
+        return await queryDatabase(statement, params).then(result => {
+            result.connection.destroy();
 
             // Should be exactly one result
-            if (rows.length >= 1) {
+            if (result.rows.length >= 1) {
                 // Already exists
                 return {
                     failed: true,
@@ -103,11 +100,11 @@ class StudentModel {
 
             // Execute query
             return queryDatabase(statement, params);
-        }).then(rows => {
-            closeDatabase();
+        }).then(result => {
+            result.connection.destroy();
 
             // No result
-            if (!rows) {
+            if (!result.rows) {
                 return {
                     failed: true,
                     error: 'Internal error'
@@ -116,16 +113,15 @@ class StudentModel {
 
             // Rows have been affected
             // Insert successful
-            if (rows.affectedRows) {
+            if (result.rows.affectedRows) {
                 return {
                     failed: false,
                     error: null
                 };
             }
-        }).catch(error => {
-            console.log(error);
-
-            closeDatabase();
+        }).catch(result => {
+            result.connection.destroy();
+            console.log(result.error);
 
             return {
                 failed: true,
@@ -161,11 +157,11 @@ class StudentModel {
         // Prepare statement
         let statement = `UPDATE student SET ${columns} WHERE nscc_id = ?;`;
 
-        return await queryDatabase(statement, params).then(rows => {
-            closeDatabase();
+        return await queryDatabase(statement, params).then(result => {
+            result.connection.destroy();
 
-            if (rows) {
-                if (rows.affectedRows < 1 || rows.changedRows < 1) {
+            if (result.rows) {
+                if (result.rows.affectedRows < 1 || result.rows.changedRows < 1) {
                     return {
                         failed: true,
                         error: 'Could not update user'
@@ -177,10 +173,9 @@ class StudentModel {
                     error: null
                 };
             }
-        }).catch(error => {
-            console.log(error);
-
-            closeDatabase();
+        }).catch(result => {
+            result.connection.destroy();
+            console.log(result.error);
 
             return {
                 failed: true,
@@ -193,10 +188,12 @@ class StudentModel {
         let statement = 'DELETE FROM student WHERE nscc_id = ?';
         let params = [nscc_id];
 
-        return await queryDatabase(statement, params).then(rows => {
+        return await queryDatabase(statement, params).then(result => {
+            result.connection.destroy();
+
             // Check result
-            if (rows) {
-                if (rows.affectedRows < 1) {
+            if (result.rows) {
+                if (result.rows.affectedRows < 1) {
                     // No affected rows means nothing happened
                     return {
                         failed: true,
@@ -210,10 +207,9 @@ class StudentModel {
                     error: null
                 };
             }
-        }).catch(error => {
-            console.log(error);
-
-            closeDatabase();
+        }).catch(result => {
+            result.connection.destroy();
+            console.log(result.error);
 
             return {
                 failed: true,

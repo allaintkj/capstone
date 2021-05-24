@@ -96,11 +96,13 @@ class LoginForm extends React.Component {
         if (this.props.token) { return <Redirect to={this.props.getPathFromToken()} />; }
 
         return (
-            <React.Fragment>
-                <form className='columns card-content has-background-light m-0' onChange={this.updateField}>
-                    <div className='column is-6-desktop is-offset-3-desktop is-4-widescreen is-offset-4-widescreen'>
-                        <div className='section'>
-                            <h2 className='subtitle has-text-centered'>hint: try admin/alpAdmin</h2>
+            <div className='section has-background-light'>
+                <div className='container'>
+                    <form className='columns' onChange={this.updateField}>
+                        <div className='column is-6-widescreen is-offset-3-widescreen'>
+                            <h1 className='subtitle has-text-centered section'>
+                                Login
+                            </h1>
 
                             {/* Didn't really need to componentize these */}
                             <LoginField loading={this.props.loading}
@@ -122,19 +124,19 @@ class LoginForm extends React.Component {
                                 submitLogin={this.submitLogin} />
 
                             {this.getErrors('password', 'Password', this.props.msg)}
-                        </div>
 
-                        {this.getErrors('text', 'Message', this.props.msg)}
+                            {this.getErrors('text', 'Message', this.props.msg)}
 
-                        <div className='buttons is-centered section'>
-                            <a className='button is-link is-block'
-                                onClick={this.submitLogin}>
-                                Login
-                            </a>
+                            <div className='buttons is-centered section'>
+                                <a className='button is-link is-block'
+                                    onClick={this.submitLogin}>
+                                    Login
+                                </a>
+                            </div>
                         </div>
-                    </div>
-                </form>
-            </React.Fragment>
+                    </form>
+                </div>
+            </div>
         );
     }
 }

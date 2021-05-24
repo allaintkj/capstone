@@ -1,6 +1,5 @@
 const {
-    queryDatabase,
-    closeDatabase
+    queryDatabase
 } = require('../services/db');
 
 class ProgressModel {
@@ -10,15 +9,15 @@ class ProgressModel {
         let statement = 'SELECT * FROM progress WHERE nscc_id = ?;';
         let params = [request.sanitize(request.params.id)];
 
-        return await queryDatabase(statement, params).then(rows => {
-            closeDatabase();
+        return await queryDatabase(statement, params).then(result => {
+            result.connection.destroy();
 
-            if ((!rows) || (rows.length < 1)) { return; }
+            if ((!result.rows) || (result.rows.length < 1)) { return; }
 
             let progress = [];
             let sortedProgressRecords = {};
 
-            rows.forEach(progressRecord => {
+            result.rows.forEach(progressRecord => {
                 let course = progressRecord.course_code;
                 let unit = progressRecord.unit;
 
@@ -45,10 +44,10 @@ class ProgressModel {
             }
 
             return progress;
-        }).catch(error => {
-            console.log(error);
+        }).catch(result => {
+            result.connection.destroy();
 
-            closeDatabase();
+            console.log(result.error);
             
             return ['Internal error'];
         });

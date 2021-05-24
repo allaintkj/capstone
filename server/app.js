@@ -1,7 +1,7 @@
 const bodyParser = require('body-parser');
 const express = require('express');
-const sanitizer = require('express-sanitizer');
 const path = require('path');
+const sanitizer = require('express-sanitizer');
 
 const config = require('./config.json');
 

@@ -18,7 +18,7 @@ class StudentList extends React.Component {
         return (
             <ul className='buttons is-block' style={{maxHeight: '400px'}}>
                 {this.props.list.map((student, index) => {
-                    let className = 'button is-block mx-0' + (this.props.currentListItem === student.nscc_id ? ' is-dark' : '');
+                    let className = 'button is-block m-0 mb-1' + (this.props.currentListItem === student.nscc_id ? ' is-dark' : '');
                     let userName = student.last_name ? student.last_name + ', ' + student.first_name : student.first_name;
                     let route = `/admin/student/${student.nscc_id}`;
                     route += this.props.isEditing ? '/edit' : '';

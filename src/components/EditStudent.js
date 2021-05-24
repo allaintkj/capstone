@@ -3,6 +3,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
 
+import ProgressChart from './ProgressChart';
 import LogoutButton from './LogoutButton';
 
 // Student actions
@@ -284,8 +285,9 @@ class EditStudent extends React.Component {
 
                 {this.getErrors('text', 'Message', this.props.msg)}
 
-                <div className='columns is-desktop is-centered mt-6'>
+                <ProgressChart />
 
+                <div className='columns is-desktop is-centered mt-6'>
                     <div className='column'>
                         <a className='button is-danger is-block'
                             disabled={false}
@@ -321,11 +323,9 @@ class EditStudent extends React.Component {
 
                         </a>
                     </div>
-
                 </div>
 
                 <LogoutButton />
-                
             </React.Fragment>
         );
     }

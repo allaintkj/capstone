@@ -3,18 +3,22 @@ const { database } = require('../config.json');
 
 exports.queryDatabase = (statement, args) => {
     return new Promise((resolve, reject) => {
-        mysql.createConnection(database).query(statement, args, (error, rows) => {
-            if (error) { return reject(error); }
-            resolve(rows);
-        });
-    });
-};
+        // Create the connection to pass with result
+        let connection = mysql.createConnection(database);
 
-exports.closeDatabase = () => {
-    return new Promise((resolve, reject) => {
-        mysql.createConnection(database).end(error => {
-            if (error) { return reject(error); }
-            resolve();
+        // Pass connection to the model so it can be closed when necessary
+        connection.query(statement, args, (error, rows) => {
+            if (error) {
+                return reject({
+                    error: error,
+                    connection: connection
+                });
+            }
+
+            resolve({
+                rows: rows,
+                connection: connection
+            });
         });
     });
 };

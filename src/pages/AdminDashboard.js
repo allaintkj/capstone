@@ -76,118 +76,84 @@ class AdminDashboard extends React.Component {
         if ((pathname[4]) && (pathname[4].toLowerCase() === 'edit')) { isEditing = true; }
 
         return (
-            <div className='card-content has-text-centered is-paddingless'>
-                <div className='columns is-desktop is-marginless'>
-                    <div className='card column is-4-desktop is-3-widescreen is-2-fullhd is-paddingless has-background-light'>
-
-                        {/* Collapse button for student/course lists */}
-                        <div className='card-header columns is-marginless is-hidden-desktop'>
-                            <div className='column is-12 is-paddingless'>
-                                <a className='card-header-icon has-background-white'
-                                    onClick={() => this.setState({collapseLists: !this.state.collapseLists})}>
-                                    <span className='icon'>
-                                        <i className={`fas fa-chevron-${this.state.collapseLists ? 'right' : 'down'}`} />
-                                    </span>
-                                </a>
-                            </div>
-                        </div>
-
-                        {/* Student/course lists */}
-                        <div className={this.state.collapseLists ? 'is-hidden' : 'is-block'}>
-                            <div className='card-header tabs is-marginless'>
-
+            <div className='section has-background-light pt-3'>
+                <div className='container'>
+                    <div className='columns'>
+                        <div className='column is-12 is-4-desktop'>
+                            {/* Student/course lists */}
+                            <div className='tabs'>
                                 {/* Control tabs for list components */}
-                                <ul style={{display: 'flex'}}>
-                                    <li className={this.type === 'student' ? 'is-active' : ''}>
+                                <ul className='is-block'>
+                                    <li className={`is-inline-block ${this.type === 'student' ? 'is-active' : ''}`}>
                                         <a href='/admin/student'>
                                             {'Students'}
                                         </a>
                                     </li>
 
-                                    <li className={this.type === 'course' ? 'is-active' : ''}>
+                                    <li className={`is-inline-block ${this.type === 'course' ? 'is-active' : ''}`}>
                                         <a href='/admin/course'>
                                             {'Courses'}
                                         </a>
                                     </li>
                                 </ul>
-
                             </div>
 
                             {/* List components */}
-                            <div className='card-content section'>
-                                <div className='columns'>
-                                    <div className='column'>
-                                        <a className='button is-success is-block'
-                                            disabled={false}
-                                            href={`/admin/${this.type}/add`}>
+                            <a className='button is-success is-block mb-3'
+                                disabled={false}
+                                href={`/admin/${this.type}/add`}>
+                                {'Add New'}
+                            </a>
 
-                                            {'Add New'}
-
-                                        </a>
-                                    </div>
-                                </div>
-
-                                <div className={`field select is-small ${this.type === 'course' ? 'is-hidden' : ''}`}>
+                            <div className={`has-text-centered mb-3 ${this.type === 'course' ? 'is-hidden' : ''}`}>
+                                <div className='field select is-small'>
                                     <select onChange={evt => this.setState({filter: evt.target.value})}>
                                         <option value='all'>All</option>
                                         <option value='active'>Active</option>
                                         <option value='inactive'>Inactive</option>
                                     </select>
                                 </div>
-
-                                <StudentList
-                                    currentListItem={params.id}
-                                    isEditing={isEditing}
-                                    list={this.props.student.list}
-                                    listFilter={this.state.filter}
-                                    visible={this.type === 'student'}
-                                />
-
-                                <CourseList
-                                    currentListItem={params.id}
-                                    isEditing={isEditing}
-                                    list={this.props.course.list}
-                                    listFilter={this.state.filter}
-                                    visible={this.type === 'course'}
-                                />
                             </div>
+
+                            <StudentList
+                                currentListItem={params.id}
+                                isEditing={isEditing}
+                                list={this.props.student.list}
+                                listFilter={this.state.filter}
+                                visible={this.type === 'student'}
+                            />
+
+                            <CourseList
+                                currentListItem={params.id}
+                                isEditing={isEditing}
+                                list={this.props.course.list}
+                                listFilter={this.state.filter}
+                                visible={this.type === 'course'}
+                            />
                         </div>
-                    </div>
 
-                    <div className={'card column is-8-desktop is-9-widescreen is-10-fullhd has-background-light p-0'}>
-
-                        {/* Information/form component */}
-                        <div style={{overflow: 'hidden', height: 'auto'}}>
-
+                        <div className='column is-12 is-8-desktop'>
                             {/* Control tabs for information/form components */}
-                            <div className='card-header tabs is-marginless'>
-                                <ul style={{display: 'flex'}}>
-
-                                    <li className={isEditing ? '' : 'is-active'}>
+                            <div className='tabs'>
+                                <ul className='is-block'>
+                                    <li className={`is-inline-block ${isEditing ? '' : 'is-active'}`}>
                                         <a href={`/admin/${this.type}/${params.id ? params.id : ''}`}>
                                             {'Info'}
                                         </a>
                                     </li>
 
-                                    <li className={isEditing ? 'is-active' : ''}>
+                                    <li className={`is-inline-block ${isEditing ? 'is-active' : ''}`}>
                                         <a href={params.id ? `/admin/${this.type}/${params.id}/edit` : ''}>
                                             {'Edit'}
                                         </a>
                                     </li>
-
                                 </ul>
                             </div>
 
-                            <div className='card-content has-text-left section'>
+                            {this.type === 'student' ? <StudentInformation visible={!isEditing} /> : <CourseInformation visible={!isEditing} />}
 
-                                {this.type === 'student' ? <StudentInformation visible={!isEditing} /> : <CourseInformation visible={!isEditing} />}
-
-                                {this.type === 'student' ? <EditStudent visible={isEditing} /> : <EditCourse visible={isEditing} />}
-
-                            </div>
-
+                            {this.type === 'student' ? <EditStudent visible={isEditing} /> : <EditCourse visible={isEditing} />}
                         </div>
-
                     </div>
                 </div>
             </div>

@@ -8,7 +8,8 @@ import {
     SET_LOAD_FLAG,
     SET_MESSAGES,
     SET_STUDENT,
-    SET_STUDENTS
+    SET_STUDENTS,
+    SET_TOKEN
 } from './types';
 
 export const fetchAllStudents = (nscc_id = '') => (dispatch, getState) => {
@@ -57,6 +58,8 @@ export const fetchAllStudents = (nscc_id = '') => (dispatch, getState) => {
             });
         }
 
+        // Set token in state
+        dispatch({ type: SET_TOKEN });
         // Disable load flag
         dispatch({
             type: SET_LOAD_FLAG,
@@ -96,7 +99,8 @@ export const fetchAllStudents = (nscc_id = '') => (dispatch, getState) => {
 
             // Set fresh token in storage
             localStorage.setItem('token', error.response.headers['authorization'].split(' ')[1]);
-
+            // Set token in state
+            dispatch({ type: SET_TOKEN });
             // Disable load flag
             dispatch({
                 type: SET_LOAD_FLAG,
@@ -143,6 +147,8 @@ export const fetchStudent = nscc_id => (dispatch, getState) => {
             type: SET_STUDENT,
             payload: student
         });
+        // Set token in state
+        dispatch({ type: SET_TOKEN });
         // Disable load flag
         dispatch({
             type: SET_LOAD_FLAG,
@@ -181,7 +187,8 @@ export const fetchStudent = nscc_id => (dispatch, getState) => {
 
             // Set fresh token
             localStorage.setItem('token', error.response.headers['authorization'].split(' ')[1]);
-
+            // Set token in state
+            dispatch({ type: SET_TOKEN });
             // Disable load flag
             dispatch({
                 type: SET_LOAD_FLAG,
@@ -242,6 +249,8 @@ export const addStudent = form => (dispatch, getState) => {
             type: SET_MESSAGES,
             payload: msgBlock
         });
+        // Set token in state
+        dispatch({ type: SET_TOKEN });
         // Toggle loading state
         dispatch({
             type: SET_LOAD_FLAG,
@@ -296,6 +305,8 @@ export const addStudent = form => (dispatch, getState) => {
                 type: SET_MESSAGES,
                 payload: msgBlock
             });
+            // Set token in state
+            dispatch({ type: SET_TOKEN });
             // Disable load flag
             dispatch({
                 type: SET_LOAD_FLAG,
@@ -359,6 +370,8 @@ export const updateStudent = form => (dispatch, getState) => {
         });
         // Fetch all students to update our list and set the selected student in state
         dispatch(fetchAllStudents(form.nscc_id));
+        // Set token in state
+        dispatch({ type: SET_TOKEN });
         // Toggle loading state
         dispatch({
             type: SET_LOAD_FLAG,
@@ -414,6 +427,8 @@ export const updateStudent = form => (dispatch, getState) => {
                 type: SET_MESSAGES,
                 payload: msgBlock
             });
+            // Set token in state
+            dispatch({ type: SET_TOKEN });
             // Disable load flag
             dispatch({
                 type: SET_LOAD_FLAG,
@@ -465,6 +480,8 @@ export const deleteStudent = nscc_id => (dispatch, getState) => {
         });
         // Fetch all students to update our list
         dispatch(fetchAllStudents());
+        // Set token in state
+        dispatch({ type: SET_TOKEN });
         // Toggle loading state
         dispatch({
             type: SET_LOAD_FLAG,
@@ -520,6 +537,8 @@ export const deleteStudent = nscc_id => (dispatch, getState) => {
                 type: SET_MESSAGES,
                 payload: msgBlock
             });
+            // Set token in state
+            dispatch({ type: SET_TOKEN });
             // Disable load flag
             dispatch({
                 type: SET_LOAD_FLAG,
